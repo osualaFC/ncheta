@@ -1,9 +1,22 @@
+import co.touchlab.skie.configuration.FlowInterop
+import co.touchlab.skie.configuration.SuspendInterop
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
     alias(libs.plugins.kotlinMultiplatform)
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlin.serialization)
+    alias(libs.plugins.skie)
+}
+
+skie {
+    features {
+        coroutinesInterop.set(true)
+        group {
+            FlowInterop.Enabled(true)
+            SuspendInterop.Enabled(true)
+        }
+    }
 }
 
 kotlin {
