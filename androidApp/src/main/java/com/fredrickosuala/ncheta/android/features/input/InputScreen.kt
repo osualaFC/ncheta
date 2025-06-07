@@ -1,14 +1,23 @@
 package com.fredrickosuala.ncheta.android.features.input
 
+import android.util.Log
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import com.fredrickosuala.ncheta.android.theme.NchetaTheme
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.fredrickosuala.ncheta.features.util.UiState
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -18,6 +27,39 @@ fun InputScreen(
 
     val sharedViewModel = androidViewModel.sharedViewModel
     val inputText by sharedViewModel.inputText.collectAsState()
+    val uiState by sharedViewModel.uiState.collectAsState()
+
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    LaunchedEffect(uiState) {
+        when (val state = uiState) {
+            is UiState.Error -> {
+                Log.d("INPUT_SCREEN", "Error: ${state.message}")
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(
+                        message = state.message,
+                        withDismissAction = true
+                        )
+                }
+                sharedViewModel.resetUiState()
+            }
+            is UiState.Success -> {
+                val successMessage = when (state.data) {
+                    is String -> "Summary generated successfully"
+                    is List<*> -> "Content generated successfully"
+                    else -> "Success!"
+                }
+                Log.d("INPUT_SCREEN", "Success: ${state.data}")
+                coroutineScope.launch {
+                    snackbarHostState.showSnackbar(successMessage)
+                }
+                sharedViewModel.resetUiState()
+            }
+            else -> {}
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -54,6 +96,7 @@ fun InputScreen(
                 textStyle = MaterialTheme.typography.bodyLarge.copy(
                     color = MaterialTheme.colorScheme.onSurface
                 ),
+                enabled = uiState !is UiState.Loading,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.outline,
@@ -74,21 +117,37 @@ fun InputScreen(
             ) {
                 ActionButton(
                     text = "Summarize",
-                    onClick = {
-                        sharedViewModel.onSummarizeClicked()
-                    }
+                    onClick = { sharedViewModel.onSummarizeClicked() },
+                    enabled = uiState !is UiState.Loading
                 )
                 ActionButton(
                     text = "Generate Flashcards",
-                    onClick = {
-                       sharedViewModel.onGenerateFlashcardsClicked()
-                    }
+                    onClick = { sharedViewModel.onGenerateFlashcardsClicked() },
+                    enabled = uiState !is UiState.Loading
                 )
                 ActionButton(
                     text = "Generate Q&A",
-                    onClick = {
-                        sharedViewModel.onGenerateQaClicked()
-                    }
+                    onClick = { sharedViewModel.onGenerateQaClicked() },
+                    enabled = uiState !is UiState.Loading
+                )
+            }
+        }
+
+        //--- Loading Overlay ---
+        AnimatedVisibility(
+            visible = uiState is UiState.Loading,
+            modifier = Modifier.fillMaxSize(),
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Color.Black.copy(alpha = 0.5f)),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    color = MaterialTheme.colorScheme.primary
                 )
             }
         }
@@ -99,7 +158,8 @@ fun InputScreen(
 private fun ActionButton(
     text: String,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
 ) {
     OutlinedButton(
         onClick = onClick,
@@ -107,7 +167,8 @@ private fun ActionButton(
         colors = ButtonDefaults.outlinedButtonColors(
             contentColor = MaterialTheme.colorScheme.primary
         ),
-        border = ButtonDefaults.outlinedButtonBorder()
+        border = ButtonDefaults.outlinedButtonBorder(),
+        enabled = enabled
     ) {
         Text(
             text,

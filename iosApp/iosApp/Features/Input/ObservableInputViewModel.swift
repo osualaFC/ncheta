@@ -16,10 +16,14 @@ class ObservableInputViewModel: ObservableObject {
 
     @Published var inputText: String = ""
     
-    private var observationTask: Task<Void, Error>?
+    @Published var uiState: UiState<AnyObject>
+    
+    private var inputTextWatcherTask: Task<Void, Error>?
+    private var uiStateWatcherTask: Task<Void, Never>?
 
     init(sharedViewModel: InputViewModel = InputViewModel()) {
         self.sharedVm = sharedViewModel
+        self.uiState = sharedVm.uiState.value
         
         // Initialize with the current value from SkieSwiftStateFlow's .value property
         // SKIE exposes StateFlow.value directly. It might be NSString by default.
@@ -30,7 +34,7 @@ class ObservableInputViewModel: ObservableObject {
         }
 
         // Start a Swift Task to observe the inputText Flow (as AsyncSequence)
-        self.observationTask = Task {
+        self.inputTextWatcherTask = Task {
               for await nsStringValue in sharedVm.inputText {
                   if let swiftString = nsStringValue as String? {
                       self.inputText = swiftString
@@ -39,6 +43,12 @@ class ObservableInputViewModel: ObservableObject {
                   }
               }
           }
+        
+        self.uiStateWatcherTask = Task {
+            for await newState in sharedVm.uiState {
+                self.uiState = newState
+            }
+        }
       }
 
     func onInputTextChanged(newText: String) {
@@ -56,9 +66,18 @@ class ObservableInputViewModel: ObservableObject {
     func onGenerateQaClicked() {
         sharedVm.onGenerateQaClicked()
     }
+    
+    func updateUserApiKey(apiKey: String) {
+           sharedVm.updateUserApiKey(apiKey: apiKey)
+    }
+    
+    func resetUiState() {
+        sharedVm.resetUiState()
+    }
 
     deinit {
-        observationTask?.cancel()
+        inputTextWatcherTask?.cancel()
+        uiStateWatcherTask?.cancel()
         sharedVm.clear()
         print("ObservableInputViewModel: deinit called, observationTask cancelled, sharedViewModel cleared.")
     }

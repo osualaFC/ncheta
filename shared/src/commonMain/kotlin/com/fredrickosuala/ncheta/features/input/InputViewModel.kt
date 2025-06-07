@@ -28,7 +28,7 @@ class InputViewModel(
     val inputText: StateFlow<String> = _inputText.asStateFlow()
 
 
-    private var userApiKey: String? = null // Placeholder for User Story 2.1
+    private var userApiKey: String? = "AIzaSyAGQujn9TJoQTf38EKeg7ZBUksoSgqKY_4" // Placeholder for User Story 2.1
 
     fun onInputTextChanged(newText: String) {
         _inputText.value = newText
@@ -70,7 +70,7 @@ class InputViewModel(
         }
     }
 
-    fun acknowledgeResult() {
+    fun resetUiState() {
         _uiState.value = UiState.Idle
     }
 

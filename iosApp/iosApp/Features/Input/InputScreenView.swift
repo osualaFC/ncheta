@@ -7,26 +7,35 @@
 //
 
 import SwiftUI
+import shared
 
 struct InputScreenView: View {
-    // @StateObject var viewModel = InputViewModel()
-    @State private var inputText: String = ""
+    
+    @StateObject var viewModel = ObservableInputViewModel()
     @State private var placeholderText: String = "Enter or extract text here"
+    
+    @State private var alertMessage: String?
+    @State private var isShowingAlert: Bool = false
 
     var body: some View {
+        
+        let isLoading = viewModel.uiState is UiStateLoading
         
         NavigationStack {
             VStack(spacing: 16) {
                 
                 ZStack(alignment: .topLeading) {
-                    if inputText.isEmpty {
+                    if viewModel.inputText.isEmpty {
                         Text(placeholderText)
                             .font(AppFonts.bodyLarge)
                             .foregroundColor(AppColors.mediumGray)
                             .padding(.horizontal, 8)
                             .padding(.vertical, 12)
                     }
-                    TextEditor(text: $inputText)
+                    TextEditor(text: Binding(
+                        get: { viewModel.inputText },
+                        set: { newText in viewModel.onInputTextChanged(newText:newText)}
+                    ))
                         .font(AppFonts.bodyLarge)
                         .foregroundColor(AppColors.nearBlack)
                         .frame(maxWidth: .infinity, minHeight: 150, maxHeight: .infinity)
@@ -45,16 +54,13 @@ struct InputScreenView: View {
 
                 VStack(spacing: 10) {
                     ActionButton(text: "Summarize") {
-                        // TODO: Call ViewModel to process summary with inputText
-                        print("Summarize clicked with text: \(inputText)")
+                        viewModel.onSummarizeClicked()
                     }
                     ActionButton(text: "Generate Flashcards") {
-                        // TODO: Call ViewModel to process flashcards with inputText
-                        print("Flashcards clicked with text: \(inputText)")
+                        viewModel.onGenerateFlashcardsClicked()
                     }
                     ActionButton(text: "Generate Q&A") {
-                        // TODO: Call ViewModel to process Q&A with inputText
-                        print("Q&A clicked with text: \(inputText)")
+                        viewModel.onGenerateQaClicked()
                     }
                 }
             }
@@ -62,8 +68,37 @@ struct InputScreenView: View {
             .navigationTitle("NCHETA")
             .navigationBarTitleDisplayMode(.inline)
             .background(AppColors.subtleOffWhite.ignoresSafeArea())
+            .disabled(isLoading)
+            
+            if isLoading {
+                Color.black.opacity(0.4).ignoresSafeArea()
+                ProgressView()
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                    .scaleEffect(1.5)
+            }
+        }
+        .onTapGesture { hideKeyboard() }
+        .onChange(of: viewModel.uiState) { newState in
+            if let successState = newState as? UiStateSuccess<AnyObject> {
+                alertMessage = "Content generated successfully!"
+                isShowingAlert = true
+            } else if let errorState = newState as? UiStateError {
+                alertMessage = errorState.message
+                isShowingAlert = true
+            }
+        }
+        .alert("NCHETA", isPresented: $isShowingAlert, presenting: alertMessage) {_ in 
+            Button("ok") {
+                viewModel.resetUiState()
+            }
+        } message: { message in
+            Text(message)
         }
     }
+    
+    private func hideKeyboard() {
+         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
+     }
 }
 
 struct ActionButton: View {
