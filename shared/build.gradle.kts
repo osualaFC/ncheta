@@ -1,6 +1,5 @@
 import co.touchlab.skie.configuration.FlowInterop
 import co.touchlab.skie.configuration.SuspendInterop
-import org.gradle.kotlin.dsl.implementation
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -8,6 +7,7 @@ plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.skie)
+    alias(libs.plugins.sqldelight)
 }
 
 skie {
@@ -16,6 +16,14 @@ skie {
         group {
             FlowInterop.Enabled(true)
             SuspendInterop.Enabled(true)
+        }
+    }
+}
+
+sqldelight {
+    databases {
+        create("NchetaDatabase") {
+            packageName.set("com.fredrickosuala.ncheta.database")
         }
     }
 }
@@ -30,7 +38,7 @@ kotlin {
             }
         }
     }
-    
+
     listOf(
         iosX64(),
         iosArm64(),
@@ -49,6 +57,14 @@ kotlin {
             implementation(libs.kotlinx.serialization.core)
             api(libs.generativeai.google)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.sqldelight.runtime)
+            implementation(libs.sqldelight.coroutines.extensions)
+        }
+        iosMain.dependencies {
+            implementation(libs.sqldelight.native.driver)
+        }
+        androidMain.dependencies {
+            implementation(libs.sqldelight.android.driver)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

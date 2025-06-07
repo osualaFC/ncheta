@@ -1,0 +1,27 @@
+
+CREATE TABLE NchetaEntry(
+    id TEXT NOT NULL PRIMARY KEY,
+    title TEXT NOT NULL,
+    sourceText TEXT NOT NULL,
+    createdAt INTEGER NOT NULL,
+    lastPracticedAt INTEGER,
+    inputSourceType TEXT NOT NULL,
+    content TEXT NOT NULL
+);
+
+-- --- Queries ---
+selectAll:
+SELECT * FROM NchetaEntry ORDER BY createdAt DESC;
+
+selectById:
+SELECT * FROM NchetaEntry WHERE id = ?;
+
+insert:
+INSERT INTO NchetaEntry(id, title, sourceText, createdAt, lastPracticedAt, inputSourceType, content)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+updateLastPracticed:
+UPDATE NchetaEntry SET lastPracticedAt = ? WHERE id = ?;
+
+deleteById:
+DELETE FROM NchetaEntry WHERE id = ?;
