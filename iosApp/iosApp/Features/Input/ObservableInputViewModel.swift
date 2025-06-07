@@ -58,9 +58,8 @@ class ObservableInputViewModel: ObservableObject {
     }
 
     deinit {
-        // Cancel the Swift Task when the ViewModel is deallocated
         observationTask?.cancel()
-        sharedVm.clear() // Still need to clear your shared ViewModel's CoroutineScope
+        sharedVm.clear()
         print("ObservableInputViewModel: deinit called, observationTask cancelled, sharedViewModel cleared.")
     }
 }

@@ -1,0 +1,89 @@
+package com.fredrickosuala.ncheta.services
+
+import com.fredrickosuala.ncheta.data.model.*
+import kotlinx.serialization.json.Json
+import dev.shreyaspatil.ai.client.generativeai.GenerativeModel
+import dev.shreyaspatil.ai.client.generativeai.type.generationConfig
+
+
+class GeminiContentGenerationService(
+    private val modelName: String = "gemini-1.5-flash-latest"
+) : ContentGenerationService {
+
+    private val json = Json { isLenient = true; ignoreUnknownKeys = true }
+
+    override suspend fun generateSummary(textToSummarize: String, apiKey: String): Result<String> {
+        try {
+            val generativeModel = GenerativeModel(modelName, apiKey)
+            val prompt = "Provide a concise summary of the following text:\n\n\"${textToSummarize}\""
+            val response = generativeModel.generateContent(prompt)
+            return response.text?.let { Result.Success(it) }
+                ?: Result.Error("Failed to generate summary. The response was empty.")
+        } catch (e: Exception) {
+            return Result.Error(e.message ?: "An unknown error occurred.")
+        }
+    }
+
+    override suspend fun generateFlashcards(textForFlashcards: String, apiKey: String): Result<List<Flashcard>> {
+        val prompt = """
+            Analyze the following text and generate a set of flashcards from its key concepts.
+            Return the response ONLY as a valid JSON object with a single key "flashcards", which contains an array of objects.
+            Each object in the array must have two keys: "front" and "back".
+            Do not include any other text, explanations, or markdown formatting in your response.
+
+            Here is the text:
+            ---
+            $textForFlashcards
+            ---
+        """.trimIndent()
+
+        try {
+            val generativeModel = GenerativeModel(
+                modelName = modelName,
+                apiKey = apiKey,
+                generationConfig = generationConfig { responseMimeType = "application/json" }
+            )
+            val responseText = generativeModel.generateContent(prompt).text
+                ?: return Result.Error("Failed to generate flashcards. The response was empty.")
+
+            val cleanedJson = responseText.substringAfter("```json").substringBeforeLast("```").trim()
+
+            val flashcardResponse = json.decodeFromString<FlashcardResponse>(cleanedJson)
+            return Result.Success(flashcardResponse.flashcards)
+
+        } catch (e: Exception) {
+            println("Flashcard Generation Error: ${e.message}")
+            return Result.Error(e.message ?: "An unknown error occurred.")
+        }
+    }
+
+    override suspend fun generateMcqs(textForMcqs: String, apiKey: String): Result<List<MultipleChoiceQuestion>> {
+
+        val prompt = """
+            Analyze the following text and generate a set of multiple-choice questions to test understanding of its key concepts.
+            Return the response ONLY as a valid JSON object with a single key "questions", which contains an array of objects.
+            Each object in the array must have three keys: "questionText" (string), "options" (an array of 4 strings), and "correctOptionIndex" (an integer from 0 to 3).
+            Do not include any other text, explanations, or markdown formatting in your response.
+
+            Here is the text:
+            ---
+            $textForMcqs
+            ---
+        """.trimIndent()
+
+        try {
+            val generativeModel = GenerativeModel(modelName, apiKey)
+            val responseText = generativeModel.generateContent(prompt).text
+                ?: return Result.Error("Failed to generate MCQs. The response was empty.")
+
+            val cleanedJson = responseText.substringAfter("```json").substringBeforeLast("```").trim()
+
+            val mcqResponse = json.decodeFromString<McqResponse>(cleanedJson)
+            return Result.Success(mcqResponse.questions)
+
+        } catch (e: Exception) {
+            println("MCQ Generation Error: ${e.message}")
+            return Result.Error(e.message ?: "An unknown error occurred.")
+        }
+    }
+}

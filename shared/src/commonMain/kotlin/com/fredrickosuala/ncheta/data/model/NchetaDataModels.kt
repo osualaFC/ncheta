@@ -13,8 +13,8 @@ enum class InputSourceType {
 
 @Serializable
 data class Flashcard(
-    val frontText: String,
-    val backText: String
+    val front: String,
+    val back: String
 )
 
 
@@ -24,6 +24,12 @@ data class MultipleChoiceQuestion(
     val options: List<String>,
     val correctOptionIndex: Int
 )
+
+@Serializable
+data class FlashcardResponse(val flashcards: List<Flashcard>)
+
+@Serializable
+data class McqResponse(val questions: List<MultipleChoiceQuestion>)
 
 @Serializable
 sealed interface GeneratedContent {

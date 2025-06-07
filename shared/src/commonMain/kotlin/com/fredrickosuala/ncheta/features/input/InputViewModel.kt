@@ -1,5 +1,9 @@
 package com.fredrickosuala.ncheta.features.input
 
+import com.fredrickosuala.ncheta.features.util.UiState
+import com.fredrickosuala.ncheta.services.Result
+import com.fredrickosuala.ncheta.services.ContentGenerationService
+import com.fredrickosuala.ncheta.services.GeminiContentGenerationService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -7,13 +11,20 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 
 class InputViewModel(
-    private val coroutineScope: CoroutineScope
+    private val coroutineScope: CoroutineScope,
+    private val generationService: ContentGenerationService
 ) {
-    constructor() : this(coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob()))
+    constructor() : this(
+        coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob()),
+        generationService = GeminiContentGenerationService()
+    )
+    private val _uiState = MutableStateFlow<UiState<Any>>(UiState.Idle)
+    val uiState: StateFlow<UiState<Any>> = _uiState.asStateFlow()
+
     private val _inputText = MutableStateFlow("")
-    
     val inputText: StateFlow<String> = _inputText.asStateFlow()
 
 
@@ -24,42 +35,43 @@ class InputViewModel(
     }
 
     fun onSummarizeClicked() {
-        // In future tasks (e.g., User Story 1.4), this will:
-        // 1. Get the API key (from settings or paid tier logic).
-        // 2. Show a loading state.
-        // 3. Call a ContentGenerationService to generate the summary from inputText.value.
-        // 4. Navigate to a results screen or update UI with the summary.
-        // 5. Handle errors.
-        if (inputText.value.isNotBlank()) {
-            println("InputViewModel: Summarize requested for text: '${inputText.value}'. API Key: $userApiKey")
-            // Example: Trigger generation
-            // generateContent(ContentType.SUMMARY)
-        } else {
-            println("InputViewModel: Summarize requested but input text is empty.")
-            // Optionally, provide feedback to the UI about empty input.
+        if (!validateInputs()) return
+
+        coroutineScope.launch {
+            _uiState.value = UiState.Loading
+            when(val result = generationService.generateSummary(_inputText.value, userApiKey!!)) {
+                is Result.Success -> _uiState.value = UiState.Success(result.data)
+                is Result.Error -> _uiState.value = UiState.Error(result.message)
+            }
         }
     }
 
     fun onGenerateFlashcardsClicked() {
-        // Similar to onSummarizeClicked, but for flashcards (User Story 2.2)
-        if (inputText.value.isNotBlank()) {
-            println("InputViewModel: Generate Flashcards requested for text: '${inputText.value}'. API Key: $userApiKey")
-            // Example: Trigger generation
-            // generateContent(ContentType.FLASHCARDS)
-        } else {
-            println("InputViewModel: Generate Flashcards requested but input text is empty.")
+        if (!validateInputs()) return
+
+        coroutineScope.launch {
+            _uiState.value = UiState.Loading
+            when(val result = generationService.generateFlashcards(_inputText.value, userApiKey!!)) {
+                is Result.Success -> _uiState.value = UiState.Success(result.data)
+                is Result.Error -> _uiState.value = UiState.Error(result.message)
+            }
         }
     }
 
     fun onGenerateQaClicked() {
-        // Similar to onSummarizeClicked, but for Q&A (User Story 2.4)
-        if (inputText.value.isNotBlank()) {
-            println("InputViewModel: Generate Q&A requested for text: '${inputText.value}'. API Key: $userApiKey")
-            // Example: Trigger generation
-            // generateContent(ContentType.QA)
-        } else {
-            println("InputViewModel: Generate Q&A requested but input text is empty.")
+        if (!validateInputs()) return
+
+        coroutineScope.launch {
+            _uiState.value = UiState.Loading
+            when(val result = generationService.generateMcqs(_inputText.value, userApiKey!!)) {
+                is Result.Success -> _uiState.value = UiState.Success(result.data)
+                is Result.Error -> _uiState.value = UiState.Error(result.message)
+            }
         }
+    }
+
+    fun acknowledgeResult() {
+        _uiState.value = UiState.Idle
     }
 
     // Placeholder for API key update logic (User Story 2.1)
@@ -68,21 +80,17 @@ class InputViewModel(
         println("InputViewModel: API Key updated to: $apiKey")
     }
 
-
-    // This is where the actual content generation call would be made.
-    // This function would likely live in a more specialized ViewModel or a UseCase later.
-    /*
-    private fun generateContent(type: ContentType) {
-        coroutineScope.launch {
-            // _uiState.value = UiState.Loading
-            // val result = contentGenerationService.generate(inputText.value, type, userApiKey)
-            // when (result) {
-            //    is Success -> _uiState.value = UiState.Success(result.data)
-            //    is Error -> _uiState.value = UiState.Error(result.message)
-            // }
+    private fun validateInputs(): Boolean {
+        if (userApiKey.isNullOrBlank()) {
+            _uiState.value = UiState.Error("API Key is missing. Please add it in settings.")
+            return false
         }
+        if (inputText.value.isBlank()) {
+            _uiState.value = UiState.Error("Input text cannot be empty.")
+            return false
+        }
+        return true
     }
-    */
 
     fun clear() {
         coroutineScope.cancel()

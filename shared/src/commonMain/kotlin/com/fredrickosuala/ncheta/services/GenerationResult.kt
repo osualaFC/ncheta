@@ -1,6 +1,6 @@
 package com.fredrickosuala.ncheta.services
 
-sealed class GenerationResult {
-    data class Success(val content: String) : GenerationResult()
-    data class Error(val message: String) : GenerationResult()
+sealed class Result<out T> {
+    data class Success<T>(val data: T) : Result<T>()
+    data class Error(val message: String) : Result<Nothing>()
 }
