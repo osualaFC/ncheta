@@ -1,9 +1,8 @@
 package com.fredrickosuala.ncheta.database
 
 import app.cash.sqldelight.ColumnAdapter
-import com.fredrickosuala.ncheta.shared.model.GeneratedContent
-import com.fredrickosuala.ncheta.shared.model.InputSourceType
-import kotlinx.serialization.encodeToString
+import com.fredrickosuala.ncheta.data.model.GeneratedContent
+import com.fredrickosuala.ncheta.data.model.InputSourceType
 import kotlinx.serialization.json.Json
 
 class Database(databaseDriverFactory: DatabaseDriverFactory) {
@@ -35,5 +34,5 @@ class Database(databaseDriverFactory: DatabaseDriverFactory) {
         )
     )
 
-    val queries = database.nchetaEntryQueries
+    val queries = database.nchetaDatabaseQueries
 }

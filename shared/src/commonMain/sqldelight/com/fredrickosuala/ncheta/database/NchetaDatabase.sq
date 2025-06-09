@@ -1,3 +1,6 @@
+import com.fredrickosuala.ncheta.data.model.GeneratedContent;
+import com.fredrickosuala.ncheta.data.model.InputSourceType;
+
 
 CREATE TABLE NchetaEntry(
     id TEXT NOT NULL PRIMARY KEY,
@@ -5,8 +8,8 @@ CREATE TABLE NchetaEntry(
     sourceText TEXT NOT NULL,
     createdAt INTEGER NOT NULL,
     lastPracticedAt INTEGER,
-    inputSourceType TEXT NOT NULL,
-    content TEXT NOT NULL
+    inputSourceType TEXT AS InputSourceType NOT NULL,
+    content TEXT AS GeneratedContent NOT NULL
 );
 
 -- --- Queries ---
