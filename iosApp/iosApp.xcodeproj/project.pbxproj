@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557BA273AAA24004C7B11 /* Assets.xcassets */; };
 		058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */; };
+		0F03EED12DFD6EE100B563D6 /* KoinHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F03EED02DFD6EE100B563D6 /* KoinHelper.swift */; };
+		0F03EED32DFD751A00B563D6 /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F03EED22DFD751A00B563D6 /* libsqlite3.tbd */; };
 		0F6986E02DE9BFA6001A8127 /* AppColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F6986DF2DE9BFA6001A8127 /* AppColor.swift */; };
 		0F6986E22DE9C000001A8127 /* AppFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F6986E12DE9C000001A8127 /* AppFonts.swift */; };
 		0F6986E62DE9C4D1001A8127 /* InputScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F6986E52DE9C4D1001A8127 /* InputScreenView.swift */; };
@@ -33,6 +35,8 @@
 /* Begin PBXFileReference section */
 		058557BA273AAA24004C7B11 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		058557D8273AAEEB004C7B11 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		0F03EED02DFD6EE100B563D6 /* KoinHelper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KoinHelper.swift; sourceTree = "<group>"; };
+		0F03EED22DFD751A00B563D6 /* libsqlite3.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libsqlite3.tbd; path = usr/lib/libsqlite3.tbd; sourceTree = SDKROOT; };
 		0F6986DF2DE9BFA6001A8127 /* AppColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColor.swift; sourceTree = "<group>"; };
 		0F6986E12DE9C000001A8127 /* AppFonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFonts.swift; sourceTree = "<group>"; };
 		0F6986E52DE9C4D1001A8127 /* InputScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputScreenView.swift; sourceTree = "<group>"; };
@@ -48,6 +52,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0F03EED32DFD751A00B563D6 /* libsqlite3.tbd in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -123,6 +128,7 @@
 				7555FF8C242A565B00829871 /* Info.plist */,
 				2152FB032600AC8F00CF470E /* iOSApp.swift */,
 				058557D7273AAEEB004C7B11 /* Preview Content */,
+				0F03EED02DFD6EE100B563D6 /* KoinHelper.swift */,
 			);
 			path = iosApp;
 			sourceTree = "<group>";
@@ -130,6 +136,7 @@
 		7555FFB0242A642200829871 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				0F03EED22DFD751A00B563D6 /* libsqlite3.tbd */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -234,6 +241,7 @@
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
 				0F6986E02DE9BFA6001A8127 /* AppColor.swift in Sources */,
 				0F6986E62DE9C4D1001A8127 /* InputScreenView.swift in Sources */,
+				0F03EED12DFD6EE100B563D6 /* KoinHelper.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

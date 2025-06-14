@@ -15,19 +15,20 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import com.fredrickosuala.ncheta.features.input.InputViewModel
 import com.fredrickosuala.ncheta.features.util.UiState
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.koinViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputScreen(
-    androidViewModel: AndroidInputViewModel = viewModel()
+    viewModel: InputViewModel = koinViewModel()
 ) {
 
-    val sharedViewModel = androidViewModel.sharedViewModel
-    val inputText by sharedViewModel.inputText.collectAsState()
-    val uiState by sharedViewModel.uiState.collectAsState()
+
+    val inputText by viewModel.inputText.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -43,7 +44,7 @@ fun InputScreen(
                         withDismissAction = true
                         )
                 }
-                sharedViewModel.resetUiState()
+                viewModel.resetUiState()
             }
             is UiState.Success -> {
                 val successMessage = when (state.data) {
@@ -55,7 +56,7 @@ fun InputScreen(
                 coroutineScope.launch {
                     snackbarHostState.showSnackbar(successMessage)
                 }
-                sharedViewModel.resetUiState()
+                viewModel.resetUiState()
             }
             else -> {}
         }
@@ -88,7 +89,7 @@ fun InputScreen(
         ) {
             OutlinedTextField(
                 value = inputText,
-                onValueChange = { sharedViewModel.onInputTextChanged(it) },
+                onValueChange = { viewModel.onInputTextChanged(it) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f),
@@ -117,17 +118,17 @@ fun InputScreen(
             ) {
                 ActionButton(
                     text = "Summarize",
-                    onClick = { sharedViewModel.onSummarizeClicked() },
+                    onClick = { viewModel.onSummarizeClicked() },
                     enabled = uiState !is UiState.Loading
                 )
                 ActionButton(
                     text = "Generate Flashcards",
-                    onClick = { sharedViewModel.onGenerateFlashcardsClicked() },
+                    onClick = { viewModel.onGenerateFlashcardsClicked() },
                     enabled = uiState !is UiState.Loading
                 )
                 ActionButton(
                     text = "Generate Q&A",
-                    onClick = { sharedViewModel.onGenerateQaClicked() },
+                    onClick = { viewModel.onGenerateQaClicked() },
                     enabled = uiState !is UiState.Loading
                 )
             }

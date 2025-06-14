@@ -21,8 +21,8 @@ class ObservableInputViewModel: ObservableObject {
     private var inputTextWatcherTask: Task<Void, Error>?
     private var uiStateWatcherTask: Task<Void, Never>?
 
-    init(sharedViewModel: InputViewModel = InputViewModel()) {
-        self.sharedVm = sharedViewModel
+    init() {
+        self.sharedVm = ViewModels().inputViewModel
         self.uiState = sharedVm.uiState.value
         
         // Initialize with the current value from SkieSwiftStateFlow's .value property
@@ -78,7 +78,7 @@ class ObservableInputViewModel: ObservableObject {
     deinit {
         inputTextWatcherTask?.cancel()
         uiStateWatcherTask?.cancel()
-        sharedVm.clear()
+        sharedVm.onCleared()
         print("ObservableInputViewModel: deinit called, observationTask cancelled, sharedViewModel cleared.")
     }
 }

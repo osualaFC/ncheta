@@ -10,6 +10,10 @@ plugins {
     alias(libs.plugins.sqldelight)
 }
 
+dependencies {
+    implementation(platform(libs.koin.bom))
+}
+
 skie {
     features {
         coroutinesInterop.set(true)
@@ -59,15 +63,20 @@ kotlin {
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.sqldelight.runtime)
             implementation(libs.sqldelight.coroutines.extensions)
+            implementation(libs.lifecycle.viewmodel.compose)
+            api(libs.koin.core)
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
         }
         androidMain.dependencies {
             implementation(libs.sqldelight.android.driver)
+            implementation(libs.koin.android)
+            implementation(libs.koin.compose)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
+            implementation(libs.koin.test)
         }
     }
 }
