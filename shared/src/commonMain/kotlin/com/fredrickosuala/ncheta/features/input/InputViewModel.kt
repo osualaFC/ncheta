@@ -1,23 +1,30 @@
 package com.fredrickosuala.ncheta.features.input
 
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
-import com.fredrickosuala.ncheta.features.util.UiState
+import com.fredrickosuala.ncheta.data.model.Flashcard
+import com.fredrickosuala.ncheta.data.model.GeneratedContent
+import com.fredrickosuala.ncheta.data.model.InputSourceType
+import com.fredrickosuala.ncheta.data.model.MultipleChoiceQuestion
+import com.fredrickosuala.ncheta.data.model.NchetaEntry
 import com.fredrickosuala.ncheta.repository.NchetaRepository
 import com.fredrickosuala.ncheta.services.Result
 import com.fredrickosuala.ncheta.services.ContentGenerationService
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlin.uuid.ExperimentalUuidApi
+import kotlin.uuid.Uuid
 
 class InputViewModel(
+    private val coroutineScope: CoroutineScope,
     private val generationService: ContentGenerationService,
     private val repository: NchetaRepository
-) : ViewModel() {
+) {
 
-    private val _uiState = MutableStateFlow<UiState<Any>>(UiState.Idle)
-    val uiState: StateFlow<UiState<Any>> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow<InputUiState>(InputUiState.Idle)
+    val uiState: StateFlow<InputUiState> = _uiState.asStateFlow()
 
     private val _inputText = MutableStateFlow("")
     val inputText: StateFlow<String> = _inputText.asStateFlow()
@@ -32,11 +39,11 @@ class InputViewModel(
     fun onSummarizeClicked() {
         if (!validateInputs()) return
 
-        viewModelScope.launch {
-            _uiState.value = UiState.Loading
+        coroutineScope.launch {
+            _uiState.value = InputUiState.Loading
             when(val result = generationService.generateSummary(_inputText.value, userApiKey!!)) {
-                is Result.Success -> _uiState.value = UiState.Success(result.data)
-                is Result.Error -> _uiState.value = UiState.Error(result.message)
+                is Result.Success -> _uiState.value = InputUiState.Success(result.data)
+                is Result.Error -> _uiState.value = InputUiState.Error(result.message)
             }
         }
     }
@@ -44,11 +51,11 @@ class InputViewModel(
     fun onGenerateFlashcardsClicked() {
         if (!validateInputs()) return
 
-        viewModelScope.launch {
-            _uiState.value = UiState.Loading
+        coroutineScope.launch {
+            _uiState.value = InputUiState.Loading
             when(val result = generationService.generateFlashcards(_inputText.value, userApiKey!!)) {
-                is Result.Success -> _uiState.value = UiState.Success(result.data)
-                is Result.Error -> _uiState.value = UiState.Error(result.message)
+                is Result.Success -> _uiState.value = InputUiState.Success(result.data)
+                is Result.Error -> _uiState.value = InputUiState.Error(result.message)
             }
         }
     }
@@ -56,17 +63,21 @@ class InputViewModel(
     fun onGenerateQaClicked() {
         if (!validateInputs()) return
 
-        viewModelScope.launch {
-            _uiState.value = UiState.Loading
+        coroutineScope.launch {
+            _uiState.value = InputUiState.Loading
             when(val result = generationService.generateMcqs(_inputText.value, userApiKey!!)) {
-                is Result.Success -> _uiState.value = UiState.Success(result.data)
-                is Result.Error -> _uiState.value = UiState.Error(result.message)
+                is Result.Success -> _uiState.value = InputUiState.Success(result.data)
+                is Result.Error -> _uiState.value = InputUiState.Error(result.message)
             }
         }
     }
 
+    fun clearText() {
+        _inputText.value = ""
+    }
+
     fun resetUiState() {
-        _uiState.value = UiState.Idle
+        _uiState.value = InputUiState.Idle
     }
 
     fun updateUserApiKey(apiKey: String?) {
@@ -76,34 +87,81 @@ class InputViewModel(
 
     private fun validateInputs(): Boolean {
         if (userApiKey.isNullOrBlank()) {
-            _uiState.value = UiState.Error("API Key is missing. Please add it in settings.")
+            _uiState.value = InputUiState.Error("API Key is missing. Please add it in settings.")
             return false
         }
         if (inputText.value.isBlank()) {
-            _uiState.value = UiState.Error("Input text cannot be empty.")
+            _uiState.value = InputUiState.Error("Input text cannot be empty.")
             return false
         }
         return true
     }
 
-    private fun generateContent(type: GenerationType) {
-        if (!validateInputs()) return
+    @OptIn(ExperimentalUuidApi::class)
+    fun saveGeneratedContent(title: String) {
+        val currentState = _uiState.value
 
-        viewModelScope.launch {
-            _uiState.value = UiState.Loading
-            val result = when (type) {
-                GenerationType.SUMMARY -> generationService.generateSummary(inputText.value, userApiKey.orEmpty())
-                GenerationType.FLASHCARDS -> generationService.generateFlashcards(inputText.value, userApiKey.orEmpty())
-                GenerationType.MCQS -> generationService.generateMcqs(inputText.value, userApiKey.orEmpty())
+        if (currentState is InputUiState.Success) {
+            val generatedData = currentState.data
+
+            if (title.isBlank()) {
+                _uiState.value = InputUiState.Error("Title cannot be empty.")
+                return
             }
 
-            when (result) {
-                is Result.Success -> _uiState.value = UiState.Success(result.data)
-                is Result.Error -> _uiState.value = UiState.Error(result.message)
+            val contentToSave: GeneratedContent = when (generatedData) {
+                is String -> GeneratedContent.Summary(generatedData)
+                is List<*> -> {
+                    if (generatedData.all { it is Flashcard }) {
+                        @Suppress("UNCHECKED_CAST")
+                        GeneratedContent.FlashcardSet(generatedData as List<Flashcard>)
+                    } else if (generatedData.all { it is MultipleChoiceQuestion }) {
+                        @Suppress("UNCHECKED_CAST")
+                        GeneratedContent.McqSet(generatedData as List<MultipleChoiceQuestion>)
+                    } else {
+                        _uiState.value = InputUiState.Error("Unsupported data type for saving.")
+                        return
+                    }
+                }
+                else -> {
+                    _uiState.value = InputUiState.Error("Cannot save this type of content.")
+                    return
+                }
             }
+
+            val newEntry = NchetaEntry(
+                id = Uuid.random().toString(),
+                title = title.trim(),
+                sourceText = inputText.value,
+                inputSourceType = InputSourceType.MANUAL,
+                content = contentToSave
+            )
+
+            try {
+                coroutineScope.launch {
+                    repository.insertEntry(newEntry)
+                }
+                _uiState.value = InputUiState.Saved
+            } catch (e: Exception) {
+                _uiState.value = InputUiState.Error("Failed to save content: ${e.message}")
+            }
+
+            resetUiState()
+
+        } else {
+            _uiState.value = InputUiState.Error("No generated content is available to save.")
         }
     }
 
-    private enum class GenerationType { SUMMARY, FLASHCARDS, MCQS }
+    fun clear() {
+        coroutineScope.cancel()
+    }
+}
 
+sealed class InputUiState {
+    data object Idle: InputUiState()
+    data object Loading: InputUiState()
+    data object Saved: InputUiState()
+    data class Success(val data: Any): InputUiState()
+    data class Error(val message: String): InputUiState()
 }

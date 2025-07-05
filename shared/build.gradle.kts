@@ -1,4 +1,5 @@
 import co.touchlab.skie.configuration.FlowInterop
+import co.touchlab.skie.configuration.SealedInterop
 import co.touchlab.skie.configuration.SuspendInterop
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
@@ -20,6 +21,7 @@ skie {
         group {
             FlowInterop.Enabled(true)
             SuspendInterop.Enabled(true)
+            SealedInterop.Enabled(true)
         }
     }
 }
