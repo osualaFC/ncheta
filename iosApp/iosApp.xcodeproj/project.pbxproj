@@ -16,6 +16,10 @@
 		0F6986E62DE9C4D1001A8127 /* InputScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F6986E52DE9C4D1001A8127 /* InputScreenView.swift */; };
 		0F6986E82DE9CD06001A8127 /* ObservableInputViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F6986E72DE9CD06001A8127 /* ObservableInputViewModel.swift */; };
 		0FB9D3812E054BC7002E0EDC /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F03EED22DFD751A00B563D6 /* libsqlite3.tbd */; };
+		0FFFF5982E18D08D00FDD1F9 /* ObservableEntryListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FFFF5972E18D08A00FDD1F9 /* ObservableEntryListViewModel.swift */; };
+		0FFFF59A2E18D18D00FDD1F9 /* EntryListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FFFF5992E18D18400FDD1F9 /* EntryListView.swift */; };
+		0FFFF59C2E18D1D100FDD1F9 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FFFF59B2E18D1CB00FDD1F9 /* MainView.swift */; };
+		0FFFF59E2E18D4D700FDD1F9 /* SaveEntryDialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FFFF59D2E18D4D300FDD1F9 /* SaveEntryDialogView.swift */; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
 		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 /* End PBXBuildFile section */
@@ -43,6 +47,10 @@
 		0F6986E12DE9C000001A8127 /* AppFonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFonts.swift; sourceTree = "<group>"; };
 		0F6986E52DE9C4D1001A8127 /* InputScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputScreenView.swift; sourceTree = "<group>"; };
 		0F6986E72DE9CD06001A8127 /* ObservableInputViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableInputViewModel.swift; sourceTree = "<group>"; };
+		0FFFF5972E18D08A00FDD1F9 /* ObservableEntryListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableEntryListViewModel.swift; sourceTree = "<group>"; };
+		0FFFF5992E18D18400FDD1F9 /* EntryListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EntryListView.swift; sourceTree = "<group>"; };
+		0FFFF59B2E18D1CB00FDD1F9 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
+		0FFFF59D2E18D4D300FDD1F9 /* SaveEntryDialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveEntryDialogView.swift; sourceTree = "<group>"; };
 		2152FB032600AC8F00CF470E /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
 		7555FF7B242A565900829871 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -98,6 +106,7 @@
 		0F6986E32DE9C4B4001A8127 /* Features */ = {
 			isa = PBXGroup;
 			children = (
+				0FFFF5962E18D07B00FDD1F9 /* EntryList */,
 				0F6986E42DE9C4BE001A8127 /* Input */,
 			);
 			path = Features;
@@ -106,10 +115,20 @@
 		0F6986E42DE9C4BE001A8127 /* Input */ = {
 			isa = PBXGroup;
 			children = (
+				0FFFF59D2E18D4D300FDD1F9 /* SaveEntryDialogView.swift */,
 				0F6986E52DE9C4D1001A8127 /* InputScreenView.swift */,
 				0F6986E72DE9CD06001A8127 /* ObservableInputViewModel.swift */,
 			);
 			path = Input;
+			sourceTree = "<group>";
+		};
+		0FFFF5962E18D07B00FDD1F9 /* EntryList */ = {
+			isa = PBXGroup;
+			children = (
+				0FFFF5992E18D18400FDD1F9 /* EntryListView.swift */,
+				0FFFF5972E18D08A00FDD1F9 /* ObservableEntryListViewModel.swift */,
+			);
+			path = EntryList;
 			sourceTree = "<group>";
 		};
 		7555FF72242A565900829871 = {
@@ -132,6 +151,7 @@
 		7555FF7D242A565900829871 /* iosApp */ = {
 			isa = PBXGroup;
 			children = (
+				0FFFF59B2E18D1CB00FDD1F9 /* MainView.swift */,
 				0F59BB912E18B734002FA65B /* Util */,
 				0F6986E32DE9C4B4001A8127 /* Features */,
 				0F6986DE2DE9BF8C001A8127 /* Theme */,
@@ -251,9 +271,13 @@
 				0F6986E82DE9CD06001A8127 /* ObservableInputViewModel.swift in Sources */,
 				7555FF83242A565900829871 /* ContentView.swift in Sources */,
 				0F6986E02DE9BFA6001A8127 /* AppColor.swift in Sources */,
+				0FFFF5982E18D08D00FDD1F9 /* ObservableEntryListViewModel.swift in Sources */,
 				0F6986E62DE9C4D1001A8127 /* InputScreenView.swift in Sources */,
+				0FFFF59C2E18D1D100FDD1F9 /* MainView.swift in Sources */,
+				0FFFF59E2E18D4D700FDD1F9 /* SaveEntryDialogView.swift in Sources */,
 				0F59BB932E18B76B002FA65B /* KMP+Extension.swift in Sources */,
 				0F03EED12DFD6EE100B563D6 /* KoinHelper.swift in Sources */,
+				0FFFF59A2E18D18D00FDD1F9 /* EntryListView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,7 +1,6 @@
 package com.fredrickosuala.ncheta.di
 
 import com.fredrickosuala.ncheta.database.Database
-import com.fredrickosuala.ncheta.features.entrylist.EntryListViewModel
 import com.fredrickosuala.ncheta.repository.NchetaRepository
 import com.fredrickosuala.ncheta.repository.NchetaRepositoryImpl
 import com.fredrickosuala.ncheta.services.ContentGenerationService
@@ -18,7 +17,6 @@ val sharedModule = module {
     single { Database(databaseDriverFactory = get()) }
     single<NchetaRepository> { NchetaRepositoryImpl(database = get()) }
 
-    factory { EntryListViewModel(repository = get()) }
 }
 
 fun initKoin(appDeclaration: KoinAppDeclaration = {}) {

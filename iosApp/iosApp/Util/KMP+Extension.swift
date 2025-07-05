@@ -25,3 +25,6 @@ extension InputUiState.Error: @unchecked Sendable {}
 
 
 extension InputViewModel: @unchecked @retroactive Sendable {}
+extension EntryListViewModel: @unchecked @retroactive Sendable {}
+
+extension NchetaEntry: @unchecked  @retroactive Sendable {}

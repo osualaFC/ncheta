@@ -79,6 +79,10 @@ class ObservableInputViewModel: ObservableObject {
     func resetUiState() {
         sharedVm.resetUiState()
     }
+    
+    func clearInputText() {
+        sharedVm.clearText()
+    }
 
     deinit {
         inputTextWatcherTask?.cancel()

@@ -6,12 +6,16 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import com.fredrickosuala.ncheta.android.theme.NchetaTheme
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.fredrickosuala.ncheta.features.input.AndroidInputViewModel
@@ -70,37 +74,40 @@ fun InputScreen(
             },
             onSaveClicked = { title ->
                 sharedVm.saveGeneratedContent(title)
+                sharedVm.clearText()
                 showSaveDialog = false
             }
         )
     }
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(snackbarHostState) },
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Text(
-                        "NCHETA",
-                        style = MaterialTheme.typography.titleLarge,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                },
-                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
-            )
-        },
-        containerColor = MaterialTheme.colorScheme.background
-    ) { paddingValues ->
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp)
+    ) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(16.dp),
+            modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            // --- TEMPORARY API Key Field for Testing ---
+//            var apiKeyInput by remember { mutableStateOf("") }
+//            OutlinedTextField(
+//                value = apiKeyInput,
+//                onValueChange = {
+//                    apiKeyInput = it
+//                    sharedVm.updateUserApiKey(it)
+//                },
+//                modifier = Modifier.fillMaxWidth(),
+//                label = { Text("Gemini API Key (for testing)") },
+//                singleLine = true,
+//                visualTransformation = PasswordVisualTransformation(),
+//                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+//                keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
+//                enabled = uiState !is InputUiState.Loading
+//            )
+
+            // Main Text Field
             OutlinedTextField(
                 value = inputText,
                 onValueChange = { sharedVm.onInputTextChanged(it) },
@@ -108,9 +115,7 @@ fun InputScreen(
                     .fillMaxWidth()
                     .weight(1f),
                 label = { Text("Enter or extract text here") },
-                textStyle = MaterialTheme.typography.bodyLarge.copy(
-                    color = MaterialTheme.colorScheme.onSurface
-                ),
+                textStyle = MaterialTheme.typography.bodyLarge,
                 enabled = uiState !is InputUiState.Loading,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
@@ -126,6 +131,7 @@ fun InputScreen(
                 color = MaterialTheme.colorScheme.onBackground
             )
 
+            // Action Buttons
             Column(
                 modifier = Modifier.fillMaxWidth(),
                 verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -148,7 +154,7 @@ fun InputScreen(
             }
         }
 
-        //--- Loading Overlay ---
+        // --- Loading Overlay ---
         AnimatedVisibility(
             visible = uiState is InputUiState.Loading,
             modifier = Modifier.fillMaxSize(),
@@ -157,13 +163,11 @@ fun InputScreen(
         ) {
             Box(
                 modifier = Modifier
-                    .fillMaxWidth()
+                    .fillMaxSize()
                     .background(Color.Black.copy(alpha = 0.5f)),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(
-                    color = MaterialTheme.colorScheme.primary
-                )
+                CircularProgressIndicator()
             }
         }
     }

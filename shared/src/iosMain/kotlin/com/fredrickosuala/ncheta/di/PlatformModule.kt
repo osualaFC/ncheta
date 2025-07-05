@@ -1,6 +1,7 @@
 package com.fredrickosuala.ncheta.di
 
 import com.fredrickosuala.ncheta.database.DatabaseDriverFactory
+import com.fredrickosuala.ncheta.features.entrylist.EntryListViewModel
 import com.fredrickosuala.ncheta.features.input.InputViewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -15,6 +16,13 @@ actual fun platformModule(): Module = module {
     factory {
         InputViewModel(
             generationService = get(),
+            repository = get(),
+            coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+        )
+    }
+
+    factory {
+        EntryListViewModel(
             repository = get(),
             coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
         )

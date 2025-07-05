@@ -10,71 +10,88 @@ import SwiftUI
 import shared
 
 struct InputScreenView: View {
-
-    @StateObject var viewModel = ObservableInputViewModel()
-    @State private var placeholderText: String = "Enter or extract text here"
-
-    @State private var alertMessage: String?
-    @State private var isShowingAlert: Bool = false
-    @State private var showSaveAlert: Bool = false
+    @StateObject private var viewModel = ObservableInputViewModel()
+    
+    // State variables to control UI based on ViewModel state
+    @State private var apiKeyInput: String = ""
+    @State private var showSaveDialog: Bool = false
     @State private var showConfirmationAlert: Bool = false
+    @State private var alertMessage: String = ""
     @State private var newEntryTitle: String = ""
-
+    
     var body: some View {
+        let isLoading = viewModel.uiState is InputUiState.Loading
+        
         NavigationStack {
-            VStack(spacing: 16) {
+            
+            ZStack {
+                
                 mainContentView
-                    .disabled(viewModel.isLoading())
-
-                if viewModel.isLoading() {
+                    .disabled(isLoading || showSaveDialog)
+                
+                // --- Overlays ---
+                if isLoading {
                     Color.black.opacity(0.4).ignoresSafeArea()
                     ProgressView()
                         .progressViewStyle(CircularProgressViewStyle(tint: .white))
                         .scaleEffect(1.5)
                 }
+                
+                if showSaveDialog {
+                    Color.black.opacity(0.4).ignoresSafeArea()
+                    SaveEntryDialogView(
+                        isPresented: $showSaveDialog,
+                        title: $newEntryTitle,
+                        onCancel: {
+                            showSaveDialog = false
+                            viewModel.resetUiState()
+                            newEntryTitle = ""
+                        },
+                        onSave: {
+                            viewModel.saveGeneratedContent(title: newEntryTitle)
+                            showSaveDialog = false
+                            viewModel.clearInputText()
+                        }
+                    )
+                }
             }
-            .padding()
             .navigationTitle("NCHETA")
             .navigationBarTitleDisplayMode(.inline)
             .background(AppColors.subtleOffWhite.ignoresSafeArea())
-            .onTapGesture { hideKeyboard() }
             .onReceive(viewModel.$uiState) { newState in
+                
                 if newState is InputUiState.Success {
-                    alertMessage = "Content generated successfully!"
-                    isShowingAlert = true
+                    showSaveDialog = true
+                } else if let saveSuccessState = newState as? InputUiState.Saved {
+                    alertMessage = "Saved successfully!"
+                    showConfirmationAlert = true
                 } else if let errorState = newState as? InputUiState.Error {
                     alertMessage = errorState.message
-                    isShowingAlert = true
+                    showConfirmationAlert = true
                 }
             }
-            .alert("Content Generated Successfully", isPresented: $showSaveAlert) {
-                TextField("Enter title", text: $newEntryTitle)
-                Button("Save") {
-                    viewModel.saveGeneratedContent(title: newEntryTitle)
-                    newEntryTitle = ""
-                }
-                Button("Cancel", role: .cancel) {
-                    viewModel.resetUiState()
-                    newEntryTitle = ""
-                }
-            } message: {
-                Text("Please provide a title to save this content for later practice.")
-            }
-            .alert("NCHETA", isPresented: $isShowingAlert, presenting: alertMessage) { _ in
-                Button("ok") {
+            .alert(alertMessage, isPresented: $showConfirmationAlert) {
+                Button("OK") {
                     viewModel.resetUiState()
                 }
-            } message: { message in
-                Text(message)
             }
         }
     }
-
+    
+    
     private var mainContentView: some View {
-        VStack(alignment: .leading, spacing: 16) {
+        VStack(spacing: 16) {
+            // API Key Field
+            //            SecureField("Gemini API Key (for testing)", text: $apiKeyInput)
+            //                .textFieldStyle(.roundedBorder)
+            //                .onChange(of: apiKeyInput) { newValue in
+            //                    viewModel.updateUserApiKey(apiKey: newValue)
+            //                }
+            
+            // Text Editor
             ZStack(alignment: .topLeading) {
                 if viewModel.inputText.isEmpty {
-                    Text(placeholderText)
+                    Text("Enter or extract text here")
                         .font(AppFonts.bodyLarge)
                         .foregroundColor(AppColors.mediumGray)
                         .padding(.horizontal, 8)
@@ -95,23 +112,20 @@ struct InputScreenView: View {
                 )
             }
             .layoutPriority(1)
-
+            
             Text("What would you like to do?")
                 .font(AppFonts.interMedium(size: 18))
                 .foregroundColor(AppColors.nearBlack)
-
+            
+            // Action Buttons
             VStack(spacing: 10) {
-                ActionButton(text: "Summarize") {
-                    viewModel.onSummarizeClicked()
-                }
-                ActionButton(text: "Generate Flashcards") {
-                    viewModel.onGenerateFlashcardsClicked()
-                }
-                ActionButton(text: "Generate Q&A") {
-                    viewModel.onGenerateQaClicked()
-                }
+                ActionButton(text: "Summarize", action: viewModel.onSummarizeClicked)
+                ActionButton(text: "Generate Flashcards", action: viewModel.onGenerateFlashcardsClicked)
+                ActionButton(text: "Generate Q&A", action: viewModel.onGenerateQaClicked)
             }
         }
+        .padding()
+        .onTapGesture { hideKeyboard() }
     }
 }
 
