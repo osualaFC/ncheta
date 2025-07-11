@@ -21,10 +21,9 @@ struct EntryListView: View {
                         .foregroundColor(.gray)
                 } else {
                     List(viewModel.entries, id: \.id) { entry in
-                        EntryRowView(entry: entry)
-                            .onTapGesture {
-                                print("Tapped on entry: \(entry.title)")
-                            }
+                        NavigationLink(destination: PracticeView(entryId: entry.id)) {
+                            EntryRowView(entry: entry)
+                        }
                     }
                 }
             }
@@ -47,7 +46,7 @@ struct EntryRowView: View {
         .padding(.vertical, 8)
     }
     
-  
+    
     private func formatTimestamp(timestamp: Int64) -> String {
         let date = Date(timeIntervalSince1970: TimeInterval(timestamp / 1000))
         let formatter = DateFormatter()

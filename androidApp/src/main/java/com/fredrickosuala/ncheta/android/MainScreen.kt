@@ -16,12 +16,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.fredrickosuala.ncheta.android.features.entrylist.EntryListScreen
 import com.fredrickosuala.ncheta.android.features.input.InputScreen
+import com.fredrickosuala.ncheta.android.features.practice.PracticeScreen
 import com.fredrickosuala.ncheta.android.navigation.BottomNavItem
 
 
@@ -29,42 +32,45 @@ import com.fredrickosuala.ncheta.android.navigation.BottomNavItem
 fun MainScreen() {
     val navController = rememberNavController()
     val navItems = listOf(BottomNavItem.Create, BottomNavItem.Review)
+    val navBackStackEntry by navController.currentBackStackEntryAsState()
+    val currentDestination = navBackStackEntry?.destination
+
+    val bottomBarRoutes = navItems.map { it.route }.toSet()
 
     Scaffold(
         bottomBar = {
-            Column {
-                HorizontalDivider(
-                    thickness = 1.dp,
-                    color = MaterialTheme.colorScheme.outline
-                )
-                NavigationBar(
-                    containerColor = MaterialTheme.colorScheme.surface
-                ) {
-                    val navBackStackEntry by navController.currentBackStackEntryAsState()
-                    val currentDestination = navBackStackEntry?.destination
-
-                    navItems.forEach { screen ->
-                        NavigationBarItem(
-                            icon = { Icon(screen.icon, contentDescription = screen.title) },
-                            label = { Text(screen.title) },
-                            selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
-                            onClick = {
-                                navController.navigate(screen.route) {
-                                    popUpTo(navController.graph.findStartDestination().id) {
-                                        saveState = true
+            if (currentDestination?.route in bottomBarRoutes) {
+                Column {
+                    HorizontalDivider(
+                        thickness = 1.dp,
+                        color = MaterialTheme.colorScheme.outline
+                    )
+                    NavigationBar(
+                        containerColor = MaterialTheme.colorScheme.surface
+                    ) {
+                        navItems.forEach { screen ->
+                            NavigationBarItem(
+                                icon = { Icon(screen.icon, contentDescription = screen.title) },
+                                label = { Text(screen.title) },
+                                selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                                onClick = {
+                                    navController.navigate(screen.route) {
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
+                                        launchSingleTop = true
+                                        restoreState = true
                                     }
-                                    launchSingleTop = true
-                                    restoreState = true
-                                }
-                            },
-                            colors = NavigationBarItemDefaults.colors(
-                                selectedIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
-                                selectedTextColor = MaterialTheme.colorScheme.primary,
-                                unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
-                                indicatorColor = MaterialTheme.colorScheme.secondaryContainer
+                                },
+                                colors = NavigationBarItemDefaults.colors(
+                                    selectedIconColor = MaterialTheme.colorScheme.onSecondaryContainer,
+                                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                                    indicatorColor = MaterialTheme.colorScheme.secondaryContainer
+                                )
                             )
-                        )
+                        }
                     }
                 }
             }
@@ -81,9 +87,21 @@ fun MainScreen() {
             composable(BottomNavItem.Review.route) {
                 EntryListScreen(
                     onEntryClick = { entryId ->
-                        println("Clicked on entry: $entryId")
+                        navController.navigate("practice/$entryId")
                     }
                 )
+            }
+            composable(
+                route = "practice/{entryId}",
+                arguments = listOf(navArgument("entryId") { type = NavType.StringType })
+            ) { backStackEntry ->
+                val entryId = backStackEntry.arguments?.getString("entryId")
+                if (entryId != null) {
+                    PracticeScreen(
+                        entryId = entryId,
+                        onNavigateBack = { navController.popBackStack() }
+                    )
+                }
             }
         }
     }

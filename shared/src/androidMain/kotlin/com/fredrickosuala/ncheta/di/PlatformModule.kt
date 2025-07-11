@@ -3,6 +3,7 @@ package com.fredrickosuala.ncheta.di
 import com.fredrickosuala.ncheta.database.DatabaseDriverFactory
 import com.fredrickosuala.ncheta.features.entrylist.AndroidEntryListViewModel
 import com.fredrickosuala.ncheta.features.input.AndroidInputViewModel
+import com.fredrickosuala.ncheta.features.practice.AndroidPracticeViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
@@ -21,6 +22,12 @@ actual fun platformModule(): Module = module {
 
     viewModel {
         AndroidEntryListViewModel(
+            repository = get()
+        )
+    }
+
+    viewModel {
+        AndroidPracticeViewModel(
             repository = get()
         )
     }
