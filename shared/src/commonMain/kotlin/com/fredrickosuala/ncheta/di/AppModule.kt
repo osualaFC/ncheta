@@ -1,6 +1,8 @@
 package com.fredrickosuala.ncheta.di
 
 import com.fredrickosuala.ncheta.database.Database
+import com.fredrickosuala.ncheta.repository.AuthRepository
+import com.fredrickosuala.ncheta.repository.FirebaseAuthRepositoryImpl
 import com.fredrickosuala.ncheta.repository.NchetaRepository
 import com.fredrickosuala.ncheta.repository.NchetaRepositoryImpl
 import com.fredrickosuala.ncheta.services.ContentGenerationService
@@ -16,6 +18,7 @@ val sharedModule = module {
     single<ContentGenerationService> { GeminiContentGenerationService() }
     single { Database(databaseDriverFactory = get()) }
     single<NchetaRepository> { NchetaRepositoryImpl(database = get()) }
+    single<AuthRepository> { FirebaseAuthRepositoryImpl() }
 
 }
 

@@ -20,8 +20,11 @@ struct InputScreenView: View {
     @State private var showConfirmationAlert: Bool = false
     @State private var alertMessage: String = ""
     @State private var newEntryTitle: String = ""
+    @State private var showAuthSheet = false
     
     var body: some View {
+        
+        let isLoggedIn = viewModel.isLoggedInState
         let isLoading = viewModel.uiState is InputUiState.Loading
         
         NavigationStack {
@@ -50,10 +53,15 @@ struct InputScreenView: View {
                             newEntryTitle = ""
                         },
                         onSave: {
-                            viewModel.saveGeneratedContent(title: newEntryTitle)
-                            showSaveDialog = false
-                            viewModel.clearInputText()
-                            appNavigationState.selectedTab = .entries
+                            if (isLoggedIn) {
+                                viewModel.saveGeneratedContent(title: newEntryTitle)
+                                showSaveDialog = false
+                                viewModel.clearInputText()
+                                appNavigationState.selectedTab = .entries
+                            } else {
+                                showAuthSheet = true
+                            }
+                           
                         }
                     )
                 }
@@ -65,7 +73,7 @@ struct InputScreenView: View {
                 
                 if newState is InputUiState.Success {
                     showSaveDialog = true
-                } else if let saveSuccessState = newState as? InputUiState.Saved {
+                } else if newState is InputUiState.Saved {
                     alertMessage = "Saved successfully!"
                     showConfirmationAlert = true
                 } else if let errorState = newState as? InputUiState.Error {
@@ -77,6 +85,11 @@ struct InputScreenView: View {
                 Button("OK") {
                     viewModel.resetUiState()
                 }
+            }
+            .sheet(isPresented: $showAuthSheet) {
+                AuthView(onAuthSuccess: {
+                    showAuthSheet = false
+                })
             }
         }
     }
@@ -140,7 +153,7 @@ struct InputScreenView: View {
 struct ActionButton: View {
     let text: String
     let action: () -> Void
-
+    
     var body: some View {
         Button(action: action) {
             Text(text)

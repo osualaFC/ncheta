@@ -6,6 +6,7 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.*
 import androidx.compose.ui.Modifier
+import com.fredrickosuala.ncheta.android.features.main.MainScreen
 import com.fredrickosuala.ncheta.android.theme.NchetaTheme
 
 class MainActivity : ComponentActivity() {

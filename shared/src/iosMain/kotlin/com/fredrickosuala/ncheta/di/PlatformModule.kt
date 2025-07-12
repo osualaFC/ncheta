@@ -1,6 +1,7 @@
 package com.fredrickosuala.ncheta.di
 
 import com.fredrickosuala.ncheta.database.DatabaseDriverFactory
+import com.fredrickosuala.ncheta.features.auth.AuthViewModel
 import com.fredrickosuala.ncheta.features.entrylist.EntryListViewModel
 import com.fredrickosuala.ncheta.features.input.InputViewModel
 import com.fredrickosuala.ncheta.features.practice.PracticeViewModel
@@ -14,25 +15,36 @@ actual fun platformModule(): Module = module {
 
     single { DatabaseDriverFactory() }
 
+    factory { CoroutineScope(Dispatchers.Main + SupervisorJob()) }
+
     factory {
         InputViewModel(
             generationService = get(),
             repository = get(),
-            coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+            coroutineScope = get(),
+            authRepository = get()
         )
     }
 
     factory {
         EntryListViewModel(
             repository = get(),
-            coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+            coroutineScope = get()
         )
     }
 
     factory {
         PracticeViewModel(
             repository = get(),
-            coroutineScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
+            coroutineScope = get()
         )
     }
+
+    factory {
+        AuthViewModel(
+            authRepository = get(),
+            coroutineScope = get()
+        )
+    }
+
 }

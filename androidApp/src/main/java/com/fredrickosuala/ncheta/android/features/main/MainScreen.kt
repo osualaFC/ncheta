@@ -1,4 +1,4 @@
-package com.fredrickosuala.ncheta.android
+package com.fredrickosuala.ncheta.android.features.main
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -22,6 +22,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.fredrickosuala.ncheta.android.features.auth.AuthScreen
 import com.fredrickosuala.ncheta.android.features.entrylist.EntryListScreen
 import com.fredrickosuala.ncheta.android.features.input.InputScreen
 import com.fredrickosuala.ncheta.android.features.practice.PracticeScreen
@@ -89,6 +90,9 @@ fun MainScreen() {
                                 inclusive = true
                             }
                         }
+                    },
+                    onNavigateToAuth = {
+                        navController.navigate("auth")
                     }
                 )
             }
@@ -96,6 +100,13 @@ fun MainScreen() {
                 EntryListScreen(
                     onEntryClick = { entryId ->
                         navController.navigate("practice/$entryId")
+                    }
+                )
+            }
+            composable("auth") {
+                AuthScreen(
+                    onAuthSuccess = {
+                        navController.popBackStack()
                     }
                 )
             }

@@ -5,6 +5,7 @@ import com.fredrickosuala.ncheta.data.model.GeneratedContent
 import com.fredrickosuala.ncheta.data.model.InputSourceType
 import com.fredrickosuala.ncheta.data.model.MultipleChoiceQuestion
 import com.fredrickosuala.ncheta.data.model.NchetaEntry
+import com.fredrickosuala.ncheta.repository.AuthRepository
 import com.fredrickosuala.ncheta.repository.NchetaRepository
 import com.fredrickosuala.ncheta.services.Result
 import com.fredrickosuala.ncheta.services.ContentGenerationService
@@ -20,8 +21,11 @@ import kotlin.uuid.Uuid
 class InputViewModel(
     private val coroutineScope: CoroutineScope,
     private val generationService: ContentGenerationService,
-    private val repository: NchetaRepository
+    private val repository: NchetaRepository,
+    private val authRepository: AuthRepository
 ) {
+
+    val isLoggedIn = authRepository.observeAuthState()
 
     private val _uiState = MutableStateFlow<InputUiState>(InputUiState.Idle)
     val uiState: StateFlow<InputUiState> = _uiState.asStateFlow()

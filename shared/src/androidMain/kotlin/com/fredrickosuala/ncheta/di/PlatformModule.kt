@@ -1,6 +1,7 @@
 package com.fredrickosuala.ncheta.di
 
 import com.fredrickosuala.ncheta.database.DatabaseDriverFactory
+import com.fredrickosuala.ncheta.features.auth.AndroidAuthViewModel
 import com.fredrickosuala.ncheta.features.entrylist.AndroidEntryListViewModel
 import com.fredrickosuala.ncheta.features.input.AndroidInputViewModel
 import com.fredrickosuala.ncheta.features.practice.AndroidPracticeViewModel
@@ -16,7 +17,8 @@ actual fun platformModule(): Module = module {
    viewModel {
        AndroidInputViewModel(
            generationService = get(),
-           repository = get()
+           repository = get(),
+           authRepository = get()
        )
    }
 
@@ -29,6 +31,12 @@ actual fun platformModule(): Module = module {
     viewModel {
         AndroidPracticeViewModel(
             repository = get()
+        )
+    }
+
+    viewModel {
+        AndroidAuthViewModel(
+            authRepository = get()
         )
     }
 }

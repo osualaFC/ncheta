@@ -31,10 +31,14 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun InputScreen(
     onSaved: () -> Unit = {},
+    onNavigateToAuth: () -> Unit,
     viewModel: AndroidInputViewModel = koinViewModel()
 ) {
 
+
     val sharedVm = viewModel.inputViewModel
+
+    val isLoggedIn by sharedVm.isLoggedIn.collectAsState(initial = false)
 
     val inputText by sharedVm.inputText.collectAsState()
     val uiState by sharedVm.uiState.collectAsState()
@@ -66,11 +70,15 @@ fun InputScreen(
                 sharedVm.resetUiState()
             },
             onSaveClicked = { title ->
-                sharedVm.saveGeneratedContent(title)
-                sharedVm.clearText()
+                if (isLoggedIn) {
+                    sharedVm.saveGeneratedContent(title)
+                    sharedVm.clearText()
+                    Toast.makeText(context, "Content saved successfully", Toast.LENGTH_SHORT).show()
+                    onSaved()
+                } else {
+                    onNavigateToAuth()
+                }
                 showSaveDialog = false
-                Toast.makeText(context, "Content saved successfully", Toast.LENGTH_SHORT).show()
-                onSaved()
             }
         )
     }
@@ -196,6 +204,6 @@ private fun ActionButton(
 @Composable
 fun InputScreenPreview() {
     NchetaTheme {
-        InputScreen()
+        InputScreen({}, {})
     }
 }

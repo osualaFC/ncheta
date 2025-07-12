@@ -1,0 +1,54 @@
+{
+  "project_info": {
+    "project_number": "378616500590",
+    "project_id": "ncheta-c8b3f",
+    "storage_bucket": "ncheta-c8b3f.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:378616500590:android:8e2d705fff725fb371b17f",
+        "android_client_info": {
+          "package_name": "com.fredrickosuala.ncheta.android"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "378616500590-nbafoe3396pj2q0scj5fl6dtau7r40r1.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fredrickosuala.ncheta.android",
+            "certificate_hash": "a81b8969d3b63bddf8053cbc44f2b3bfc2366587"
+          }
+        },
+        {
+          "client_id": "378616500590-8cqoh2e4jm1p4ut82v7r91g62s7q4d24.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBKRfkU7Yxtxv-3SHqnIfNoQHJCYSSbW9g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "378616500590-8cqoh2e4jm1p4ut82v7r91g62s7q4d24.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "378616500590-b1mfafjfbva585aqkqgrbk0ou94qatl8.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.fredrickosuala.ncheta.ios"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

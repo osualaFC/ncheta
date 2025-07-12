@@ -53,6 +53,9 @@ kotlin {
         it.binaries.framework {
             baseName = "shared"
             isStatic = true
+            // Tells the KMP linker to link against the Firebase frameworks provided by SPM
+            linkerOpts.add("-framework")
+            linkerOpts.add("FirebaseAuth")
         }
     }
 
@@ -67,6 +70,7 @@ kotlin {
             implementation(libs.sqldelight.coroutines.extensions)
             implementation(libs.lifecycle.viewmodel.compose)
             api(libs.koin.core)
+            implementation("dev.gitlive:firebase-auth:1.13.0")
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
