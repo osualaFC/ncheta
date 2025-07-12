@@ -12,6 +12,7 @@ import shared
 struct EntryListView: View {
     
     @StateObject private var viewModel = ObservableEntryListViewModel()
+    @State private var entryToPractice: NchetaEntry?
     
     var body: some View {
         NavigationView {
@@ -21,13 +22,18 @@ struct EntryListView: View {
                         .foregroundColor(.gray)
                 } else {
                     List(viewModel.entries, id: \.id) { entry in
-                        NavigationLink(destination: PracticeView(entryId: entry.id)) {
-                            EntryRowView(entry: entry)
-                        }
+                        
+                        EntryRowView(entry: entry)
+                            .onTapGesture {
+                                self.entryToPractice = entry
+                            }
                     }
                 }
             }
             .navigationTitle("My Entries")
+            .fullScreenCover(item: $entryToPractice) { entry in
+                PracticeView(entryId: entry.id)
+            }
         }
     }
 }

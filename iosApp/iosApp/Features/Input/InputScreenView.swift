@@ -10,7 +10,9 @@ import SwiftUI
 import shared
 
 struct InputScreenView: View {
+    
     @StateObject private var viewModel = ObservableInputViewModel()
+    @EnvironmentObject private var appNavigationState: AppNavigationState
     
     // State variables to control UI based on ViewModel state
     @State private var apiKeyInput: String = ""
@@ -51,6 +53,7 @@ struct InputScreenView: View {
                             viewModel.saveGeneratedContent(title: newEntryTitle)
                             showSaveDialog = false
                             viewModel.clearInputText()
+                            appNavigationState.selectedTab = .entries
                         }
                     )
                 }
@@ -143,7 +146,7 @@ struct ActionButton: View {
             Text(text)
                 .font(AppFonts.interMedium(size: 16))
                 .foregroundColor(AppColors.nearBlack)
-                .padding(.vertical, 10)
+                .padding(.vertical, 16)
                 .frame(maxWidth: .infinity)
                 .overlay(
                     RoundedRectangle(cornerRadius: 8)

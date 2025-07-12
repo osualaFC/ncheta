@@ -18,59 +18,68 @@ struct McqPracticeView: View {
     let onRestart: () -> Void
 
     var body: some View {
-        
+       
         if practiceState.isPracticeComplete {
-            
-            VStack(spacing: 16) {
-                Text("You've completed this quiz!")
-                    .font(.title2)
-                Button("Practice Again", action: onRestart)
-                    .buttonStyle(.borderedProminent)
-            }
+            completionView
         } else {
+            quizView
+        }
+    }
+
+   
+    private var completionView: some View {
+        VStack(spacing: 16) {
+            Text("You've completed this quiz!")
+                .font(.title2)
+            Button("Practice Again", action: onRestart)
+                .buttonStyle(.borderedProminent)
+        }
+    }
+
+   
+    private var quizView: some View {
+       
+        let mcqSet = practiceState.entry.content as? GeneratedContentMcqSet
+        let question = mcqSet?.items[Int(practiceState.currentQuestionIndex)]
+        
+        return VStack(spacing: 20) {
+            Text(question?.questionText ?? "Loading question...")
+                .font(.title2)
+                .fontWeight(.medium)
+                .multilineTextAlignment(.center)
             
-            let mcqSet = practiceState.entry.content as? GeneratedContentMcqSet
-            let question = mcqSet?.items[Int(practiceState.currentQuestionIndex)]
-            
-            VStack(spacing: 20) {
-                Text(question?.questionText ?? "Loading question...")
-                    .font(.title2)
-                    .fontWeight(.medium)
-                    .multilineTextAlignment(.center)
-                
-                VStack(spacing: 12) {
-                    ForEach(0..<(question?.options.count ?? 0), id: \.self) { index in
-                        let isSelected = practiceState.selectedOptionIndex?.intValue == index
-                        
-                        OptionRowView(
-                            text: question?.options[index] as? String ?? "",
-                            isSelected: isSelected,
-                            isCorrect: question?.correctOptionIndex.intValue == index,
-                            isAnswerRevealed: practiceState.isAnswerRevealed
-                        )
-                        .onTapGesture {
-                            onSelectOption(Int32(index))
-                        }
+            VStack(spacing: 12) {
+                ForEach(0..<(question?.options.count ?? 0), id: \.self) { index in
+                    let isSelected = practiceState.selectedOptionIndex?.intValue == index
+                    
+                    OptionRowView(
+                        text: question?.options[index] as? String ?? "",
+                        isSelected: isSelected,
+                        isCorrect: (question?.correctOptionIndex as? Int) == index,
+                        isAnswerRevealed: practiceState.isAnswerRevealed
+                    )
+                    .onTapGesture {
+                        onSelectOption(Int32(index))
                     }
                 }
-                
-                Spacer()
-                
-                if practiceState.isAnswerRevealed {
-                    Button(action: onNextQuestion) {
-                        let isLastQuestion = practiceState.currentQuestionIndex == ((mcqSet?.items.count ?? 0) - 1)
-                        Text(isLastQuestion ? "Finish" : "Next Question")
-                            .frame(maxWidth: .infinity)
-                    }
+            }
+            
+            Spacer()
+            
+            if practiceState.isAnswerRevealed {
+                Button(action: onNextQuestion) {
+                    let isLastQuestion = practiceState.currentQuestionIndex == ((mcqSet?.items.count ?? 0) - 1)
+                    Text(isLastQuestion ? "Finish" : "Next Question")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+            } else {
+                Button("Check Answer", action: onCheckAnswer)
+                    .frame(maxWidth: .infinity)
+                    .disabled(practiceState.selectedOptionIndex == nil)
                     .buttonStyle(.borderedProminent)
                     .controlSize(.large)
-                } else {
-                    Button("Check Answer", action: onCheckAnswer)
-                        .frame(maxWidth: .infinity)
-                        .disabled(practiceState.selectedOptionIndex == nil)
-                        .buttonStyle(.borderedProminent)
-                        .controlSize(.large)
-                }
             }
         }
     }

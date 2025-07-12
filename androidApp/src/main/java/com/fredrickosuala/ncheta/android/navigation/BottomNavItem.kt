@@ -7,5 +7,5 @@ import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val title: String) {
     data object Create : BottomNavItem("create", Icons.Default.Create, "Create")
-    data object Review : BottomNavItem("review", Icons.AutoMirrored.Filled.List, "Review")
+    data object Entries : BottomNavItem("entries", Icons.AutoMirrored.Filled.List, "Entries")
 }

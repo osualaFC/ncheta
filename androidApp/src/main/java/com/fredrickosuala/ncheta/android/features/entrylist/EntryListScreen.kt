@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.fredrickosuala.ncheta.android.navigation.AppHeader
 import com.fredrickosuala.ncheta.android.theme.NchetaTheme
 import com.fredrickosuala.ncheta.data.model.NchetaEntry
 import com.fredrickosuala.ncheta.features.entrylist.AndroidEntryListViewModel
@@ -31,11 +32,15 @@ fun EntryListScreen(
 
     val entries by entryListViewModel.entries.collectAsState()
 
-    Box(
+    Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp)
     ) {
+        AppHeader(
+            "My Entries",
+            showBackArrow = false) { }
+
         if (entries.isEmpty()) {
             Box(
                 modifier = Modifier.fillMaxSize(),

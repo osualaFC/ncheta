@@ -1,6 +1,5 @@
 package com.fredrickosuala.ncheta.features.practice
 
-import com.fredrickosuala.ncheta.data.model.Flashcard
 import com.fredrickosuala.ncheta.data.model.GeneratedContent
 import com.fredrickosuala.ncheta.data.model.NchetaEntry
 import com.fredrickosuala.ncheta.repository.NchetaRepository

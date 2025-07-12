@@ -31,7 +31,7 @@ import com.fredrickosuala.ncheta.android.navigation.BottomNavItem
 @Composable
 fun MainScreen() {
     val navController = rememberNavController()
-    val navItems = listOf(BottomNavItem.Create, BottomNavItem.Review)
+    val navItems = listOf(BottomNavItem.Create, BottomNavItem.Entries)
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentDestination = navBackStackEntry?.destination
 
@@ -82,9 +82,17 @@ fun MainScreen() {
             modifier = Modifier.padding(innerPadding)
         ) {
             composable(BottomNavItem.Create.route) {
-                InputScreen()
+                InputScreen(
+                    onSaved = {
+                        navController.navigate(BottomNavItem.Entries.route) {
+                            popUpTo(BottomNavItem.Create.route) {
+                                inclusive = true
+                            }
+                        }
+                    }
+                )
             }
-            composable(BottomNavItem.Review.route) {
+            composable(BottomNavItem.Entries.route) {
                 EntryListScreen(
                     onEntryClick = { entryId ->
                         navController.navigate("practice/$entryId")

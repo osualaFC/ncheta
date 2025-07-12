@@ -30,3 +30,6 @@ extension PracticeViewModel: @unchecked @retroactive Sendable {}
 
 extension NchetaEntry: @unchecked  @retroactive Sendable {}
 extension PracticeUiState: @unchecked @retroactive Sendable {}
+
+
+extension NchetaEntry: @retroactive Identifiable {}

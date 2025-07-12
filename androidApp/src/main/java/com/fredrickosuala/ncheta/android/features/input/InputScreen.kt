@@ -1,5 +1,6 @@
 package com.fredrickosuala.ncheta.android.features.input
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -13,11 +14,13 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.fredrickosuala.ncheta.android.navigation.AppHeader
 import com.fredrickosuala.ncheta.features.input.AndroidInputViewModel
 import com.fredrickosuala.ncheta.features.input.InputUiState
 import com.fredrickosuala.ncheta.features.input.InputViewModel
@@ -27,6 +30,7 @@ import org.koin.androidx.compose.koinViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun InputScreen(
+    onSaved: () -> Unit = {},
     viewModel: AndroidInputViewModel = koinViewModel()
 ) {
 
@@ -36,28 +40,17 @@ fun InputScreen(
     val uiState by sharedVm.uiState.collectAsState()
     var showSaveDialog by remember { mutableStateOf(false) }
 
-    val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
+    val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
     LaunchedEffect(uiState) {
         when (val state = uiState) {
             is InputUiState.Error -> {
                 coroutineScope.launch {
-                    snackbarHostState.showSnackbar(
-                        message = state.message,
-                        withDismissAction = true
-                        )
+                    Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
                 }
                 sharedVm.resetUiState()
-            }
-            is InputUiState.Saved -> {
-                sharedVm.clearText()
-                coroutineScope.launch {
-                    snackbarHostState.showSnackbar(
-                        message = "Content saved successfully"
-                    )
-                }
             }
             is InputUiState.Success -> {
                 showSaveDialog = true
@@ -76,6 +69,8 @@ fun InputScreen(
                 sharedVm.saveGeneratedContent(title)
                 sharedVm.clearText()
                 showSaveDialog = false
+                Toast.makeText(context, "Content saved successfully", Toast.LENGTH_SHORT).show()
+                onSaved()
             }
         )
     }
@@ -106,7 +101,7 @@ fun InputScreen(
 //                keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
 //                enabled = uiState !is InputUiState.Loading
 //            )
-
+            AppHeader("NCHETA", showBackArrow = false) { }
             // Main Text Field
             OutlinedTextField(
                 value = inputText,
@@ -187,7 +182,8 @@ private fun ActionButton(
             contentColor = MaterialTheme.colorScheme.primary
         ),
         border = ButtonDefaults.outlinedButtonBorder(),
-        enabled = enabled
+        enabled = enabled,
+        contentPadding = PaddingValues(vertical = 16.dp)
     ) {
         Text(
             text,

@@ -13,6 +13,7 @@ class GeminiContentGenerationService(
     private val json = Json { isLenient = true; ignoreUnknownKeys = true }
 
     override suspend fun generateSummary(textToSummarize: String, apiKey: String): Result<String> {
+        if (textToSummarize.isBlank()) return Result.Error("Input text cannot be empty.")
         try {
             val generativeModel = GenerativeModel(modelName, apiKey)
             val prompt = "Provide a concise summary of the following text:\n\n\"${textToSummarize}\""
@@ -36,7 +37,7 @@ class GeminiContentGenerationService(
             $textForFlashcards
             ---
         """.trimIndent()
-
+        if (textForFlashcards.isBlank()) return Result.Error("Input text cannot be empty.")
         try {
             val generativeModel = GenerativeModel(
                 modelName = modelName,
@@ -70,6 +71,8 @@ class GeminiContentGenerationService(
             $textForMcqs
             ---
         """.trimIndent()
+
+        if (textForMcqs.isBlank()) return Result.Error("Input text cannot be empty.")
 
         try {
             val generativeModel = GenerativeModel(modelName, apiKey)

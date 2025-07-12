@@ -16,57 +16,69 @@ struct PracticeView: View {
     
     @StateObject private var viewModel: ObservablePracticeViewModel
     
+    @Environment(\.dismiss) private var dismiss
+    
     init(entryId: String) {
         self.entryId = entryId
         self._viewModel = StateObject(wrappedValue: ObservablePracticeViewModel(entryId: entryId))
     }
     
     var body: some View {
-        VStack {
-            
-            switch viewModel.uiState {
-            case is PracticeUiState.Loading:
-                ProgressView()
+        
+        NavigationView {
+            VStack {
                 
-            case let successState as PracticeUiState.Success:
-                
-                switch successState.state.entry.content {
-                case let summary as GeneratedContentSummary:
-                    SummaryView(summary: summary)
+                switch viewModel.uiState {
+                case is PracticeUiState.Loading:
+                    ProgressView()
                     
-                case let flashcardSet as GeneratedContentFlashcardSet:
-                    FlashcardPracticeView(
-                        practiceState: successState.state,
-                        onFlipCard: viewModel.flipCard,
-                        onNextCard: viewModel.nextCard,
-                        onRestart: viewModel.restartPractice
-                    )
+                case let successState as PracticeUiState.Success:
                     
-                case let mcqSet as GeneratedContentMcqSet:
-                    McqPracticeView(
-                        practiceState: successState.state,
-                        onSelectOption: viewModel.selectOption,
-                        onCheckAnswer: viewModel.checkAnswer,
-                        onNextQuestion: viewModel.nextQuestion,
-                        onRestart: viewModel.restartPractice
-                    )
+                    switch successState.state.entry.content {
+                    case let summary as GeneratedContentSummary:
+                        SummaryView(summary: summary)
+                        
+                    case let flashcardSet as GeneratedContentFlashcardSet:
+                        FlashcardPracticeView(
+                            practiceState: successState.state,
+                            onFlipCard: viewModel.flipCard,
+                            onNextCard: viewModel.nextCard,
+                            onRestart: viewModel.restartPractice
+                        )
+                        
+                    case let mcqSet as GeneratedContentMcqSet:
+                        McqPracticeView(
+                            practiceState: successState.state,
+                            onSelectOption: viewModel.selectOption,
+                            onCheckAnswer: viewModel.checkAnswer,
+                            onNextQuestion: viewModel.nextQuestion,
+                            onRestart: viewModel.restartPractice
+                        )
+                        
+                    default:
+                        Text("Unknown content type.")
+                    }
+                    
+                case let errorState as PracticeUiState.Error:
+                    Text("Error: \(errorState.message)")
+                        .foregroundColor(.red)
+                        .multilineTextAlignment(.center)
+                        .padding()
                     
                 default:
-                    Text("Unknown content type.")
+                    EmptyView()
                 }
-                
-            case let errorState as PracticeUiState.Error:
-                Text("Error: \(errorState.message)")
-                    .foregroundColor(.red)
-                    .multilineTextAlignment(.center)
-                    .padding()
-                
-            default:
-                EmptyView()
+            }
+            .navigationTitle((viewModel.uiState as? PracticeUiState.Success)?.state.entry.title ?? "Practice")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .cancellationAction) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
             }
         }
-        .navigationTitle((viewModel.uiState as? PracticeUiState.Success)?.state.entry.title ?? "Practice")
-        .navigationBarTitleDisplayMode(.inline)
     }
 }
 

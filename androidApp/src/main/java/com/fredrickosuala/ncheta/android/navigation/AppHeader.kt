@@ -13,16 +13,19 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 
 @Composable
 fun AppHeader(
     title: String,
+    modifier: Modifier = Modifier,
     showBackArrow: Boolean = true,
-    onBackArrowClick: () -> Unit
+    onBackArrowClick: () -> Unit,
 ) {
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (showBackArrow) {
@@ -34,7 +37,9 @@ fun AppHeader(
         Text(
             title,
             fontSize = MaterialTheme.typography.titleLarge.fontSize,
-            modifier = Modifier.padding(horizontal = 6.dp),
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 6.dp),
+            fontWeight = FontWeight.Bold,
+            textAlign = if (showBackArrow) TextAlign.Start else TextAlign.Center
         )
     }
 }
