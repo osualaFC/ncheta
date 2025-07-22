@@ -71,6 +71,7 @@ kotlin {
             implementation(libs.lifecycle.viewmodel.compose)
             api(libs.koin.core)
             implementation("dev.gitlive:firebase-auth:1.13.0")
+            implementation(libs.multiplatformSettings.noArg)
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)

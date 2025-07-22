@@ -10,6 +10,8 @@
 import SwiftUI
 import shared
 import GoogleSignIn
+import AuthenticationServices
+import CryptoKit
 
 struct AuthView: View {
     @StateObject private var viewModel = ObservableAuthViewModel()

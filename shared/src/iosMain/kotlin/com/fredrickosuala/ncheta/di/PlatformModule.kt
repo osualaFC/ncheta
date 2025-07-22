@@ -5,6 +5,8 @@ import com.fredrickosuala.ncheta.features.auth.AuthViewModel
 import com.fredrickosuala.ncheta.features.entrylist.EntryListViewModel
 import com.fredrickosuala.ncheta.features.input.InputViewModel
 import com.fredrickosuala.ncheta.features.practice.PracticeViewModel
+import com.russhwolf.settings.NSUserDefaultsSettings
+import com.russhwolf.settings.Settings
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -14,6 +16,8 @@ import org.koin.dsl.module
 actual fun platformModule(): Module = module {
 
     single { DatabaseDriverFactory() }
+
+    single<Settings> { NSUserDefaultsSettings.Factory().create("ncheta_settings") }
 
     factory { CoroutineScope(Dispatchers.Main + SupervisorJob()) }
 

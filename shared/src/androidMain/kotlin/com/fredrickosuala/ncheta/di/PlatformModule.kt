@@ -5,6 +5,8 @@ import com.fredrickosuala.ncheta.features.auth.AndroidAuthViewModel
 import com.fredrickosuala.ncheta.features.entrylist.AndroidEntryListViewModel
 import com.fredrickosuala.ncheta.features.input.AndroidInputViewModel
 import com.fredrickosuala.ncheta.features.practice.AndroidPracticeViewModel
+import com.russhwolf.settings.Settings
+import com.russhwolf.settings.SharedPreferencesSettings
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModel
 import org.koin.core.module.Module
@@ -13,6 +15,10 @@ import org.koin.dsl.module
 actual fun platformModule(): Module = module {
 
     single { DatabaseDriverFactory(androidContext()) }
+
+    single<Settings> {
+        SharedPreferencesSettings.Factory(androidContext()).create(name = "ncheta_settings")
+    }
 
    viewModel {
        AndroidInputViewModel(

@@ -83,10 +83,6 @@ struct PracticeView: View {
 }
 
 
-
-
-
-
 private struct SummaryView: View {
     let summary: GeneratedContentSummary
     

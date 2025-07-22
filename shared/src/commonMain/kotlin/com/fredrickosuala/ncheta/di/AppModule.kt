@@ -1,6 +1,7 @@
 package com.fredrickosuala.ncheta.di
 
 import com.fredrickosuala.ncheta.database.Database
+import com.fredrickosuala.ncheta.domain.OnboardingManager
 import com.fredrickosuala.ncheta.repository.AuthRepository
 import com.fredrickosuala.ncheta.repository.FirebaseAuthRepositoryImpl
 import com.fredrickosuala.ncheta.repository.NchetaRepository
@@ -19,6 +20,7 @@ val sharedModule = module {
     single { Database(databaseDriverFactory = get()) }
     single<NchetaRepository> { NchetaRepositoryImpl(database = get()) }
     single<AuthRepository> { FirebaseAuthRepositoryImpl() }
+    single { OnboardingManager(settings = get()) }
 
 }
 
