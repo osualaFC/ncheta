@@ -4,6 +4,7 @@ import com.fredrickosuala.ncheta.database.DatabaseDriverFactory
 import com.fredrickosuala.ncheta.features.auth.AndroidAuthViewModel
 import com.fredrickosuala.ncheta.features.entrylist.AndroidEntryListViewModel
 import com.fredrickosuala.ncheta.features.input.AndroidInputViewModel
+import com.fredrickosuala.ncheta.features.main.MainViewModel
 import com.fredrickosuala.ncheta.features.practice.AndroidPracticeViewModel
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.SharedPreferencesSettings
@@ -19,6 +20,8 @@ actual fun platformModule(): Module = module {
     single<Settings> {
         SharedPreferencesSettings.Factory(androidContext()).create(name = "ncheta_settings")
     }
+
+    viewModel { MainViewModel(onboardingManager = get()) }
 
    viewModel {
        AndroidInputViewModel(

@@ -23,6 +23,9 @@
 		0F06F2792E22924C005D9745 /* UIApplication+TopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F06F2782E229248005D9745 /* UIApplication+TopViewController.swift */; };
 		0F06F27B2E229632005D9745 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0F06F27A2E229632005D9745 /* GoogleService-Info.plist */; };
 		0F59BB932E18B76B002FA65B /* KMP+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F59BB922E18B75C002FA65B /* KMP+Extension.swift */; };
+		0F5F01BF2E30E50100AD071C /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5F01BE2E30E4EF00AD071C /* MainViewModel.swift */; };
+		0F5F01C22E30E62100AD071C /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5F01C12E30E61600AD071C /* OnboardingView.swift */; };
+		0F5F01C52E30E77C00AD071C /* AppEntryPointView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5F01C42E30E77100AD071C /* AppEntryPointView.swift */; };
 		0F6986E02DE9BFA6001A8127 /* AppColor.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F6986DF2DE9BFA6001A8127 /* AppColor.swift */; };
 		0F6986E22DE9C000001A8127 /* AppFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F6986E12DE9C000001A8127 /* AppFonts.swift */; };
 		0F6986E62DE9C4D1001A8127 /* InputScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F6986E52DE9C4D1001A8127 /* InputScreenView.swift */; };
@@ -33,7 +36,6 @@
 		0FFFF59C2E18D1D100FDD1F9 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FFFF59B2E18D1CB00FDD1F9 /* MainView.swift */; };
 		0FFFF59E2E18D4D700FDD1F9 /* SaveEntryDialogView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FFFF59D2E18D4D300FDD1F9 /* SaveEntryDialogView.swift */; };
 		2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2152FB032600AC8F00CF470E /* iOSApp.swift */; };
-		7555FF83242A565900829871 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7555FF82242A565900829871 /* ContentView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -64,6 +66,9 @@
 		0F06F2782E229248005D9745 /* UIApplication+TopViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIApplication+TopViewController.swift"; sourceTree = "<group>"; };
 		0F06F27A2E229632005D9745 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		0F59BB922E18B75C002FA65B /* KMP+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "KMP+Extension.swift"; sourceTree = "<group>"; };
+		0F5F01BE2E30E4EF00AD071C /* MainViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainViewModel.swift; sourceTree = "<group>"; };
+		0F5F01C12E30E61600AD071C /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
+		0F5F01C42E30E77100AD071C /* AppEntryPointView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEntryPointView.swift; sourceTree = "<group>"; };
 		0F6986DF2DE9BFA6001A8127 /* AppColor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppColor.swift; sourceTree = "<group>"; };
 		0F6986E12DE9C000001A8127 /* AppFonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFonts.swift; sourceTree = "<group>"; };
 		0F6986E52DE9C4D1001A8127 /* InputScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputScreenView.swift; sourceTree = "<group>"; };
@@ -74,7 +79,6 @@
 		0FFFF59D2E18D4D300FDD1F9 /* SaveEntryDialogView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SaveEntryDialogView.swift; sourceTree = "<group>"; };
 		2152FB032600AC8F00CF470E /* iOSApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = iOSApp.swift; sourceTree = "<group>"; };
 		7555FF7B242A565900829871 /* iosApp.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = iosApp.app; sourceTree = BUILT_PRODUCTS_DIR; };
-		7555FF82242A565900829871 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		7555FF8C242A565B00829871 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -115,6 +119,7 @@
 		0F06F2602E22245D005D9745 /* Main */ = {
 			isa = PBXGroup;
 			children = (
+				0F5F01BE2E30E4EF00AD071C /* MainViewModel.swift */,
 				0F06F2612E22247F005D9745 /* AppNavigationState.swift */,
 				0FFFF59B2E18D1CB00FDD1F9 /* MainView.swift */,
 			);
@@ -140,6 +145,22 @@
 			path = Util;
 			sourceTree = "<group>";
 		};
+		0F5F01C02E30E5F500AD071C /* Onboard */ = {
+			isa = PBXGroup;
+			children = (
+				0F5F01C12E30E61600AD071C /* OnboardingView.swift */,
+			);
+			path = Onboard;
+			sourceTree = "<group>";
+		};
+		0F5F01C32E30E75D00AD071C /* App */ = {
+			isa = PBXGroup;
+			children = (
+				0F5F01C42E30E77100AD071C /* AppEntryPointView.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
 		0F6986D92DE9B5D8001A8127 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -160,6 +181,7 @@
 		0F6986E32DE9C4B4001A8127 /* Features */ = {
 			isa = PBXGroup;
 			children = (
+				0F5F01C02E30E5F500AD071C /* Onboard */,
 				0F06F2682E226CDF005D9745 /* Auth */,
 				0F06F2602E22245D005D9745 /* Main */,
 				0F06F2572E211E3B005D9745 /* Practice */,
@@ -208,12 +230,12 @@
 		7555FF7D242A565900829871 /* iosApp */ = {
 			isa = PBXGroup;
 			children = (
+				0F5F01C32E30E75D00AD071C /* App */,
 				0F06F27A2E229632005D9745 /* GoogleService-Info.plist */,
 				0F59BB912E18B734002FA65B /* Util */,
 				0F6986E32DE9C4B4001A8127 /* Features */,
 				0F6986DE2DE9BF8C001A8127 /* Theme */,
 				0F6986D92DE9B5D8001A8127 /* Resources */,
-				7555FF82242A565900829871 /* ContentView.swift */,
 				7555FF8C242A565B00829871 /* Info.plist */,
 				2152FB032600AC8F00CF470E /* iOSApp.swift */,
 				058557D7273AAEEB004C7B11 /* Preview Content */,
@@ -331,7 +353,6 @@
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
 				0F06F2592E211EC2005D9745 /* ObservablePracticeViewModel.swift in Sources */,
 				0F6986E82DE9CD06001A8127 /* ObservableInputViewModel.swift in Sources */,
-				7555FF83242A565900829871 /* ContentView.swift in Sources */,
 				0F6986E02DE9BFA6001A8127 /* AppColor.swift in Sources */,
 				0F06F26A2E226D73005D9745 /* ObservableAuthViewModel.swift in Sources */,
 				0F06F26C2E226DD2005D9745 /* AuthView.swift in Sources */,
@@ -340,12 +361,15 @@
 				0F6986E62DE9C4D1001A8127 /* InputScreenView.swift in Sources */,
 				0FFFF59C2E18D1D100FDD1F9 /* MainView.swift in Sources */,
 				0FFFF59E2E18D4D700FDD1F9 /* SaveEntryDialogView.swift in Sources */,
+				0F5F01C52E30E77C00AD071C /* AppEntryPointView.swift in Sources */,
+				0F5F01BF2E30E50100AD071C /* MainViewModel.swift in Sources */,
 				0F06F25D2E213139005D9745 /* FlashcardPracticeView.swift in Sources */,
 				0F06F2792E22924C005D9745 /* UIApplication+TopViewController.swift in Sources */,
 				0F59BB932E18B76B002FA65B /* KMP+Extension.swift in Sources */,
 				0F06F25B2E212353005D9745 /* PracticeView.swift in Sources */,
 				0F03EED12DFD6EE100B563D6 /* KoinHelper.swift in Sources */,
 				0FFFF59A2E18D18D00FDD1F9 /* EntryListView.swift in Sources */,
+				0F5F01C22E30E62100AD071C /* OnboardingView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

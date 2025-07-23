@@ -1,5 +1,6 @@
 package com.fredrickosuala.ncheta.di
 
+import com.fredrickosuala.ncheta.domain.OnboardingManager
 import com.fredrickosuala.ncheta.features.auth.AuthViewModel
 import com.fredrickosuala.ncheta.features.entrylist.EntryListViewModel
 import com.fredrickosuala.ncheta.features.input.InputViewModel
@@ -21,5 +22,6 @@ class ViewModels : KoinComponent {
     val entryListViewModel: EntryListViewModel by inject()
     val practiceViewModel: PracticeViewModel by inject()
     val authViewModel: AuthViewModel by inject()
+    val onboardingManager: OnboardingManager by inject()
 }
 
