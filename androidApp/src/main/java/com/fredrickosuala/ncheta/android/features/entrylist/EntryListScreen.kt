@@ -1,14 +1,22 @@
 package com.fredrickosuala.ncheta.android.features.entrylist
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.style.TextAlign
@@ -32,10 +40,36 @@ fun EntryListScreen(
 
     val entries by entryListViewModel.entries.collectAsState()
 
+    var showDeleteDialog by remember { mutableStateOf<NchetaEntry?>(null) }
+
+    showDeleteDialog?.let { entryToDelete ->
+        AlertDialog(
+            onDismissRequest = { showDeleteDialog = null },
+            title = { Text("Delete Entry") },
+            text = { Text("Are you sure you want to permanently delete '${entryToDelete.title}'?") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        viewModel.entryListViewModel.deleteEntry(entryToDelete.id)
+                        showDeleteDialog = null
+                    }
+                ) {
+                    Text("Delete")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showDeleteDialog = null }) {
+                    Text("Cancel")
+                }
+            }
+        )
+    }
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(bottom = 16.dp)
+            .padding(horizontal = 16.dp)
     ) {
         AppHeader(
             "My Entries",
@@ -59,10 +93,49 @@ fun EntryListScreen(
                 verticalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 items(entries, key = { it.id }) { entry ->
-                    EntryRow(
-                        entry = entry,
-                        onClick = { onEntryClick(entry.id) }
+
+                    val dismissState = rememberSwipeToDismissBoxState(
+                        confirmValueChange = { dismissValue ->
+                            if (dismissValue == SwipeToDismissBoxValue.EndToStart) {
+                                showDeleteDialog = entry
+                                return@rememberSwipeToDismissBoxState false
+                            }
+                            return@rememberSwipeToDismissBoxState false
+                        }
                     )
+
+                    LaunchedEffect(showDeleteDialog) {
+                        if (showDeleteDialog == null) {
+                            dismissState.reset()
+                        }
+                    }
+
+                    SwipeToDismissBox(
+                        state = dismissState,
+                        enableDismissFromStartToEnd = false,
+                        enableDismissFromEndToStart = true,
+                        backgroundContent = {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(MaterialTheme.colorScheme.errorContainer)
+                                    .padding(horizontal = 20.dp),
+                                contentAlignment = Alignment.CenterEnd
+                            ) {
+                                Icon(
+                                    Icons.Default.Delete,
+                                    contentDescription = "Delete",
+                                    tint = MaterialTheme.colorScheme.onErrorContainer
+                                )
+                            }
+                        }
+                    ) {
+                        EntryRow(
+                            entry = entry,
+                            onClick = { onEntryClick(entry.id) }
+                        )
+                    }
+
                 }
             }
         }

@@ -72,6 +72,7 @@ kotlin {
             api(libs.koin.core)
             implementation("dev.gitlive:firebase-auth:1.13.0")
             implementation(libs.multiplatformSettings.noArg)
+            implementation("com.russhwolf:multiplatform-settings-coroutines:1.3.0")
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)

@@ -20,6 +20,14 @@ class MainViewModel(
                 initialValue = null
             )
 
+    val isReadyToUseApp: StateFlow<Boolean> =
+        onboardingManager.isReadyToUseApp
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.Companion.WhileSubscribed(5000),
+                initialValue = false
+            )
+
     fun setOnboardingComplete() {
         viewModelScope.launch {
             onboardingManager.setOnboardingCompleted()

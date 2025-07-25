@@ -7,13 +7,16 @@ import com.fredrickosuala.ncheta.data.model.MultipleChoiceQuestion
 import com.fredrickosuala.ncheta.data.model.NchetaEntry
 import com.fredrickosuala.ncheta.repository.AuthRepository
 import com.fredrickosuala.ncheta.repository.NchetaRepository
+import com.fredrickosuala.ncheta.repository.SettingsRepository
 import com.fredrickosuala.ncheta.services.Result
 import com.fredrickosuala.ncheta.services.ContentGenerationService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -22,7 +25,8 @@ class InputViewModel(
     private val coroutineScope: CoroutineScope,
     private val generationService: ContentGenerationService,
     private val repository: NchetaRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val settingsRepository: SettingsRepository
 ) {
 
     val isLoggedIn = authRepository.observeAuthState()
@@ -34,7 +38,12 @@ class InputViewModel(
     val inputText: StateFlow<String> = _inputText.asStateFlow()
 
 
-    private var userApiKey: String? = "AIzaSyAGQujn9TJoQTf38EKeg7ZBUksoSgqKY_4" // Placeholder for User Story 2.1
+    private var userApiKey: StateFlow<String?> = settingsRepository.getApiKey()
+        .stateIn(
+            scope = coroutineScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
+        )
 
     fun onInputTextChanged(newText: String) {
         _inputText.value = newText
@@ -45,7 +54,7 @@ class InputViewModel(
 
         coroutineScope.launch {
             _uiState.value = InputUiState.Loading
-            when(val result = generationService.generateSummary(_inputText.value, userApiKey!!)) {
+            when(val result = generationService.generateSummary(_inputText.value, userApiKey.value!!)) {
                 is Result.Success -> _uiState.value = InputUiState.Success(result.data)
                 is Result.Error -> _uiState.value = InputUiState.Error(result.message)
             }
@@ -57,7 +66,7 @@ class InputViewModel(
 
         coroutineScope.launch {
             _uiState.value = InputUiState.Loading
-            when(val result = generationService.generateFlashcards(_inputText.value, userApiKey!!)) {
+            when(val result = generationService.generateFlashcards(_inputText.value, userApiKey.value!!)) {
                 is Result.Success -> _uiState.value = InputUiState.Success(result.data)
                 is Result.Error -> _uiState.value = InputUiState.Error(result.message)
             }
@@ -69,7 +78,7 @@ class InputViewModel(
 
         coroutineScope.launch {
             _uiState.value = InputUiState.Loading
-            when(val result = generationService.generateMcqs(_inputText.value, userApiKey!!)) {
+            when(val result = generationService.generateMcqs(_inputText.value, userApiKey.value!!)) {
                 is Result.Success -> _uiState.value = InputUiState.Success(result.data)
                 is Result.Error -> _uiState.value = InputUiState.Error(result.message)
             }
@@ -84,13 +93,8 @@ class InputViewModel(
         _uiState.value = InputUiState.Idle
     }
 
-    fun updateUserApiKey(apiKey: String?) {
-        this.userApiKey = apiKey
-        println("InputViewModel: API Key updated to: $apiKey")
-    }
-
     private fun validateInputs(): Boolean {
-        if (userApiKey.isNullOrBlank()) {
+        if (userApiKey.value.isNullOrBlank()) {
             _uiState.value = InputUiState.Error("API Key is missing. Please add it in settings.")
             return false
         }

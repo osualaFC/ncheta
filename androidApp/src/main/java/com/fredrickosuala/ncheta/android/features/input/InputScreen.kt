@@ -86,29 +86,15 @@ fun InputScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(16.dp)
+            .padding(bottom = 16.dp)
+            .padding(horizontal = 16.dp)
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // --- TEMPORARY API Key Field for Testing ---
-//            var apiKeyInput by remember { mutableStateOf("") }
-//            OutlinedTextField(
-//                value = apiKeyInput,
-//                onValueChange = {
-//                    apiKeyInput = it
-//                    sharedVm.updateUserApiKey(it)
-//                },
-//                modifier = Modifier.fillMaxWidth(),
-//                label = { Text("Gemini API Key (for testing)") },
-//                singleLine = true,
-//                visualTransformation = PasswordVisualTransformation(),
-//                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-//                keyboardActions = KeyboardActions(onDone = { keyboardController?.hide() }),
-//                enabled = uiState !is InputUiState.Loading
-//            )
+
             AppHeader("NCHETA", showBackArrow = false) { }
             // Main Text Field
             OutlinedTextField(

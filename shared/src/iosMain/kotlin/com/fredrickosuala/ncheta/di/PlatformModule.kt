@@ -5,6 +5,7 @@ import com.fredrickosuala.ncheta.features.auth.AuthViewModel
 import com.fredrickosuala.ncheta.features.entrylist.EntryListViewModel
 import com.fredrickosuala.ncheta.features.input.InputViewModel
 import com.fredrickosuala.ncheta.features.practice.PracticeViewModel
+import com.fredrickosuala.ncheta.features.settings.SettingsViewModel
 import com.russhwolf.settings.NSUserDefaultsSettings
 import com.russhwolf.settings.Settings
 import kotlinx.coroutines.CoroutineScope
@@ -22,11 +23,19 @@ actual fun platformModule(): Module = module {
     factory { CoroutineScope(Dispatchers.Main + SupervisorJob()) }
 
     factory {
+        SettingsViewModel(
+            settingsRepository = get(),
+            coroutineScope = get()
+        )
+    }
+
+    factory {
         InputViewModel(
             generationService = get(),
             repository = get(),
             coroutineScope = get(),
-            authRepository = get()
+            authRepository = get(),
+            settingsRepository = get()
         )
     }
 

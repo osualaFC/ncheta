@@ -1,17 +1,14 @@
 package com.fredrickosuala.ncheta.android.features.main
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.HorizontalDivider
-import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.NavigationBar
-import androidx.compose.material3.NavigationBarItem
-import androidx.compose.material3.NavigationBarItemDefaults
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavDestination.Companion.hierarchy
@@ -25,30 +22,69 @@ import androidx.navigation.navArgument
 import com.fredrickosuala.ncheta.android.features.auth.AuthScreen
 import com.fredrickosuala.ncheta.android.features.entrylist.EntryListScreen
 import com.fredrickosuala.ncheta.android.features.input.InputScreen
+import com.fredrickosuala.ncheta.android.features.onboarding.OnboardingScreen
 import com.fredrickosuala.ncheta.android.features.practice.PracticeScreen
+import com.fredrickosuala.ncheta.android.features.settings.SettingsScreen
 import com.fredrickosuala.ncheta.android.navigation.BottomNavItem
+import com.fredrickosuala.ncheta.features.main.MainViewModel
+import org.koin.androidx.compose.koinViewModel
 
-
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun MainScreen() {
-    val navController = rememberNavController()
-    val navItems = listOf(BottomNavItem.Create, BottomNavItem.Entries)
-    val navBackStackEntry by navController.currentBackStackEntryAsState()
-    val currentDestination = navBackStackEntry?.destination
+fun MainScreen(
+    mainViewModel: MainViewModel = koinViewModel()
+) {
 
-    val bottomBarRoutes = navItems.map { it.route }.toSet()
+    val hasCompletedOnboarding by mainViewModel.hasCompletedOnboarding.collectAsState()
+    val isReadyToUseApp by mainViewModel.isReadyToUseApp.collectAsState()
+    val navController = rememberNavController()
+
+    val startDestination = remember(hasCompletedOnboarding, isReadyToUseApp) {
+        when {
+            hasCompletedOnboarding == null -> "loading"
+            !hasCompletedOnboarding!! -> "onboarding"
+            !isReadyToUseApp -> "settings"
+            else -> BottomNavItem.Create.route
+        }
+    }
+
+    if (startDestination == "loading") {
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
+        }
+        return
+    }
 
     Scaffold(
+        topBar = {
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentDestination = navBackStackEntry?.destination
+            val bottomBarRoutes = listOf(BottomNavItem.Create.route, BottomNavItem.Entries.route).toSet()
+            val shouldShowTopBar = currentDestination?.route in bottomBarRoutes
+
+            if (shouldShowTopBar) {
+                TopAppBar(
+                    title = {
+                        Text("")
+                    },
+                    actions = {
+                        IconButton(onClick = { navController.navigate("settings") }) {
+                            Icon(imageVector = Icons.Default.Settings, contentDescription = "Settings")
+                        }
+                    }
+                )
+            }
+        },
         bottomBar = {
-            if (currentDestination?.route in bottomBarRoutes) {
+            val navBackStackEntry by navController.currentBackStackEntryAsState()
+            val currentDestination = navBackStackEntry?.destination
+            val shouldShowBottomBar = listOf(BottomNavItem.Create.route, BottomNavItem.Entries.route).any { it == currentDestination?.route }
+
+            if (shouldShowBottomBar) {
                 Column {
-                    HorizontalDivider(
-                        thickness = 1.dp,
-                        color = MaterialTheme.colorScheme.outline
-                    )
-                    NavigationBar(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    ) {
+                    HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.outline)
+                    NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
+                        val navItems = listOf(BottomNavItem.Create, BottomNavItem.Entries)
                         navItems.forEach { screen ->
                             NavigationBarItem(
                                 icon = { Icon(screen.icon, contentDescription = screen.title) },
@@ -56,9 +92,7 @@ fun MainScreen() {
                                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                                 onClick = {
                                     navController.navigate(screen.route) {
-                                        popUpTo(navController.graph.findStartDestination().id) {
-                                            saveState = true
-                                        }
+                                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
                                         launchSingleTop = true
                                         restoreState = true
                                     }
@@ -77,38 +111,45 @@ fun MainScreen() {
             }
         }
     ) { innerPadding ->
+
         NavHost(
             navController = navController,
-            startDestination = BottomNavItem.Create.route,
+            startDestination = startDestination,
             modifier = Modifier.padding(innerPadding)
         ) {
+            composable("onboarding") {
+                OnboardingScreen(onOnboardingComplete = {
+                    mainViewModel.setOnboardingComplete()
+                    navController.navigate("settings") { popUpTo("onboarding") { inclusive = true } }
+                })
+            }
+            composable("settings") {
+                SettingsScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onKeySaved = {
+                        navController.navigate(BottomNavItem.Create.route) {
+                            popUpTo(navController.graph.id) { inclusive = true }
+                        }
+                    }
+                )
+            }
             composable(BottomNavItem.Create.route) {
                 InputScreen(
                     onSaved = {
                         navController.navigate(BottomNavItem.Entries.route) {
-                            popUpTo(BottomNavItem.Create.route) {
-                                inclusive = true
-                            }
+                            popUpTo(BottomNavItem.Create.route) { inclusive = true }
                         }
                     },
-                    onNavigateToAuth = {
-                        navController.navigate("auth")
-                    }
+                    onNavigateToAuth = { navController.navigate("auth") }
                 )
             }
             composable(BottomNavItem.Entries.route) {
                 EntryListScreen(
-                    onEntryClick = { entryId ->
-                        navController.navigate("practice/$entryId")
-                    }
+                    onEntryClick = { entryId -> navController.navigate("practice/$entryId") },
                 )
             }
             composable("auth") {
-                AuthScreen(
-                    onAuthSuccess = {
-                        navController.popBackStack()
-                    }
-                )
+                AuthScreen(onAuthSuccess = { navController.popBackStack() })
             }
             composable(
                 route = "practice/{entryId}",

@@ -4,19 +4,22 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fredrickosuala.ncheta.repository.AuthRepository
 import com.fredrickosuala.ncheta.repository.NchetaRepository
+import com.fredrickosuala.ncheta.repository.SettingsRepository
 import com.fredrickosuala.ncheta.services.ContentGenerationService
 
 class AndroidInputViewModel(
     generationService: ContentGenerationService,
     repository: NchetaRepository,
-    authRepository: AuthRepository
+    authRepository: AuthRepository,
+    settingsRepository: SettingsRepository
 ) : ViewModel() {
 
     val inputViewModel = InputViewModel(
         coroutineScope = viewModelScope,
         generationService = generationService,
         repository = repository,
-        authRepository = authRepository
+        authRepository = authRepository,
+        settingsRepository = settingsRepository
     )
 
     override fun onCleared() {

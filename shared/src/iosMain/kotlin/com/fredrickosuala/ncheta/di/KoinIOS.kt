@@ -5,6 +5,7 @@ import com.fredrickosuala.ncheta.features.auth.AuthViewModel
 import com.fredrickosuala.ncheta.features.entrylist.EntryListViewModel
 import com.fredrickosuala.ncheta.features.input.InputViewModel
 import com.fredrickosuala.ncheta.features.practice.PracticeViewModel
+import com.fredrickosuala.ncheta.features.settings.SettingsViewModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.context.startKoin
@@ -23,5 +24,6 @@ class ViewModels : KoinComponent {
     val practiceViewModel: PracticeViewModel by inject()
     val authViewModel: AuthViewModel by inject()
     val onboardingManager: OnboardingManager by inject()
+    val settingsViewModel: SettingsViewModel by inject()
 }
 

@@ -6,6 +6,8 @@ import com.fredrickosuala.ncheta.features.entrylist.AndroidEntryListViewModel
 import com.fredrickosuala.ncheta.features.input.AndroidInputViewModel
 import com.fredrickosuala.ncheta.features.main.MainViewModel
 import com.fredrickosuala.ncheta.features.practice.AndroidPracticeViewModel
+import com.fredrickosuala.ncheta.features.settings.AndroidSettingsViewModel
+import com.fredrickosuala.ncheta.features.settings.SettingsViewModel
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.SharedPreferencesSettings
 import org.koin.android.ext.koin.androidContext
@@ -23,11 +25,14 @@ actual fun platformModule(): Module = module {
 
     viewModel { MainViewModel(onboardingManager = get()) }
 
+    viewModel { AndroidSettingsViewModel(settingsRepository = get()) }
+
    viewModel {
        AndroidInputViewModel(
            generationService = get(),
            repository = get(),
-           authRepository = get()
+           authRepository = get(),
+           settingsRepository = get()
        )
    }
 
