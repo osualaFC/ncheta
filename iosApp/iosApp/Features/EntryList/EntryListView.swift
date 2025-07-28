@@ -13,6 +13,9 @@ struct EntryListView: View {
     
     @StateObject private var viewModel = ObservableEntryListViewModel()
     @State private var entryToPractice: NchetaEntry?
+    @State private var showDeleteAlert = false
+    @State private var entryToDelete: NchetaEntry? = nil
+    @State private var showSettings = false
     
     var body: some View {
         NavigationView {
@@ -27,10 +30,42 @@ struct EntryListView: View {
                             .onTapGesture {
                                 self.entryToPractice = entry
                             }
+                            .swipeActions(edge: .trailing) {
+                                Button(role: .destructive) {
+                                    entryToDelete = entry
+                                    showDeleteAlert = true
+                                } label: {
+                                    Label("Delete", systemImage: "trash.fill")
+                                }
+                            }
                     }
                 }
             }
             .navigationTitle("My Entries")
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        showSettings = true
+                    } label: {
+                        Image(systemName: "gearshape.fill")
+                    }
+                }
+            }
+            .sheet(isPresented: $showSettings) {
+                SettingsView()
+            }
+            .alert(
+                "Delete Entry",
+                isPresented: $showDeleteAlert,
+                presenting: entryToDelete
+            ) { entry in
+                Button("Delete", role: .destructive) {
+                    viewModel.deleteEntry(entryId: entry.id)
+                }
+                Button("Cancel", role: .cancel) {}
+            } message: { entry in
+                Text("Are you sure you want to permanently delete \(entry.title) from your entries ?")
+            }
             .fullScreenCover(item: $entryToPractice) { entry in
                 PracticeView(entryId: entry.id)
             }

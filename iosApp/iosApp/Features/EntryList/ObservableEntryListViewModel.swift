@@ -37,6 +37,10 @@ class ObservableEntryListViewModel: ObservableObject {
         }
     }
     
+    func deleteEntry(entryId: String) {
+           sharedVm.deleteEntry(entryId: entryId)
+       }
+    
     deinit {
         observationTask?.cancel()
         sharedVm.clear()

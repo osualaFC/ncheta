@@ -83,10 +83,6 @@ class ObservableInputViewModel: ObservableObject {
         sharedVm.saveGeneratedContent(title: title)
     }
     
-    func updateUserApiKey(apiKey: String) {
-        sharedVm.updateUserApiKey(apiKey: apiKey)
-    }
-    
     func resetUiState() {
         sharedVm.resetUiState()
     }

@@ -1,6 +1,5 @@
 package com.fredrickosuala.ncheta.repository
 
-import com.russhwolf.settings.ExperimentalSettingsApi
 import com.russhwolf.settings.Settings
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

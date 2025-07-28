@@ -17,8 +17,10 @@ class MainViewModel: ObservableObject {
     private let onboardingManager: OnboardingManager
     
     @Published var hasCompletedOnboarding: Bool? = nil
+    @Published var isReadyToUseApp: Bool? = nil
     
     private var observationTask: Task<Void, Never>?
+    private var readyWatcher: Task<Void, Never>?
 
     init() {
         self.onboardingManager = ViewModels().onboardingManager
@@ -29,16 +31,22 @@ class MainViewModel: ObservableObject {
                 self.hasCompletedOnboarding = hasCompleted as? Bool ?? false
             }
         }
+        
+        self.readyWatcher = Task {
+            for await isReady in self.onboardingManager.isReadyToUseApp {
+                self.isReadyToUseApp = isReady as? Bool ?? false
+            }
+        }
     }
     
     func setOnboardingComplete() {
         Task {
-           
             onboardingManager.setOnboardingCompleted()
         }
     }
     
     deinit {
         observationTask?.cancel()
+        readyWatcher?.cancel()
     }
 }

@@ -21,6 +21,7 @@ struct InputScreenView: View {
     @State private var alertMessage: String = ""
     @State private var newEntryTitle: String = ""
     @State private var showAuthSheet = false
+    @State private var showSettings = false
     
     var body: some View {
         
@@ -69,6 +70,18 @@ struct InputScreenView: View {
             .navigationTitle("NCHETA")
             .navigationBarTitleDisplayMode(.inline)
             .background(AppColors.subtleOffWhite.ignoresSafeArea())
+            .toolbar {
+                ToolbarItem(placement: .primaryAction) {
+                    Button {
+                        showSettings = true
+                    } label: {
+                        Image(systemName: "gearshape.fill")
+                    }
+                }
+            }
+            .sheet(isPresented: $showSettings) {
+                SettingsView()
+            }
             .onReceive(viewModel.$uiState) { newState in
                 
                 if newState is InputUiState.Success {
@@ -97,13 +110,6 @@ struct InputScreenView: View {
     
     private var mainContentView: some View {
         VStack(spacing: 16) {
-            // API Key Field
-            //            SecureField("Gemini API Key (for testing)", text: $apiKeyInput)
-            //                .textFieldStyle(.roundedBorder)
-            //                .onChange(of: apiKeyInput) { newValue in
-            //                    viewModel.updateUserApiKey(apiKey: newValue)
-            //                }
-            
             // Text Editor
             ZStack(alignment: .topLeading) {
                 if viewModel.inputText.isEmpty {
