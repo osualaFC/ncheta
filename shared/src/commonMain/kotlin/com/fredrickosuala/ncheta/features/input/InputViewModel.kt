@@ -85,6 +85,14 @@ class InputViewModel(
         }
     }
 
+    fun showError(errorMessage: String) {
+        _uiState.value = InputUiState.Error(errorMessage)
+    }
+
+    fun startLoading() {
+        _uiState.value = InputUiState.Loading
+    }
+
     fun clearText() {
         _inputText.value = ""
     }

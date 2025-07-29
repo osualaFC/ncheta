@@ -1,14 +1,15 @@
 package com.fredrickosuala.ncheta.android.features.input
 
+import android.net.Uri
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import com.fredrickosuala.ncheta.android.theme.NchetaTheme
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -16,16 +17,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.fredrickosuala.ncheta.android.navigation.AppHeader
 import com.fredrickosuala.ncheta.features.input.AndroidInputViewModel
 import com.fredrickosuala.ncheta.features.input.InputUiState
-import com.fredrickosuala.ncheta.features.input.InputViewModel
+import com.tom_roush.pdfbox.pdmodel.PDDocument
+import com.tom_roush.pdfbox.text.PDFTextStripper
 import kotlinx.coroutines.launch
+import org.apache.poi.xwpf.extractor.XWPFWordExtractor
+import org.apache.poi.xwpf.usermodel.XWPFDocument
 import org.koin.androidx.compose.koinViewModel
+import java.io.BufferedReader
+import java.io.InputStreamReader
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -47,6 +51,64 @@ fun InputScreen(
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    val documentPickerLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.OpenDocument(),
+        onResult = { uri: Uri? ->
+            uri?.let {
+                coroutineScope.launch {
+                    try {
+                        sharedVm.startLoading()
+                        sharedVm.clearText()
+
+                        val mimeType = context.contentResolver.getType(it)
+                        var fileContent: String?
+
+                        when (mimeType) {
+                            "application/pdf" -> {
+                                fileContent = context.contentResolver.openInputStream(it)?.use { inputStream ->
+                                    val document = PDDocument.load(inputStream)
+                                    val pdfStripper = PDFTextStripper()
+                                    pdfStripper.getText(document).also { document.close() }
+                                }
+                            }
+                            "application/vnd.openxmlformats-officedocument.wordprocessingml.document", "application/msword" -> {
+                                fileContent = context.contentResolver.openInputStream(it)?.use { inputStream ->
+                                    val doc = XWPFDocument(inputStream)
+                                    val extractor = XWPFWordExtractor(doc)
+                                    extractor.text.also { extractor.close() }
+                                }
+                            }
+                            "text/plain" -> {
+                                fileContent = context.contentResolver.openInputStream(it)?.use { inputStream ->
+                                    BufferedReader(InputStreamReader(inputStream)).readText()
+                                }
+                            }
+                            else -> {
+                                // Fallback for other text types or unknown types
+                                fileContent = context.contentResolver.openInputStream(it)?.use { inputStream ->
+                                    BufferedReader(InputStreamReader(inputStream)).readText()
+                                }
+                            }
+                        }
+
+                        if (fileContent != null) {
+                            sharedVm.onInputTextChanged(fileContent)
+                        } else {
+                            sharedVm.showError("Could not read content from the selected file.")
+                        }
+
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                        sharedVm.showError("Failed to read file.")
+                    } finally {
+                        sharedVm.resetUiState()
+                    }
+                }
+            }
+        }
+    )
+
 
     LaunchedEffect(uiState) {
         when (val state = uiState) {
@@ -97,6 +159,19 @@ fun InputScreen(
 
             AppHeader("NCHETA", showBackArrow = false) { }
             // Main Text Field
+            OutlinedButton(
+                onClick = {
+                    documentPickerLauncher.launch(arrayOf(
+                        "text/plain",
+                        "application/pdf",
+                        "application/msword",
+                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                    ))
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Upload Document")
+            }
             OutlinedTextField(
                 value = inputText,
                 onValueChange = { sharedVm.onInputTextChanged(it) },
