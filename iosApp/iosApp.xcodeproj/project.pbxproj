@@ -29,6 +29,7 @@
 		0F6986E22DE9C000001A8127 /* AppFonts.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F6986E12DE9C000001A8127 /* AppFonts.swift */; };
 		0F6986E62DE9C4D1001A8127 /* InputScreenView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F6986E52DE9C4D1001A8127 /* InputScreenView.swift */; };
 		0F6986E82DE9CD06001A8127 /* ObservableInputViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F6986E72DE9CD06001A8127 /* ObservableInputViewModel.swift */; };
+		0F7AB9152E3DD49900402F8F /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F7AB9142E3DD49000402F8F /* DocumentPicker.swift */; };
 		0FB9D3812E054BC7002E0EDC /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F03EED22DFD751A00B563D6 /* libsqlite3.tbd */; };
 		0FFCEA6E2E3775DE00CF5BA3 /* ObservableSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FFCEA6D2E3775D300CF5BA3 /* ObservableSettingsViewModel.swift */; };
 		0FFCEA702E3776B700CF5BA3 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FFCEA6F2E3776B400CF5BA3 /* SettingsView.swift */; };
@@ -74,6 +75,7 @@
 		0F6986E12DE9C000001A8127 /* AppFonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFonts.swift; sourceTree = "<group>"; };
 		0F6986E52DE9C4D1001A8127 /* InputScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputScreenView.swift; sourceTree = "<group>"; };
 		0F6986E72DE9CD06001A8127 /* ObservableInputViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableInputViewModel.swift; sourceTree = "<group>"; };
+		0F7AB9142E3DD49000402F8F /* DocumentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
 		0FFCEA6D2E3775D300CF5BA3 /* ObservableSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableSettingsViewModel.swift; sourceTree = "<group>"; };
 		0FFCEA6F2E3776B400CF5BA3 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		0FFCEA712E377AE700CF5BA3 /* AppEntryPointView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppEntryPointView.swift; sourceTree = "<group>"; };
@@ -192,6 +194,7 @@
 		0F6986E42DE9C4BE001A8127 /* Input */ = {
 			isa = PBXGroup;
 			children = (
+				0F7AB9142E3DD49000402F8F /* DocumentPicker.swift */,
 				0FFFF59D2E18D4D300FDD1F9 /* SaveEntryDialogView.swift */,
 				0F6986E52DE9C4D1001A8127 /* InputScreenView.swift */,
 				0F6986E72DE9CD06001A8127 /* ObservableInputViewModel.swift */,
@@ -357,6 +360,7 @@
 				0F06F2622E222482005D9745 /* AppNavigationState.swift in Sources */,
 				0F6986E22DE9C000001A8127 /* AppFonts.swift in Sources */,
 				2152FB042600AC8F00CF470E /* iOSApp.swift in Sources */,
+				0F7AB9152E3DD49900402F8F /* DocumentPicker.swift in Sources */,
 				0F06F2592E211EC2005D9745 /* ObservablePracticeViewModel.swift in Sources */,
 				0F6986E82DE9CD06001A8127 /* ObservableInputViewModel.swift in Sources */,
 				0FFCEA6E2E3775DE00CF5BA3 /* ObservableSettingsViewModel.swift in Sources */,

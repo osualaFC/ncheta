@@ -15,13 +15,13 @@ struct InputScreenView: View {
     @EnvironmentObject private var appNavigationState: AppNavigationState
     
     // State variables to control UI based on ViewModel state
-    @State private var apiKeyInput: String = ""
     @State private var showSaveDialog: Bool = false
     @State private var showConfirmationAlert: Bool = false
     @State private var alertMessage: String = ""
     @State private var newEntryTitle: String = ""
     @State private var showAuthSheet = false
     @State private var showSettings = false
+    @State private var isShowingDocumentPicker = false
     
     var body: some View {
         
@@ -110,6 +110,14 @@ struct InputScreenView: View {
     
     private var mainContentView: some View {
         VStack(spacing: 16) {
+            Button {
+                            isShowingDocumentPicker = true
+                        } label: {
+                            Text("Upload Document")
+                                .frame(maxWidth: .infinity)
+                        }
+                        .buttonStyle(.bordered)
+                        .controlSize(.regular)
             // Text Editor
             ZStack(alignment: .topLeading) {
                 if viewModel.inputText.isEmpty {
@@ -148,6 +156,12 @@ struct InputScreenView: View {
         }
         .padding()
         .onTapGesture { hideKeyboard() }
+        .sheet(isPresented: $isShowingDocumentPicker) {
+            DocumentPicker { extractedText in
+                viewModel.onInputTextChanged(newText: extractedText)
+                isShowingDocumentPicker = false
+            }
+        }
     }
 }
 
