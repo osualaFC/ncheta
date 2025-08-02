@@ -20,4 +20,12 @@ interface ContentGenerationService {
      * The response is expected to be a JSON string, which will be parsed.
      */
     suspend fun generateMcqs(textForMcqs: String, apiKey: String): Result<List<MultipleChoiceQuestion>>
+
+    /**
+     * Extracts text from the given image data using a multimodal model.
+     * @param imageData The platform-agnostic byte array of the image.
+     * @param apiKey The user's API key.
+     * @return A Result containing the extracted text or an error.
+     */
+    suspend fun getTextFromImage(imageData: ByteArray, apiKey: String): Result<String>
 }

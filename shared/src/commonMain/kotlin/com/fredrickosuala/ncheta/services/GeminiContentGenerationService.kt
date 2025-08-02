@@ -3,6 +3,7 @@ package com.fredrickosuala.ncheta.services
 import com.fredrickosuala.ncheta.data.model.*
 import kotlinx.serialization.json.Json
 import dev.shreyaspatil.ai.client.generativeai.GenerativeModel
+import dev.shreyaspatil.ai.client.generativeai.type.content
 import dev.shreyaspatil.ai.client.generativeai.type.generationConfig
 
 
@@ -87,6 +88,34 @@ class GeminiContentGenerationService(
         } catch (e: Exception) {
             println("MCQ Generation Error: ${e.message}")
             return Result.Error(e.message ?: "An unknown error occurred.")
+        }
+    }
+
+    override suspend fun getTextFromImage(
+        imageData: ByteArray,
+        apiKey: String
+    ): Result<String> {
+
+        if (apiKey.isBlank()) return Result.Error("API key is missing.")
+        if (imageData.isEmpty()) return Result.Error("Image data cannot be empty.")
+
+        try {
+
+            val generativeModel = GenerativeModel(modelName = modelName, apiKey = apiKey)
+
+            val prompt = content {
+                image(imageData)
+                text("Extract all the text from this image. If there is no text, respond with an empty string.")
+            }
+
+            val response = generativeModel.generateContent(prompt)
+
+            return response.text?.let { Result.Success(it.trim()) }
+                ?: Result.Error("Failed to extract text from the image.")
+
+        } catch (e: Exception) {
+            println("Gemini Image Error: ${e.message}")
+            return Result.Error(e.message ?: "An unknown error occurred during image processing.")
         }
     }
 }

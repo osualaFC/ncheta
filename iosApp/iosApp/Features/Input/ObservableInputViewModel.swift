@@ -79,6 +79,13 @@ class ObservableInputViewModel: ObservableObject {
         sharedVm.onGenerateQaClicked()
     }
     
+    func getTextFromImage(imageData: [UInt8]) {
+        let kotlinByteArray = KotlinByteArray(size: Int32(imageData.count)) { index in
+            return KotlinByte(value: Int8(bitPattern: imageData[index.intValue]))
+        }
+        sharedVm.getTextFromImage(imageData: kotlinByteArray)
+    }
+    
     func saveGeneratedContent(title: String) {
         sharedVm.saveGeneratedContent(title: title)
     }

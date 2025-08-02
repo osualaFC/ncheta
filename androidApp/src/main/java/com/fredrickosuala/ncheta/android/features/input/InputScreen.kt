@@ -1,8 +1,10 @@
 package com.fredrickosuala.ncheta.android.features.input
 
+import android.graphics.Bitmap
 import android.net.Uri
 import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
@@ -29,6 +31,7 @@ import org.apache.poi.xwpf.extractor.XWPFWordExtractor
 import org.apache.poi.xwpf.usermodel.XWPFDocument
 import org.koin.androidx.compose.koinViewModel
 import java.io.BufferedReader
+import java.io.ByteArrayOutputStream
 import java.io.InputStreamReader
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -39,7 +42,6 @@ fun InputScreen(
     viewModel: AndroidInputViewModel = koinViewModel()
 ) {
 
-
     val sharedVm = viewModel.inputViewModel
 
     val isLoggedIn by sharedVm.isLoggedIn.collectAsState(initial = false)
@@ -47,10 +49,35 @@ fun InputScreen(
     val inputText by sharedVm.inputText.collectAsState()
     val uiState by sharedVm.uiState.collectAsState()
     var showSaveDialog by remember { mutableStateOf(false) }
+    var showImageSourceDialog by remember { mutableStateOf(false) }
 
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    val galleryLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.PickVisualMedia(),
+        onResult = { uri: Uri? ->
+            uri?.let {
+                val imageData = context.contentResolver.openInputStream(it)?.readBytes()
+                if (imageData != null) {
+                    sharedVm.getTextFromImage(imageData)
+                }
+            }
+        }
+    )
+
+    val cameraLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.TakePicturePreview(),
+        onResult = { bitmap: Bitmap? ->
+            bitmap?.let {
+                val stream = ByteArrayOutputStream()
+                it.compress(Bitmap.CompressFormat.JPEG, 100, stream)
+                val imageData = stream.toByteArray()
+                sharedVm.getTextFromImage(imageData)
+            }
+        }
+    )
 
     val documentPickerLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.OpenDocument(),
@@ -145,6 +172,29 @@ fun InputScreen(
         )
     }
 
+    if (showImageSourceDialog) {
+        AlertDialog(
+            onDismissRequest = { showImageSourceDialog = false },
+            title = { Text("Select Image Source") },
+            text = { Text("Choose whether to take a new photo or select one from your gallery.") },
+            confirmButton = {
+                TextButton(onClick = {
+                    cameraLauncher.launch(null)
+                    showImageSourceDialog = false
+                }) { Text("Camera") }
+            },
+            dismissButton = {
+                TextButton(onClick = {
+                    galleryLauncher.launch(
+                        PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                    )
+                    showImageSourceDialog = false
+                }) { Text("Gallery") }
+            }
+        )
+    }
+
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -156,22 +206,27 @@ fun InputScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-
+            //Header
             AppHeader("NCHETA", showBackArrow = false) { }
-            // Main Text Field
-            OutlinedButton(
-                onClick = {
-                    documentPickerLauncher.launch(arrayOf(
-                        "text/plain",
-                        "application/pdf",
-                        "application/msword",
-                        "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-                    ))
-                },
-                modifier = Modifier.fillMaxWidth()
+            //upload buttons
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text("Upload Document")
+                OutlinedButton(
+                    onClick = { documentPickerLauncher.launch(arrayOf("text/plain", "application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")) },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Document")
+                }
+                OutlinedButton(
+                    onClick = { showImageSourceDialog = true },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Text("Image")
+                }
             }
+            // Main Text Field
             OutlinedTextField(
                 value = inputText,
                 onValueChange = { sharedVm.onInputTextChanged(it) },

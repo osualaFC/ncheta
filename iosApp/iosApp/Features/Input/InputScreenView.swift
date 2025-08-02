@@ -22,6 +22,9 @@ struct InputScreenView: View {
     @State private var showAuthSheet = false
     @State private var showSettings = false
     @State private var isShowingDocumentPicker = false
+    @State private var showImagePicker = false
+    @State private var imagePickerSourceType: ImagePicker.SourceType = .photoLibrary
+    @State private var showImageSourceOptions = false
     
     var body: some View {
         
@@ -110,14 +113,25 @@ struct InputScreenView: View {
     
     private var mainContentView: some View {
         VStack(spacing: 16) {
-            Button {
-                            isShowingDocumentPicker = true
-                        } label: {
-                            Text("Upload Document")
-                                .frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(.bordered)
-                        .controlSize(.regular)
+            HStack(spacing: 8) {
+                Button {
+                    isShowingDocumentPicker = true
+                } label: {
+                    Label("Document", systemImage: "doc.text")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.regular)
+                
+                Button {
+                    showImageSourceOptions = true
+                } label: {
+                    Label("Image", systemImage: "photo")
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.bordered)
+                .controlSize(.regular)
+            }
             // Text Editor
             ZStack(alignment: .topLeading) {
                 if viewModel.inputText.isEmpty {
@@ -161,6 +175,24 @@ struct InputScreenView: View {
                 viewModel.onInputTextChanged(newText: extractedText)
                 isShowingDocumentPicker = false
             }
+        }
+        .sheet(isPresented: $showImagePicker) {
+            ImagePicker(sourceType: imagePickerSourceType) { imageData in
+                guard let data = imageData else { return }
+                let byteArray = [UInt8](data)
+                viewModel.getTextFromImage(imageData: byteArray)
+            }
+        }
+        .confirmationDialog("Select Image Source", isPresented: $showImageSourceOptions) {
+            Button("Camera") {
+                self.imagePickerSourceType = .camera
+                self.showImagePicker = true
+            }
+            Button("Photo Library") {
+                self.imagePickerSourceType = .photoLibrary
+                self.showImagePicker = true
+            }
+            Button("Cancel", role: .cancel) {}
         }
     }
 }

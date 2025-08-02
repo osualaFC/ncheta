@@ -85,6 +85,21 @@ class InputViewModel(
         }
     }
 
+    fun getTextFromImage(imageData: ByteArray) {
+        if (!validateInputs(true)) return
+
+        coroutineScope.launch {
+            _uiState.value = InputUiState.Loading
+            when (val result = generationService.getTextFromImage(imageData, userApiKey.value!!)) {
+                is Result.Success -> {
+                    _inputText.value = result.data
+                    _uiState.value = InputUiState.Idle
+                }
+                is Result.Error -> _uiState.value = InputUiState.Error(result.message)
+            }
+        }
+    }
+
     fun showError(errorMessage: String) {
         _uiState.value = InputUiState.Error(errorMessage)
     }
@@ -101,12 +116,14 @@ class InputViewModel(
         _uiState.value = InputUiState.Idle
     }
 
-    private fun validateInputs(): Boolean {
+    private fun validateInputs(checkApiKeyOnly: Boolean = false): Boolean {
         if (userApiKey.value.isNullOrBlank()) {
             _uiState.value = InputUiState.Error("API Key is missing. Please add it in settings.")
             return false
         }
-        if (inputText.value.isBlank()) {
+        if (checkApiKeyOnly) {
+            return true
+        } else if (inputText.value.isBlank()) {
             _uiState.value = InputUiState.Error("Input text cannot be empty.")
             return false
         }
