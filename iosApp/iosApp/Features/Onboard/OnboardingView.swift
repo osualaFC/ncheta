@@ -35,7 +35,7 @@ struct OnboardingView: View {
             HStack(spacing: 8) {
                 ForEach(pages.indices, id: \.self) { index in
                     Circle()
-                        .fill(index == currentPage ? Color.accentColor : Color.gray.opacity(0.5))
+                        .fill(index == currentPage ? Color.black : Color.gray.opacity(0.5))
                         .frame(width: 8, height: 8)
                 }
             }
@@ -56,6 +56,7 @@ struct OnboardingView: View {
                     .frame(maxWidth: .infinity)
             }
             .buttonStyle(.borderedProminent)
+            .tint(.black)
             .controlSize(.large)
             .padding(32)
         }
@@ -72,7 +73,7 @@ private struct OnboardingPageView: View {
                 .resizable()
                 .scaledToFit()
                 .frame(width: 120, height: 120)
-                .foregroundColor(.accentColor)
+                .foregroundColor(.black)
             
             Text(page.title)
                 .font(.largeTitle)
@@ -91,4 +92,12 @@ private struct OnboardingPage: Identifiable {
     let systemImageName: String
     let title: String
     let description: String
+}
+
+struct OnboardingView_Previews: PreviewProvider {
+    static var previews: some View {
+        OnboardingView(
+            onOnboardingComplete: {}
+        )
+    }
 }

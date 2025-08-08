@@ -14,7 +14,6 @@ import androidx.compose.ui.unit.dp
 import androidx.credentials.CredentialManager
 import com.fredrickosuala.ncheta.features.auth.AndroidAuthViewModel
 import com.fredrickosuala.ncheta.features.auth.AuthUiState
-import com.google.android.gms.auth.api.identity.Identity
 import kotlinx.coroutines.launch
 import org.koin.androidx.compose.koinViewModel
 
@@ -119,7 +118,8 @@ fun AuthScreen(
                     },
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 16.dp),
+                        .padding(vertical = 16.dp)
+                        .height(50.dp),
                     enabled = uiState !is AuthUiState.Loading
                 ) {
                     Text(if (isLoginMode) "Login" else "Sign Up")

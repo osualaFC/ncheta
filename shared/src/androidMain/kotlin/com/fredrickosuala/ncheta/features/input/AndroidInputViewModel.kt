@@ -7,7 +7,7 @@ import com.fredrickosuala.ncheta.repository.NchetaRepository
 import com.fredrickosuala.ncheta.repository.SettingsRepository
 import com.fredrickosuala.ncheta.services.ContentGenerationService
 
-class AndroidInputViewModel(
+open class AndroidInputViewModel(
     generationService: ContentGenerationService,
     repository: NchetaRepository,
     authRepository: AuthRepository,

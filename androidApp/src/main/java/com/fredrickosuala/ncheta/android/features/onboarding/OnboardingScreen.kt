@@ -6,10 +6,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountBox
-import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
@@ -17,10 +13,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import kotlinx.coroutines.launch
+import com.fredrickosuala.ncheta.android.R
+import com.fredrickosuala.ncheta.android.theme.NchetaTheme
 
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -30,17 +30,17 @@ fun OnboardingScreen(
 ) {
     val pages = listOf(
         OnboardingPage(
-            icon = Icons.Default.Create,
+            icon = ImageVector.vectorResource(R.drawable.ic_input_anything),
             title = "Input Anything",
             description = "Type, paste, or upload text and documents to get started."
         ),
         OnboardingPage(
-            icon = Icons.Default.Share,
+            icon = ImageVector.vectorResource(R.drawable.ic_generate_content),
             title = "Generate Content",
             description = "Instantly create summaries, flashcards, or multiple-choice questions."
         ),
         OnboardingPage(
-            icon = Icons.Default.AccountBox,
+            icon = ImageVector.vectorResource(R.drawable.ic_save_content),
             title = "Save & Practice",
             description = "Save your generated content and practice to remember it forever."
         )
@@ -113,7 +113,6 @@ private data class OnboardingPage(
     val description: String
 )
 
-
 @Composable
 private fun OnboardingPageLayout(page: OnboardingPage) {
     Column(
@@ -142,4 +141,13 @@ private fun OnboardingPageLayout(page: OnboardingPage) {
             textAlign = TextAlign.Center
         )
     }
+}
+
+@Preview
+@Composable
+fun OnboardingScreenPreview() {
+    NchetaTheme {
+        OnboardingScreen({})
+    }
+
 }

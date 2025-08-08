@@ -33,6 +33,7 @@ struct AuthView: View {
             
             
             TextField("Email", text: $viewModel.email)
+                .padding(.horizontal, 12)
                 .keyboardType(.emailAddress)
                 .textContentType(.emailAddress)
                 .autocapitalization(.none)
@@ -43,51 +44,58 @@ struct AuthView: View {
             
             
             SecureField("Password", text: $viewModel.password)
+                .padding(.horizontal, 12)
                 .textContentType(isLoginMode ? .password : .newPassword)
                 .textFieldStyle(.roundedBorder)
                 .onChange(of: viewModel.password) { newValue in
                     viewModel.onPasswordChanged(newPassword: newValue)
                 }
             
-//            SignInWithAppleButton(
-//                onRequest: { request in
-//                    let nonce = randomNonceString()
-//                    currentNonce = nonce
-//                    request.requestedScopes = [.fullName, .email]
-//                    request.nonce = sha256(nonce)
-//                },
-//                onCompletion: { result in
-//                    switch result {
-//                    case .success(let authorization):
-//                        guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential else { return }
-//                        guard let nonce = currentNonce else { return }
-//                        guard let idTokenData = appleIDCredential.identityToken else { return }
-//                        guard let idToken = String(data: idTokenData, encoding: .utf8) else { return }
-//                        
-//                        // Pass the credentials to the ViewModel
-//                        viewModel.signInWithApple(idToken: idToken, nonce: nonce)
-//                        
-//                    case .failure(let error):
-//                        print("Apple Sign-In Error: \(error.localizedDescription)")
-//                    }
-//                }
-//            )
-//            .signInWithAppleButtonStyle()
-//            .frame(height: 54)
-//            .cornerRadius(8)
+            SignInWithAppleButton(
+                onRequest: { request in
+                    let nonce = randomNonceString()
+                    currentNonce = nonce
+                    request.requestedScopes = [.fullName, .email]
+                    request.nonce = sha256(nonce)
+                },
+                onCompletion: { result in
+                    switch result {
+                    case .success(let authorization):
+                        guard let appleIDCredential = authorization.credential as? ASAuthorizationAppleIDCredential else { return }
+                        guard let nonce = currentNonce else { return }
+                        guard let idTokenData = appleIDCredential.identityToken else { return }
+                        guard let idToken = String(data: idTokenData, encoding: .utf8) else { return }
+                        
+                        // Pass the credentials to the ViewModel
+                        viewModel.signInWithApple(idToken: idToken, nonce: nonce)
+                        
+                    case .failure(let error):
+                        print("Apple Sign-In Error: \(error.localizedDescription)")
+                    }
+                }
+            )
+            .signInWithAppleButtonStyle(.black)
+            .frame(height: 50)
+            .cornerRadius(8)
             
             Button(action: handleGoogleSignIn) {
                 HStack {
-                    Image("google_logo_name")
+                    Image("google_g_logo")
                         .resizable()
-                        .frame(width: 20, height: 20)
+                        .renderingMode(.original)
+                        .frame(width: 24, height: 24)
                     Text("Sign in with Google")
                         .font(.headline)
+                        .foregroundColor(.black)
                 }
-                .frame(maxWidth: .infinity, minHeight: 44)
+                .frame(maxWidth: .infinity, maxHeight: 40)
             }
             .buttonStyle(.bordered)
-            .tint(.primary)
+            .tint(.white)
+            .overlay(
+                  RoundedRectangle(cornerRadius: 10)
+                      .stroke(Color.gray.opacity(0.4), lineWidth: 1)
+              )
             
             Button(action: {
                 if isLoginMode { viewModel.signIn() } else { viewModel.signUp() }
@@ -104,6 +112,7 @@ struct AuthView: View {
             }
             .buttonStyle(.borderedProminent)
             .controlSize(.large)
+            .tint(.black)
             .disabled(isLoading)
             
             Button(isLoginMode ? "Don't have an account? Sign Up" : "Already have an account? Login") {
