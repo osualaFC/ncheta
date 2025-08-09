@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.fredrickosuala.ncheta.android.navigation.AppHeader
@@ -33,6 +34,7 @@ import org.koin.androidx.compose.koinViewModel
 import java.io.BufferedReader
 import java.io.ByteArrayOutputStream
 import java.io.InputStreamReader
+import com.fredrickosuala.ncheta.android.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -176,12 +178,12 @@ fun InputScreen(
         AlertDialog(
             onDismissRequest = { showImageSourceDialog = false },
             title = { Text("Select Image Source") },
-            text = { Text("Choose whether to take a new photo or select one from your gallery.") },
+            text = { Text("Would you like to take a photo or pick one from your gallery?") },
             confirmButton = {
                 TextButton(onClick = {
                     cameraLauncher.launch(null)
                     showImageSourceDialog = false
-                }) { Text("Camera") }
+                }) { Text("Take Photo") }
             },
             dismissButton = {
                 TextButton(onClick = {
@@ -189,7 +191,7 @@ fun InputScreen(
                         PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                     )
                     showImageSourceDialog = false
-                }) { Text("Gallery") }
+                }) { Text("Choose from Gallery") }
             }
         )
     }
@@ -217,13 +219,21 @@ fun InputScreen(
                     onClick = { documentPickerLauncher.launch(arrayOf("text/plain", "application/pdf", "application/vnd.openxmlformats-officedocument.wordprocessingml.document")) },
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("Document")
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_upload_doc),
+                        contentDescription = "Upload Doc",
+                        tint = Color.Black
+                    )
                 }
                 OutlinedButton(
                     onClick = { showImageSourceDialog = true },
                     modifier = Modifier.weight(1f)
                 ) {
-                    Text("Image")
+                    Icon(
+                        painter = painterResource(id = R.drawable.ic_upload_image),
+                        contentDescription = "Upload Image",
+                        tint = Color.Black
+                    )
                 }
             }
             // Main Text Field

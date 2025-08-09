@@ -21,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -77,6 +78,7 @@ fun FlashcardPracticeView(
                         text = cardText,
                         style = MaterialTheme.typography.headlineMedium,
                         textAlign = TextAlign.Center,
+                        color = if (rotation < 90) Color.Black else Color.Green,
                         modifier = Modifier
                             .padding(16.dp)
                             .verticalScroll(rememberScrollState())

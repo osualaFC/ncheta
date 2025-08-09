@@ -117,20 +117,34 @@ struct InputScreenView: View {
                 Button {
                     isShowingDocumentPicker = true
                 } label: {
-                    Label("Document", systemImage: "doc.text")
+                    Label("", systemImage: "document.badge.plus")
                         .frame(maxWidth: .infinity)
+                        .foregroundColor(.black)
+                        
                 }
                 .buttonStyle(.bordered)
+                .tint(Color.white)
                 .controlSize(.regular)
+                .overlay(
+                      RoundedRectangle(cornerRadius: 10)
+                          .stroke(Color.gray.opacity(0.4), lineWidth: 1)
+                  )
                 
                 Button {
                     showImageSourceOptions = true
                 } label: {
-                    Label("Image", systemImage: "photo")
+                    Label("", systemImage: "photo.badge.plus")
                         .frame(maxWidth: .infinity)
+                        .foregroundColor(.black)
+                        
                 }
                 .buttonStyle(.bordered)
+                .tint(Color.white)
                 .controlSize(.regular)
+                .overlay(
+                      RoundedRectangle(cornerRadius: 10)
+                          .stroke(Color.gray.opacity(0.4), lineWidth: 1)
+                  )
             }
             // Text Editor
             ZStack(alignment: .topLeading) {

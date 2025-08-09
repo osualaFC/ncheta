@@ -55,7 +55,7 @@ struct McqPracticeView: View {
                     OptionRowView(
                         text: question?.options[index] as? String ?? "",
                         isSelected: isSelected,
-                        isCorrect: (question?.correctOptionIndex as? Int) == index,
+                        isCorrect: question?.correctOptionIndex ?? 0 == index,
                         isAnswerRevealed: practiceState.isAnswerRevealed
                     )
                     .onTapGesture {
@@ -67,13 +67,11 @@ struct McqPracticeView: View {
             Spacer()
             
             if practiceState.isAnswerRevealed {
-                Button(action: onNextQuestion) {
-                    let isLastQuestion = practiceState.currentQuestionIndex == ((mcqSet?.items.count ?? 0) - 1)
-                    Text(isLastQuestion ? "Finish" : "Next Question")
-                        .frame(maxWidth: .infinity)
-                }
-                .buttonStyle(.borderedProminent)
-                .controlSize(.large)
+                let isLastQuestion = practiceState.currentQuestionIndex == ((mcqSet?.items.count ?? 0) - 1)
+                Button(isLastQuestion ? "Finish" : "Next Question", action: onNextQuestion)
+                    .frame(maxWidth: .infinity)
+                    .buttonStyle(.borderedProminent)
+                    .controlSize(.large)
             } else {
                 Button("Check Answer", action: onCheckAnswer)
                     .frame(maxWidth: .infinity)
@@ -106,19 +104,31 @@ private struct OptionRowView: View {
             RoundedRectangle(cornerRadius: 8)
                 .stroke(borderColor(), lineWidth: 1.5)
         )
+        .padding()
     }
     
 
     private func backgroundColor() -> Color {
-        guard isAnswerRevealed else { return Color(.systemGray6) }
-        return isCorrect ? .green.opacity(0.15) : (isSelected ? .red.opacity(0.15) : Color(.systemGray6))
+        if isAnswerRevealed && isCorrect {
+            return Color.green.opacity(0.2)
+        } else if isAnswerRevealed && isSelected && !isCorrect {
+            return Color.red.opacity(0.2)
+        }  else if isAnswerRevealed && !isSelected && isCorrect {
+            return Color.red.opacity(0.2)
+        } else {
+            return Color(.systemGray6)
+        }
     }
     
   
     private func borderColor() -> Color {
-        guard isSelected else { return .clear }
-        guard isAnswerRevealed else { return .accentColor }
-        return isCorrect ? .green : .red
+        if isAnswerRevealed && isCorrect {
+            return Color.green.opacity(0.8)
+        } else if isAnswerRevealed && isSelected && !isCorrect {
+            return Color.red.opacity(0.8)
+        } else {
+            return Color(.separator)
+        }
     }
 }
 

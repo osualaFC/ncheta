@@ -73,6 +73,7 @@ private struct FlashcardView: View {
                     .font(.title)
                     .multilineTextAlignment(.center)
                     .padding()
+                    .foregroundStyle(isFlipped ? Color.green : Color.black)
                     .scaleEffect(x: isFlipped ? -1 : 1, y: 1)
             }
         }

@@ -8,6 +8,8 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlin.Boolean
+import kotlin.Int
 
 class PracticeViewModel(
     private val coroutineScope: CoroutineScope,
@@ -56,17 +58,20 @@ class PracticeViewModel(
         }
     }
 
-        fun restartPractice() {
-            (_uiState.value as? PracticeUiState.Success)?.let { successState ->
-                _uiState.value = successState.copy(
-                    state = successState.state.copy(
-                        currentCardIndex = 0,
-                        isCardFlipped = false,
-                        isPracticeComplete = false
-                    )
+    fun restartPractice() {
+        (_uiState.value as? PracticeUiState.Success)?.let { successState ->
+            _uiState.value = successState.copy(
+                state = successState.state.copy(
+                    currentCardIndex = 0,
+                    isCardFlipped = false,
+                    isPracticeComplete = false,
+                    currentQuestionIndex = 0,
+                    selectedOptionIndex = null,
+                    isAnswerRevealed = false
                 )
-            }
+            )
         }
+    }
 
 
     fun selectOption(optionIndex: Int) {
