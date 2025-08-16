@@ -70,9 +70,9 @@ kotlin {
             implementation(libs.sqldelight.coroutines.extensions)
             implementation(libs.lifecycle.viewmodel.compose)
             api(libs.koin.core)
-            implementation("dev.gitlive:firebase-auth:1.13.0")
+            implementation(libs.firebase.auth)
             implementation(libs.multiplatformSettings.noArg)
-            implementation("com.russhwolf:multiplatform-settings-coroutines:1.3.0")
+            implementation(libs.multiplatform.settings.coroutines)
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
@@ -84,7 +84,12 @@ kotlin {
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)
-           // implementation(libs.koin.test)
+            implementation(libs.kotlinx.coroutines.test)
+        }
+        androidUnitTest.dependencies {
+            implementation(libs.mockk)
+            implementation(libs.junit)
+            implementation(libs.kotlinx.coroutines.test)
         }
     }
 }

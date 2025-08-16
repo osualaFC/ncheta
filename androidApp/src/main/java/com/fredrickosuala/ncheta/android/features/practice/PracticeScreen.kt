@@ -1,21 +1,16 @@
 package com.fredrickosuala.ncheta.android.features.practice
 
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.fredrickosuala.ncheta.android.navigation.AppHeader
 import com.fredrickosuala.ncheta.data.model.GeneratedContent
 import com.fredrickosuala.ncheta.features.practice.AndroidPracticeViewModel
-import com.fredrickosuala.ncheta.features.practice.PracticeState
 import com.fredrickosuala.ncheta.features.practice.PracticeUiState
 import org.koin.androidx.compose.koinViewModel
 

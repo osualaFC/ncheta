@@ -14,6 +14,8 @@ android {
         targetSdk = 35
         versionCode = 1
         versionName = "1.0"
+        
+        testInstrumentationRunner = "com.fredrickosuala.ncheta.android.CustomTestRunner"
     }
     buildFeatures {
         compose = true
@@ -54,4 +56,19 @@ dependencies {
     implementation(libs.googleid)
     implementation("com.tom-roush:pdfbox-android:2.0.27.0")
     implementation("org.apache.poi:poi-ooxml:5.2.5")
+    
+    // Testing dependencies
+    testImplementation(libs.junit)
+    testImplementation(libs.mockk)
+    testImplementation(libs.kotlinx.coroutines.test)
+    
+    // Android testing dependencies
+    androidTestImplementation(libs.androidx.test.ext.junit)
+    androidTestImplementation(libs.androidx.test.espresso.core)
+    androidTestImplementation(libs.compose.ui.test.junit4)
+    androidTestImplementation(libs.mockk)
+    androidTestImplementation(libs.kotlinx.coroutines.test)
+    
+    // Debug testing dependencies
+    debugImplementation(libs.compose.ui.test.manifest)
 }
