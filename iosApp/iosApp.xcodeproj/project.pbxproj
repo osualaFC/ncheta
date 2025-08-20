@@ -31,6 +31,7 @@
 		0F6986E82DE9CD06001A8127 /* ObservableInputViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F6986E72DE9CD06001A8127 /* ObservableInputViewModel.swift */; };
 		0F7AB9152E3DD49900402F8F /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F7AB9142E3DD49000402F8F /* DocumentPicker.swift */; };
 		0F7AB9172E3DE43B00402F8F /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F7AB9162E3DE43700402F8F /* ImagePicker.swift */; };
+		0F9A7E582E55D9E1007CBCC1 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 0F9A7E572E55D9E1007CBCC1 /* FirebaseFirestore */; };
 		0FB9D3812E054BC7002E0EDC /* libsqlite3.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 0F03EED22DFD751A00B563D6 /* libsqlite3.tbd */; };
 		0FFCEA6E2E3775DE00CF5BA3 /* ObservableSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FFCEA6D2E3775D300CF5BA3 /* ObservableSettingsViewModel.swift */; };
 		0FFCEA702E3776B700CF5BA3 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0FFCEA6F2E3776B400CF5BA3 /* SettingsView.swift */; };
@@ -98,6 +99,7 @@
 				0FB9D3812E054BC7002E0EDC /* libsqlite3.tbd in Frameworks */,
 				0F06F2672E22599D005D9745 /* FirebaseAuth in Frameworks */,
 				0F06F2752E2291AC005D9745 /* GoogleSignIn in Frameworks */,
+				0F9A7E582E55D9E1007CBCC1 /* FirebaseFirestore in Frameworks */,
 				0F06F2772E2291AC005D9745 /* GoogleSignInSwift in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -623,6 +625,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0F06F2732E2291AC005D9745 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignInSwift;
+		};
+		0F9A7E572E55D9E1007CBCC1 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0F06F2652E22599C005D9745 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

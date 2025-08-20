@@ -25,4 +25,10 @@ interface NchetaRepository {
      * Deletes a specific NchetaEntry by its unique ID.
      */
     suspend fun deleteEntryById(id: String)
+
+    /**
+     * Synchronizes local entries with the remote data source.
+     */
+    suspend fun syncRemoteEntries()
+
 }

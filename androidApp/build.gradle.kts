@@ -22,7 +22,12 @@ android {
     }
     packaging {
         resources {
-            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+            excludes += setOf(
+                "META-INF/LICENSE.md",
+                "META-INF/LICENSE-notice.md",
+                "META-INF/NOTICE.md",
+                "/META-INF/{AL2.0,LGPL2.1}"
+            )
         }
     }
     buildTypes {

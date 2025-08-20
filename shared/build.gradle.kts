@@ -71,6 +71,7 @@ kotlin {
             implementation(libs.lifecycle.viewmodel.compose)
             api(libs.koin.core)
             implementation(libs.firebase.auth)
+            implementation("dev.gitlive:firebase-firestore:1.13.0")
             implementation(libs.multiplatformSettings.noArg)
             implementation(libs.multiplatform.settings.coroutines)
         }

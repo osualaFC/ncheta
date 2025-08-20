@@ -28,3 +28,6 @@ UPDATE NchetaEntry SET lastPracticedAt = ? WHERE id = ?;
 
 deleteById:
 DELETE FROM NchetaEntry WHERE id = ?;
+
+deleteAll:
+DELETE FROM NchetaEntry;
