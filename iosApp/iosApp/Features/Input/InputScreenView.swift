@@ -170,6 +170,17 @@ struct InputScreenView: View {
                 )
             }
             .layoutPriority(1)
+            .confirmationDialog("Select Image Source", isPresented: $showImageSourceOptions) {
+                Button("Camera") {
+                    self.imagePickerSourceType = .camera
+                    self.showImagePicker = true
+                }
+                Button("Photo Library") {
+                    self.imagePickerSourceType = .photoLibrary
+                    self.showImagePicker = true
+                }
+                Button("Cancel", role: .cancel) {}
+            }
             
             Text("What would you like to do?")
                 .font(AppFonts.interMedium(size: 18))
@@ -197,17 +208,7 @@ struct InputScreenView: View {
                 viewModel.getTextFromImage(imageData: byteArray)
             }
         }
-        .confirmationDialog("Select Image Source", isPresented: $showImageSourceOptions) {
-            Button("Camera") {
-                self.imagePickerSourceType = .camera
-                self.showImagePicker = true
-            }
-            Button("Photo Library") {
-                self.imagePickerSourceType = .photoLibrary
-                self.showImagePicker = true
-            }
-            Button("Cancel", role: .cancel) {}
-        }
+
     }
 }
 
