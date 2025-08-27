@@ -1,7 +1,7 @@
 package com.fredrickosuala.ncheta.repository
 
 import com.fredrickosuala.ncheta.data.model.NchetaEntry
-import com.fredrickosuala.ncheta.services.SubscriptionManager
+import com.fredrickosuala.ncheta.domain.SubscriptionManager
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.withContext
@@ -16,9 +16,9 @@ class NchetaRepositoryImpl(
     override suspend fun insertEntry(entry: NchetaEntry) {
         localDataSource.insertEntry(entry)
         val currentUser = authRepository.getCurrentUser()
-        if (currentUser != null && subscriptionManager.isPremium) {
-            remoteDataSource.saveEntry(currentUser.uid, entry)
-        }
+//        if (currentUser != null && subscriptionManager.isPremium) {
+//            remoteDataSource.saveEntry(currentUser.uid, entry)
+//        }
     }
 
     override suspend fun getEntryById(id: String): NchetaEntry? {
@@ -39,14 +39,14 @@ class NchetaRepositoryImpl(
 
     override suspend fun syncRemoteEntries() {
         val currentUser = authRepository.getCurrentUser()
-        if (subscriptionManager.isPremium && currentUser != null) {
-            try {
-                val remoteEntries = remoteDataSource.getEntries(currentUser.uid)
-                localDataSource.replaceAll(remoteEntries)
-            } catch (e: Exception) {
-                println("Error syncing remote entries: ${e.message}")
-            }
-        }
+//        if (subscriptionManager.isPremium && currentUser != null) {
+//            try {
+//                val remoteEntries = remoteDataSource.getEntries(currentUser.uid)
+//                localDataSource.replaceAll(remoteEntries)
+//            } catch (e: Exception) {
+//                println("Error syncing remote entries: ${e.message}")
+//            }
+//        }
     }
 
 }

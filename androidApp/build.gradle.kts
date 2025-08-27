@@ -61,6 +61,7 @@ dependencies {
     implementation(libs.googleid)
     implementation("com.tom-roush:pdfbox-android:2.0.27.0")
     implementation("org.apache.poi:poi-ooxml:5.2.5")
+    implementation("com.revenuecat.purchases:purchases:9.3.2")
     
     // Testing dependencies
     testImplementation(libs.junit)

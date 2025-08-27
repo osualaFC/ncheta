@@ -4,6 +4,7 @@ import com.fredrickosuala.ncheta.database.DatabaseDriverFactory
 import com.fredrickosuala.ncheta.features.auth.AuthViewModel
 import com.fredrickosuala.ncheta.features.entrylist.EntryListViewModel
 import com.fredrickosuala.ncheta.features.input.InputViewModel
+import com.fredrickosuala.ncheta.features.paywall.PaywallViewModel
 import com.fredrickosuala.ncheta.features.practice.PracticeViewModel
 import com.fredrickosuala.ncheta.features.settings.SettingsViewModel
 import com.russhwolf.settings.NSUserDefaultsSettings
@@ -60,4 +61,13 @@ actual fun platformModule(): Module = module {
         )
     }
 
+    factory {
+        PaywallViewModel(
+            subscriptionManager = get(),
+            coroutineScope = get()
+        )
+    }
+
 }
+
+internal actual val isAndroid: Boolean = false

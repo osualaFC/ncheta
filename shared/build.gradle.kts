@@ -60,6 +60,13 @@ kotlin {
     }
 
     sourceSets {
+
+        named { it.lowercase().startsWith("ios") }.configureEach {
+            languageSettings {
+                optIn("kotlinx.cinterop.ExperimentalForeignApi")
+            }
+        }
+
         commonMain.dependencies {
             implementation(libs.kotlinx.coroutines.core)
             implementation(libs.kotlinx.datetime)
@@ -74,6 +81,10 @@ kotlin {
             implementation("dev.gitlive:firebase-firestore:1.13.0")
             implementation(libs.multiplatformSettings.noArg)
             implementation(libs.multiplatform.settings.coroutines)
+            implementation(libs.purchases.core)
+            implementation(libs.purchases.datetime)
+//            implementation(libs.purchases.either)
+//            implementation(libs.purchases.result)
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)

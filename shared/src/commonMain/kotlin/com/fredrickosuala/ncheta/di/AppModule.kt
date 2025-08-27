@@ -2,6 +2,8 @@ package com.fredrickosuala.ncheta.di
 
 import com.fredrickosuala.ncheta.database.Database
 import com.fredrickosuala.ncheta.domain.OnboardingManager
+import com.fredrickosuala.ncheta.domain.RevenueCatSubscriptionManager
+import com.fredrickosuala.ncheta.domain.SubscriptionManager
 import com.fredrickosuala.ncheta.repository.AuthRepository
 import com.fredrickosuala.ncheta.repository.FirebaseAuthRepositoryImpl
 import com.fredrickosuala.ncheta.repository.FirestoreRemoteDataSource
@@ -14,7 +16,6 @@ import com.fredrickosuala.ncheta.repository.SettingsRepositoryImpl
 import com.fredrickosuala.ncheta.repository.SqlDelightLocalDataSource
 import com.fredrickosuala.ncheta.services.ContentGenerationService
 import com.fredrickosuala.ncheta.services.GeminiContentGenerationService
-import com.fredrickosuala.ncheta.services.SubscriptionManager
 import org.koin.core.context.startKoin
 import org.koin.core.module.Module
 import org.koin.dsl.KoinAppDeclaration
@@ -27,7 +28,7 @@ val sharedModule = module {
     single { Database(databaseDriverFactory = get()) }
     single<LocalDataSource> { SqlDelightLocalDataSource(database = get()) }
     single<RemoteDataSource> { FirestoreRemoteDataSource() }
-    single { SubscriptionManager() }
+    single<SubscriptionManager> { RevenueCatSubscriptionManager() }
     single<NchetaRepository> {
         NchetaRepositoryImpl(
             localDataSource = get(),
@@ -52,3 +53,5 @@ fun initKoin(appDeclaration: KoinAppDeclaration = {}) {
 
 
 expect fun platformModule(): Module
+
+internal expect val isAndroid: Boolean

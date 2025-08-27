@@ -5,6 +5,7 @@ import com.fredrickosuala.ncheta.features.auth.AndroidAuthViewModel
 import com.fredrickosuala.ncheta.features.entrylist.AndroidEntryListViewModel
 import com.fredrickosuala.ncheta.features.input.AndroidInputViewModel
 import com.fredrickosuala.ncheta.features.main.MainViewModel
+import com.fredrickosuala.ncheta.features.paywall.AndroidPaywallViewModel
 import com.fredrickosuala.ncheta.features.practice.AndroidPracticeViewModel
 import com.fredrickosuala.ncheta.features.settings.AndroidSettingsViewModel
 import com.fredrickosuala.ncheta.features.settings.SettingsViewModel
@@ -53,4 +54,12 @@ actual fun platformModule(): Module = module {
             authRepository = get()
         )
     }
+
+    viewModel {
+        AndroidPaywallViewModel(
+            subscriptionManager = get()
+        )
+    }
 }
+
+internal actual val isAndroid: Boolean = true
