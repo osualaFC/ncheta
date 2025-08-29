@@ -15,7 +15,7 @@ class RevenueCatSubscriptionManager : SubscriptionManager {
         private const val PREMIUM_ENTITLEMENT_ID = "premium"
     }
 
-    override suspend fun isPremium(): Flow<Boolean> = flow {
+    override fun isPremium(): Flow<Boolean> = flow {
         val customerInfo = Purchases.sharedInstance.awaitCustomerInfo()
         emit(customerInfo.entitlements.active[PREMIUM_ENTITLEMENT_ID]?.isActive == true)
     }

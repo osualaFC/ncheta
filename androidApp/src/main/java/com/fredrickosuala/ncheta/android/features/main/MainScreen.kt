@@ -23,6 +23,7 @@ import com.fredrickosuala.ncheta.android.features.auth.AuthScreen
 import com.fredrickosuala.ncheta.android.features.entrylist.EntryListScreen
 import com.fredrickosuala.ncheta.android.features.input.InputScreen
 import com.fredrickosuala.ncheta.android.features.onboarding.OnboardingScreen
+import com.fredrickosuala.ncheta.android.features.paywall.PaywallScreen
 import com.fredrickosuala.ncheta.android.features.practice.PracticeScreen
 import com.fredrickosuala.ncheta.android.features.settings.SettingsScreen
 import com.fredrickosuala.ncheta.android.navigation.BottomNavItem
@@ -59,7 +60,8 @@ fun MainScreen(
         topBar = {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentDestination = navBackStackEntry?.destination
-            val bottomBarRoutes = listOf(BottomNavItem.Create.route, BottomNavItem.Entries.route).toSet()
+            val bottomBarRoutes =
+                listOf(BottomNavItem.Create.route, BottomNavItem.Entries.route).toSet()
             val shouldShowTopBar = currentDestination?.route in bottomBarRoutes
 
             if (shouldShowTopBar) {
@@ -69,7 +71,10 @@ fun MainScreen(
                     },
                     actions = {
                         IconButton(onClick = { navController.navigate("settings") }) {
-                            Icon(imageVector = Icons.Default.Settings, contentDescription = "Settings")
+                            Icon(
+                                imageVector = Icons.Default.Settings,
+                                contentDescription = "Settings"
+                            )
                         }
                     }
                 )
@@ -78,7 +83,10 @@ fun MainScreen(
         bottomBar = {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentDestination = navBackStackEntry?.destination
-            val shouldShowBottomBar = listOf(BottomNavItem.Create.route, BottomNavItem.Entries.route).any { it == currentDestination?.route }
+            val shouldShowBottomBar = listOf(
+                BottomNavItem.Create.route,
+                BottomNavItem.Entries.route
+            ).any { it == currentDestination?.route }
 
             if (shouldShowBottomBar) {
                 Column {
@@ -92,7 +100,9 @@ fun MainScreen(
                                 selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
                                 onClick = {
                                     navController.navigate(screen.route) {
-                                        popUpTo(navController.graph.findStartDestination().id) { saveState = true }
+                                        popUpTo(navController.graph.findStartDestination().id) {
+                                            saveState = true
+                                        }
                                         launchSingleTop = true
                                         restoreState = true
                                     }
@@ -120,7 +130,11 @@ fun MainScreen(
             composable("onboarding") {
                 OnboardingScreen(onOnboardingComplete = {
                     mainViewModel.setOnboardingComplete()
-                    navController.navigate("settings") { popUpTo("onboarding") { inclusive = true } }
+                    navController.navigate("settings") {
+                        popUpTo("onboarding") {
+                            inclusive = true
+                        }
+                    }
                 })
             }
             composable("settings") {
@@ -130,6 +144,17 @@ fun MainScreen(
                         navController.navigate(BottomNavItem.Create.route) {
                             popUpTo(navController.graph.id) { inclusive = true }
                         }
+                    },
+                    onNavigateToPaywall = { navController.navigate("paywall") }
+                )
+            }
+            composable("paywall") {
+                PaywallScreen(
+                    onPurchaseSuccess = {
+                        navController.popBackStack()
+                    },
+                    onNavigateBack = {
+                        navController.popBackStack()
                     }
                 )
             }

@@ -5,7 +5,7 @@ import com.revenuecat.purchases.kmp.Purchases
 import com.revenuecat.purchases.kmp.PurchasesConfiguration
 
 object RevenueCatKeys {
-    const val GOOGLE_API_KEY = "goog_YOUR_REVENUECAT_GOOGLE_API_KEY"
+    const val GOOGLE_API_KEY = "goog_VjazuZOxZZPHNHqgesYedpDWIwO"
     const val APPLE_API_KEY = "appl_YOUR_REVENUECAT_APPLE_API_KEY"
 }
 

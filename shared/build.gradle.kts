@@ -82,9 +82,8 @@ kotlin {
             implementation(libs.multiplatformSettings.noArg)
             implementation(libs.multiplatform.settings.coroutines)
             implementation(libs.purchases.core)
+            implementation(libs.purchases.models)
             implementation(libs.purchases.datetime)
-//            implementation(libs.purchases.either)
-//            implementation(libs.purchases.result)
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
@@ -93,6 +92,8 @@ kotlin {
             implementation(libs.sqldelight.android.driver)
             implementation(libs.koin.android)
             implementation(libs.koin.compose)
+            implementation(libs.purchases.core)
+            implementation(libs.purchases.models)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

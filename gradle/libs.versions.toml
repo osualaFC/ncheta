@@ -27,6 +27,7 @@ androidx-test-ext = "1.1.5"
 androidx-test-espresso = "3.5.1"
 compose-test = "1.8.2"
 purchases-kmp = "2.1.0+16.2.0"
+revenuecat = "8.1.1"
 
 [libraries]
 androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }
@@ -62,7 +63,8 @@ play-services-auth = { module = "com.google.android.gms:play-services-auth", ver
 purchases-core = { module = "com.revenuecat.purchases:purchases-kmp-core", version.ref = "purchases-kmp" }
 purchases-datetime = { module = "com.revenuecat.purchases:purchases-kmp-datetime", version.ref = "purchases-kmp" }
 purchases-either = { module = "com.revenuecat.purchases:purchases-kmp-either", version.ref = "purchases-kmp" }
-purchases-result = { module = "com.revenuecat.purchases:purchases-kmp-result", version.ref = "purchases-kmp" }
+purchases-models = { module = "com.revenuecat.purchases:purchases-kmp-models", version.ref = "purchases-kmp" }
+purchases-coroutines = { module = "com.revenuecat.purchases:purchases-kmp-coroutines-extensions", version.ref = "revenuecat" }
 sqldelight-runtime = { module = "app.cash.sqldelight:runtime", version.ref = "sqldelight" }
 sqldelight-coroutines-extensions = { module = "app.cash.sqldelight:coroutines-extensions", version.ref = "sqldelight" }
 sqldelight-android-driver = { module = "app.cash.sqldelight:android-driver", version.ref = "sqldelight" }

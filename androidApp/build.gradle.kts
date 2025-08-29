@@ -13,7 +13,7 @@ android {
         minSdk = 26
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.0-test-1"
         
         testInstrumentationRunner = "com.fredrickosuala.ncheta.android.CustomTestRunner"
     }
@@ -61,8 +61,8 @@ dependencies {
     implementation(libs.googleid)
     implementation("com.tom-roush:pdfbox-android:2.0.27.0")
     implementation("org.apache.poi:poi-ooxml:5.2.5")
-    implementation("com.revenuecat.purchases:purchases:9.3.2")
-    
+    implementation(libs.purchases.core)
+   //implementation(libs.purchases.coroutines)
     // Testing dependencies
     testImplementation(libs.junit)
     testImplementation(libs.mockk)

@@ -27,6 +27,7 @@ import org.koin.androidx.compose.koinViewModel
 fun SettingsScreen(
     onNavigateBack: () -> Unit,
     onKeySaved: () -> Unit,
+    onNavigateToPaywall: () -> Unit,
     viewModel: AndroidSettingsViewModel = koinViewModel()
 ) {
     val apiKey by viewModel.settingsViewModel.apiKey.collectAsState()
@@ -114,6 +115,12 @@ fun SettingsScreen(
                         }
                 }
             )
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            Button(onClick = onNavigateToPaywall) {
+                Text("Upgrade to Premium")
+            }
         }
     }
 }

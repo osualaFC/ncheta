@@ -2,6 +2,7 @@ package com.fredrickosuala.ncheta.features.paywall
 
 import com.fredrickosuala.ncheta.domain.PurchaseResult
 import com.fredrickosuala.ncheta.domain.SubscriptionManager
+import com.revenuecat.purchases.kmp.models.CustomerInfo
 import com.revenuecat.purchases.kmp.models.Package
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
@@ -45,8 +46,8 @@ class PaywallViewModel(
         }
     }
 
-    fun onPurchaseCompleted(purchaseResult: PurchaseResult) {
-        println("Purchase result: $purchaseResult")
+    fun onPurchaseSuccess() {
+        println("Purchase result: Purchase completed")
     }
 
     fun clear() {

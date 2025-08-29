@@ -14,6 +14,7 @@ struct SettingsView: View {
     @StateObject private var viewModel = ObservableSettingsViewModel()
     @Environment(\.dismiss) private var dismiss
     var isPresentedModally: Bool = true
+    @State private var showPaywall = false
     
     var body: some View {
         let isSaving = viewModel.uiState is SettingsUiState.Saving
@@ -29,6 +30,12 @@ struct SettingsView: View {
                 
                 Section(footer: Text("Ncheta uses the Gemini API for content generation. You must provide your own free developer key.")) {
                     Link("Click here to get your Gemini API key from Google AI Studio", destination: URL(string: "https://aistudio.google.com/app/apikey")!)
+                }
+                
+                Section(header: Text("Premium")) {
+                    Button("Upgrade to Premium") {
+                        showPaywall = true
+                    }
                 }
             }
             .navigationTitle("Settings")
@@ -52,6 +59,16 @@ struct SettingsView: View {
                 if newState is SettingsUiState.Success {
                     dismiss()
                 }
+            }
+            .sheet(isPresented: $showPaywall) {
+                PaywallView(
+                    onPurchaseSuccess: {
+                        showPaywall = false
+                    },
+                    onDismiss: {
+                        showPaywall = false
+                    }
+                )
             }
         }
     }

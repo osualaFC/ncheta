@@ -29,11 +29,14 @@ extension EntryListViewModel: @unchecked @retroactive Sendable {}
 extension PracticeViewModel: @unchecked @retroactive Sendable {}
 extension AuthViewModel: @unchecked @retroactive Sendable {}
 extension SettingsViewModel: @unchecked @retroactive Sendable {}
+extension PaywallViewModel: @unchecked @retroactive Sendable {}
 
 extension NchetaEntry: @unchecked  @retroactive Sendable {}
 extension PracticeUiState: @unchecked @retroactive Sendable {}
 extension AuthUiState: @unchecked @retroactive Sendable {}
 extension SettingsUiState: @unchecked @retroactive Sendable {}
+extension PaywallState: @unchecked @retroactive Sendable {}
+extension PaywallEvent: @unchecked @retroactive Sendable {}
 
 
 extension NchetaEntry: @retroactive Identifiable {}

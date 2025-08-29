@@ -31,6 +31,8 @@
 		0F6986E82DE9CD06001A8127 /* ObservableInputViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F6986E72DE9CD06001A8127 /* ObservableInputViewModel.swift */; };
 		0F78786C2E5F0B98004EA53B /* PurchasesHybridCommon in Frameworks */ = {isa = PBXBuildFile; productRef = 0F78786B2E5F0B98004EA53B /* PurchasesHybridCommon */; };
 		0F78786E2E5F0B98004EA53B /* PurchasesHybridCommonUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0F78786D2E5F0B98004EA53B /* PurchasesHybridCommonUI */; };
+		0F7878712E612369004EA53B /* ObservablePaywallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F7878702E61233B004EA53B /* ObservablePaywallViewModel.swift */; };
+		0F7878732E612909004EA53B /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F7878722E612905004EA53B /* PaywallView.swift */; };
 		0F7AB9152E3DD49900402F8F /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F7AB9142E3DD49000402F8F /* DocumentPicker.swift */; };
 		0F7AB9172E3DE43B00402F8F /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F7AB9162E3DE43700402F8F /* ImagePicker.swift */; };
 		0F9A7E582E55D9E1007CBCC1 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 0F9A7E572E55D9E1007CBCC1 /* FirebaseFirestore */; };
@@ -79,6 +81,8 @@
 		0F6986E12DE9C000001A8127 /* AppFonts.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppFonts.swift; sourceTree = "<group>"; };
 		0F6986E52DE9C4D1001A8127 /* InputScreenView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputScreenView.swift; sourceTree = "<group>"; };
 		0F6986E72DE9CD06001A8127 /* ObservableInputViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableInputViewModel.swift; sourceTree = "<group>"; };
+		0F7878702E61233B004EA53B /* ObservablePaywallViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservablePaywallViewModel.swift; sourceTree = "<group>"; };
+		0F7878722E612905004EA53B /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
 		0F7AB9142E3DD49000402F8F /* DocumentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
 		0F7AB9162E3DE43700402F8F /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		0FFCEA6D2E3775D300CF5BA3 /* ObservableSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableSettingsViewModel.swift; sourceTree = "<group>"; };
@@ -188,6 +192,7 @@
 		0F6986E32DE9C4B4001A8127 /* Features */ = {
 			isa = PBXGroup;
 			children = (
+				0F78786F2E612316004EA53B /* Paywall */,
 				0FFCEA6C2E3775C500CF5BA3 /* Settings */,
 				0F5F01C02E30E5F500AD071C /* Onboard */,
 				0F06F2682E226CDF005D9745 /* Auth */,
@@ -209,6 +214,15 @@
 				0F6986E72DE9CD06001A8127 /* ObservableInputViewModel.swift */,
 			);
 			path = Input;
+			sourceTree = "<group>";
+		};
+		0F78786F2E612316004EA53B /* Paywall */ = {
+			isa = PBXGroup;
+			children = (
+				0F7878722E612905004EA53B /* PaywallView.swift */,
+				0F7878702E61233B004EA53B /* ObservablePaywallViewModel.swift */,
+			);
+			path = Paywall;
 			sourceTree = "<group>";
 		};
 		0FFCEA6C2E3775C500CF5BA3 /* Settings */ = {
@@ -384,9 +398,11 @@
 				0F6986E62DE9C4D1001A8127 /* InputScreenView.swift in Sources */,
 				0FFFF59C2E18D1D100FDD1F9 /* MainView.swift in Sources */,
 				0FFFF59E2E18D4D700FDD1F9 /* SaveEntryDialogView.swift in Sources */,
+				0F7878712E612369004EA53B /* ObservablePaywallViewModel.swift in Sources */,
 				0F5F01BF2E30E50100AD071C /* MainViewModel.swift in Sources */,
 				0F06F25D2E213139005D9745 /* FlashcardPracticeView.swift in Sources */,
 				0F06F2792E22924C005D9745 /* UIApplication+TopViewController.swift in Sources */,
+				0F7878732E612909004EA53B /* PaywallView.swift in Sources */,
 				0F59BB932E18B76B002FA65B /* KMP+Extension.swift in Sources */,
 				0F06F25B2E212353005D9745 /* PracticeView.swift in Sources */,
 				0FFCEA722E377AEA00CF5BA3 /* AppEntryPointView.swift in Sources */,
