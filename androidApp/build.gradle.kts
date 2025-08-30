@@ -12,8 +12,8 @@ android {
         applicationId = "com.fredrickosuala.ncheta.android"
         minSdk = 26
         targetSdk = 35
-        versionCode = 1
-        versionName = "1.0-test-1"
+        versionCode = 4
+        versionName = "1.0-test-4"
         
         testInstrumentationRunner = "com.fredrickosuala.ncheta.android.CustomTestRunner"
     }
@@ -32,7 +32,13 @@ android {
     }
     buildTypes {
         getByName("release") {
-            isMinifyEnabled = false
+            isMinifyEnabled = true
+            isShrinkResources = true
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+
         }
     }
     compileOptions {

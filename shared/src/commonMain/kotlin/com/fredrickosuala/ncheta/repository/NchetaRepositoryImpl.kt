@@ -2,8 +2,13 @@ package com.fredrickosuala.ncheta.repository
 
 import com.fredrickosuala.ncheta.data.model.NchetaEntry
 import com.fredrickosuala.ncheta.domain.SubscriptionManager
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.IO
+import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
 
 class NchetaRepositoryImpl(
@@ -13,12 +18,19 @@ class NchetaRepositoryImpl(
     private val subscriptionManager: SubscriptionManager
 ) : NchetaRepository {
 
+    private val isPremium = subscriptionManager.isPremium()
+        .stateIn(
+            scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
+            started = SharingStarted.Eagerly,
+            initialValue = false
+        )
+
     override suspend fun insertEntry(entry: NchetaEntry) {
         localDataSource.insertEntry(entry)
         val currentUser = authRepository.getCurrentUser()
-//        if (currentUser != null && subscriptionManager.isPremium) {
-//            remoteDataSource.saveEntry(currentUser.uid, entry)
-//        }
+        if (currentUser != null && isPremium.value) {
+            remoteDataSource.saveEntry(currentUser.uid, entry)
+        }
     }
 
     override suspend fun getEntryById(id: String): NchetaEntry? {
@@ -39,14 +51,14 @@ class NchetaRepositoryImpl(
 
     override suspend fun syncRemoteEntries() {
         val currentUser = authRepository.getCurrentUser()
-//        if (subscriptionManager.isPremium && currentUser != null) {
-//            try {
-//                val remoteEntries = remoteDataSource.getEntries(currentUser.uid)
-//                localDataSource.replaceAll(remoteEntries)
-//            } catch (e: Exception) {
-//                println("Error syncing remote entries: ${e.message}")
-//            }
-//        }
+        if (isPremium.value && currentUser != null) {
+            try {
+                val remoteEntries = remoteDataSource.getEntries(currentUser.uid)
+                localDataSource.replaceAll(remoteEntries)
+            } catch (e: Exception) {
+                println("Error syncing remote entries: ${e.message}")
+            }
+        }
     }
 
 }

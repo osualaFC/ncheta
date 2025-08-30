@@ -20,14 +20,10 @@ class RevenueCatSubscriptionManager : SubscriptionManager {
         emit(customerInfo.entitlements.active[PREMIUM_ENTITLEMENT_ID]?.isActive == true)
     }
 
-    override suspend fun getOfferings(): Result<Offering> {
+    override suspend fun getOfferings(): Result<List<Offering>> {
       return try {
-          val offerings = Purchases.sharedInstance.awaitOfferings().current
-          if (offerings != null) {
-              Result.success(offerings)
-          } else {
-              Result.failure(Exception("No current offering found."))
-          }
+          val offeringsList = Purchases.sharedInstance.awaitOfferings().all.values.toList()
+          Result.success(offeringsList)
       } catch (e: Exception) {
           Result.failure(e)
       }

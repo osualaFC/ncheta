@@ -29,9 +29,9 @@ struct PaywallView: View {
                     
                 case let successState as PaywallState.Success:
                     
-                    if let kmpOffering = successState.offering as? shared.ModelsOffering {
+                    if let kmpOffering = successState.offerings as? [shared.ModelsOffering] {
                         PaywallContentView(
-                            offering: kmpOffering,
+                            offerings: kmpOffering,
                             onPurchaseClicked: { kmpPackage in
                                 viewModel.onPurchaseClicked(pkg: kmpPackage)
                             }
@@ -100,37 +100,123 @@ struct PaywallView: View {
         }
     }
     
-    // This sub-view displays the content of the paywall
     private struct PaywallContentView: View {
-        let offering: shared.ModelsOffering
+        
+        let offerings: [shared.ModelsOffering]
         let onPurchaseClicked: (shared.ModelsPackage) -> Void
         
+        // State to keep track of the currently selected package
+        @State private var selectedPackage: shared.ModelsPackage?
+        
         var body: some View {
-            VStack(spacing: 20) {
+            VStack {
+                Spacer()
                 Text("Go Premium")
                     .font(.largeTitle).bold()
                 
-                Text("Unlock cloud sync to access your entries on all your devices.")
-                    .font(.headline)
-                    .multilineTextAlignment(.center)
-                if let packages = offering.availablePackages as? [shared.ModelsPackage] {
-                    ForEach(packages, id: \.identifier) { pkg in
-                        Button {
-                            onPurchaseClicked(pkg)
-                        } label: {
-                            Text("\(pkg.storeProduct.title) - \(pkg.storeProduct.price.formatted)")
-                                .fontWeight(.semibold)
-                                .frame(maxWidth: .infinity)
-                        }
-                        .buttonStyle(.borderedProminent)
-                        .controlSize(.large)
-                    }
+                VStack(alignment: .leading, spacing: 12) {
+                    FeatureItemView(text: "Unlock cloud sync across all devices")
+                    FeatureItemView(text: "Input text via audio")
+                    FeatureItemView(text: "Advanced editing & merging")
+                    FeatureItemView(text: "And lots more coming...")
                 }
+                .padding(.vertical, 32)
+                
+                    HStack(spacing: 16) {
+                        ForEach(offerings, id: \.identifier) { offering in
+                            if let pkg = offering.availablePackages.first {
+                                PackageCardView(
+                                    pkg: pkg,
+                                    isSelected: selectedPackage?.identifier == pkg.identifier,
+                                    onTap: { selectedPackage = pkg }
+                                )
+                            }
+                        }
+                    }
+                
+                Spacer()
+                
+                Button(action: {
+                    if let selectedPackage = selectedPackage {
+                        onPurchaseClicked(selectedPackage)
+                    }
+                }) {
+                    Text("Upgrade Now")
+                        .fontWeight(.semibold)
+                        .frame(maxWidth: .infinity)
+                }
+                .buttonStyle(.borderedProminent)
+                .controlSize(.large)
+                .disabled(selectedPackage == nil)
+                
                 Text("Payments are managed by the App Store.")
                     .font(.caption)
                     .foregroundColor(.secondary)
+                    .padding(.top, 8)
             }
             .padding(32)
+            .onAppear {
+                // Pre-select the first available package
+                selectedPackage = offerings
+                       .compactMap { $0.availablePackages.first }
+                       .first
+            }
+        }
+    }
+}
+
+private struct FeatureItemView: View {
+    let text: String
+    
+    var body: some View {
+        HStack {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundColor(.green)
+            Text(text)
+            Spacer()
+        }
+    }
+}
+
+private struct PackageCardView: View {
+    let pkg: shared.ModelsPackage
+    let isSelected: Bool
+    let onTap: () -> Void
+    
+    var body: some View {
+        
+        cardContent
+            .padding()
+            .frame(maxWidth: .infinity, minHeight: 100)
+            .background(isSelected ? Color.accentColor.opacity(0.1) : Color(.systemGray6))
+            .cornerRadius(12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(isSelected ? Color.accentColor : Color.clear, lineWidth: 2)
+            )
+            .onTapGesture(perform: onTap)
+    }
+    
+    private var cardContent: some View {
+        VStack(spacing: 8) {
+            Text(pkg.packageType.toDisplayString())
+                .font(.headline)
+                .fontWeight(.bold)
+            
+            Text(pkg.storeProduct.price.currencyCode + "" + pkg.storeProduct.price.formatted.replacingOccurrences(of: "$", with: ""))
+                .font(.title).bold()
+        }
+    }
+}
+
+// Helper extension to make package types readable
+extension ModelsPackageType {
+    func toDisplayString() -> String {
+        switch self {
+        case .monthly: return "Monthly"
+        case .annual: return "Annual"
+        case .lifetime: return "Lifetime"
+        default: return "Unknown"
         }
     }
 }

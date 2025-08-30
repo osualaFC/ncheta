@@ -12,5 +12,5 @@ sealed class PaywallEvent {
 sealed class PaywallState {
     data object Loading : PaywallState()
     data class Error(val message: String) : PaywallState()
-    data class Success(val offering: Offering) : PaywallState()
+    data class Success(val offerings: List<Offering>) : PaywallState()
 }

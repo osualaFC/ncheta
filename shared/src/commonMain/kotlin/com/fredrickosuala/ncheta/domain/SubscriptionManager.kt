@@ -15,7 +15,7 @@ interface SubscriptionManager {
     /**
      * Fetches the current offerings (e.g., "monthly", "annual" plans) from RevenueCat.
      */
-    suspend fun getOfferings(): Result<Offering>
+    suspend fun getOfferings(): Result<List<Offering>>
 
     /**
      * Initiates the purchase flow for a specific package.
