@@ -5,6 +5,12 @@ import kotlinx.serialization.json.Json
 import dev.shreyaspatil.ai.client.generativeai.GenerativeModel
 import dev.shreyaspatil.ai.client.generativeai.type.content
 import dev.shreyaspatil.ai.client.generativeai.type.generationConfig
+import io.ktor.client.call.body
+import io.ktor.client.request.post
+import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
+import okio.ByteString.Companion.toByteString
 
 
 class GeminiContentGenerationService(
@@ -12,6 +18,8 @@ class GeminiContentGenerationService(
 ) : ContentGenerationService {
 
     private val json = Json { isLenient = true; ignoreUnknownKeys = true }
+
+    private val httpClient = createHttpClient()
 
     override suspend fun generateSummary(textToSummarize: String, apiKey: String): Result<String> {
         if (textToSummarize.isBlank()) return Result.Error("Input text cannot be empty.")
@@ -118,4 +126,44 @@ class GeminiContentGenerationService(
             return Result.Error(e.message ?: "An unknown error occurred during image processing.")
         }
     }
+
+    override suspend fun transcribeAudio(audioData: ByteArray, mimeType: String, apiKey: String): Result<String> {
+        val baseUrl = "https://generativelanguage.googleapis.com/v1beta/models/$modelName:generateContent"
+
+        try {
+            val encodedAudio = audioData.toByteString().base64()
+
+            val requestBody = GeminiRequest(
+                contents = listOf(
+                    Content(
+                        parts = listOf(
+                            Part(inlineData = InlineData(mimeType = mimeType, data = encodedAudio)),
+                            Part(text = "Transcribe this audio recording. Respond only with the transcribed text.")
+                        )
+                    )
+                )
+            )
+
+
+            val response: GeminiResponse = httpClient.post(baseUrl) {
+                url { parameters.append("key", apiKey) }
+                contentType(ContentType.Application.Json)
+                setBody(requestBody)
+            }.body()
+
+            // 6. Extract the text from the response
+            val text = response.candidates?.firstOrNull()?.text
+            return if (text != null) {
+                Result.Success(text.trim())
+            } else {
+                Result.Error(response.promptFeedback?.blockReason ?: "Failed to transcribe audio.")
+            }
+
+        } catch (e: Exception) {
+            println("Ktor/Gemini Error: ${e.message}")
+            return Result.Error(e.message ?: "An unknown network error occurred.")
+        }
+    }
+
+
 }

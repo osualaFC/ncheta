@@ -1,4 +1,4 @@
-package com.fredrickosuala.ncheta.domain
+package com.fredrickosuala.ncheta.domain.subscription
 
 import com.revenuecat.purchases.kmp.Purchases
 import com.revenuecat.purchases.kmp.ktx.awaitCustomerInfo
@@ -16,13 +16,13 @@ class RevenueCatSubscriptionManager : SubscriptionManager {
     }
 
     override fun isPremium(): Flow<Boolean> = flow {
-        val customerInfo = Purchases.sharedInstance.awaitCustomerInfo()
+        val customerInfo = Purchases.Companion.sharedInstance.awaitCustomerInfo()
         emit(customerInfo.entitlements.active[PREMIUM_ENTITLEMENT_ID]?.isActive == true)
     }
 
     override suspend fun getOfferings(): Result<List<Offering>> {
       return try {
-          val offeringsList = Purchases.sharedInstance.awaitOfferings().all.values.toList()
+          val offeringsList = Purchases.Companion.sharedInstance.awaitOfferings().all.values.toList()
           Result.success(offeringsList)
       } catch (e: Exception) {
           Result.failure(e)
@@ -35,7 +35,7 @@ class RevenueCatSubscriptionManager : SubscriptionManager {
 
     override suspend fun restorePurchases(): Result<Boolean> {
         return try {
-            val customerInfo = Purchases.sharedInstance.awaitCustomerInfo()
+            val customerInfo = Purchases.Companion.sharedInstance.awaitCustomerInfo()
             val wasSuccess = customerInfo.entitlements.all[PREMIUM_ENTITLEMENT_ID]?.isActive == true
             Result.success(wasSuccess)
         } catch (e: Exception) {

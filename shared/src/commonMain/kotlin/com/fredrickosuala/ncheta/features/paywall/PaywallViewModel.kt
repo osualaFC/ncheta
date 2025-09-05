@@ -1,8 +1,6 @@
 package com.fredrickosuala.ncheta.features.paywall
 
-import com.fredrickosuala.ncheta.domain.PurchaseResult
-import com.fredrickosuala.ncheta.domain.SubscriptionManager
-import com.revenuecat.purchases.kmp.models.CustomerInfo
+import com.fredrickosuala.ncheta.domain.subscription.SubscriptionManager
 import com.revenuecat.purchases.kmp.models.Package
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel

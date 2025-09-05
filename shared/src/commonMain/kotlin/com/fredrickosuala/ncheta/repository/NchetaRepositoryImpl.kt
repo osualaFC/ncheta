@@ -1,7 +1,7 @@
 package com.fredrickosuala.ncheta.repository
 
 import com.fredrickosuala.ncheta.data.model.NchetaEntry
-import com.fredrickosuala.ncheta.domain.SubscriptionManager
+import com.fredrickosuala.ncheta.domain.subscription.SubscriptionManager
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.IO

@@ -69,9 +69,6 @@ fun EntryListScreen(
             .padding(bottom = 16.dp)
             .padding(horizontal = 16.dp)
     ) {
-        AppHeader(
-            "My Entries",
-            showBackArrow = false) { }
 
         if (entries.isEmpty()) {
             Box(

@@ -1,5 +1,6 @@
 package com.fredrickosuala.ncheta.di
 
+import android.util.Base64
 import com.fredrickosuala.ncheta.database.DatabaseDriverFactory
 import com.fredrickosuala.ncheta.features.auth.AndroidAuthViewModel
 import com.fredrickosuala.ncheta.features.entrylist.AndroidEntryListViewModel
@@ -33,7 +34,8 @@ actual fun platformModule(): Module = module {
            generationService = get(),
            repository = get(),
            authRepository = get(),
-           settingsRepository = get()
+           settingsRepository = get(),
+           audioRecorder = get()
        )
    }
 

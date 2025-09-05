@@ -2,7 +2,7 @@ package com.fredrickosuala.ncheta.features.paywall
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.fredrickosuala.ncheta.domain.SubscriptionManager
+import com.fredrickosuala.ncheta.domain.subscription.SubscriptionManager
 
 class AndroidPaywallViewModel(
     subscriptionManager: SubscriptionManager,

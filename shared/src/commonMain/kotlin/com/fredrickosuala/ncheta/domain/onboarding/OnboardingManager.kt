@@ -1,4 +1,4 @@
-package com.fredrickosuala.ncheta.domain
+package com.fredrickosuala.ncheta.domain.onboarding
 
 import com.fredrickosuala.ncheta.repository.SettingsRepository
 import com.russhwolf.settings.Settings

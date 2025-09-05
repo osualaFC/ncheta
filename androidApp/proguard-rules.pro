@@ -68,3 +68,6 @@
 -dontwarn java.lang.invoke.*
 # Ignore missing JPEG2000 decoder (PdfBox optional dependency)
 -dontwarn com.gemalto.jp2.**
+# Keep all Ktor classes to prevent issues with the code shrinker (R8/ProGuard)
+-keep class io.ktor.** { *; }
+-dontwarn io.ktor.**

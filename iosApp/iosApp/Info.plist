@@ -69,5 +69,7 @@
 	<string>To capture images of text for processing.</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>To select images of text for processing.</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>To record audio for transcription</string>
 </dict>
 </plist>

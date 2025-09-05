@@ -84,9 +84,15 @@ kotlin {
             implementation(libs.purchases.core)
             implementation(libs.purchases.models)
             implementation(libs.purchases.datetime)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.serialization.kotlinx.json)
+            implementation(libs.okio)
+
         }
         iosMain.dependencies {
             implementation(libs.sqldelight.native.driver)
+            implementation(libs.ktor.client.darwin)
         }
         androidMain.dependencies {
             implementation(libs.sqldelight.android.driver)
@@ -94,6 +100,7 @@ kotlin {
             implementation(libs.koin.compose)
             implementation(libs.purchases.core)
             implementation(libs.purchases.models)
+            implementation(libs.ktor.client.android)
         }
         commonTest.dependencies {
             implementation(libs.kotlin.test)

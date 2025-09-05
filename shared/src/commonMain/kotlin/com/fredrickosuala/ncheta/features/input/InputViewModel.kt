@@ -5,17 +5,22 @@ import com.fredrickosuala.ncheta.data.model.GeneratedContent
 import com.fredrickosuala.ncheta.data.model.InputSourceType
 import com.fredrickosuala.ncheta.data.model.MultipleChoiceQuestion
 import com.fredrickosuala.ncheta.data.model.NchetaEntry
+import com.fredrickosuala.ncheta.domain.audio.AudioRecorderState
+import com.fredrickosuala.ncheta.domain.audio.AudioRecorder
 import com.fredrickosuala.ncheta.repository.AuthRepository
 import com.fredrickosuala.ncheta.repository.NchetaRepository
 import com.fredrickosuala.ncheta.repository.SettingsRepository
 import com.fredrickosuala.ncheta.services.Result
 import com.fredrickosuala.ncheta.services.ContentGenerationService
+import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
@@ -26,7 +31,8 @@ class InputViewModel(
     private val generationService: ContentGenerationService,
     private val repository: NchetaRepository,
     private val authRepository: AuthRepository,
-    private val settingsRepository: SettingsRepository
+    private val settingsRepository: SettingsRepository,
+    private val audioRecorder: AudioRecorder,
 ) {
 
     val isLoggedIn = authRepository.observeAuthState()
@@ -36,6 +42,26 @@ class InputViewModel(
 
     private val _inputText = MutableStateFlow("")
     val inputText: StateFlow<String> = _inputText.asStateFlow()
+
+    val audioRecorderState = audioRecorder.state
+
+    val handler = CoroutineExceptionHandler { _, throwable ->
+        println("Caught coroutine exception: $throwable")
+    }
+
+
+
+    init {
+        // 3. Listen for a successful recording from the recorder
+        coroutineScope.launch {
+            audioRecorder.state.collectLatest { state ->
+                if (state is AudioRecorderState.Success) {
+                    // When recording is successful, send the audio for transcription
+                    transcribeAudio(state.audioData, state.mimeType)
+                }
+            }
+        }
+    }
 
 
     private var userApiKey: StateFlow<String?> = settingsRepository.getApiKey()
@@ -186,8 +212,39 @@ class InputViewModel(
         }
     }
 
+    fun startRecording() {
+        audioRecorder.startRecording()
+    }
+
+    fun stopRecording() {
+        coroutineScope.launch(Dispatchers.Main) {
+            audioRecorder.stopRecording()
+        }
+    }
+
+
+    private fun transcribeAudio(audioData: ByteArray, mimeType: String) {
+        val currentApiKey = userApiKey.value
+        if (currentApiKey.isNullOrBlank()) {
+            _uiState.value = InputUiState.Error("API Key is missing.")
+            return
+        }
+
+        _uiState.value = InputUiState.Loading
+        coroutineScope.launch {
+            when (val result = generationService.transcribeAudio(audioData, mimeType, currentApiKey)) {
+                is Result.Success -> {
+                    _inputText.value = result.data
+                    _uiState.value = InputUiState.Idle
+                }
+                is Result.Error -> _uiState.value = InputUiState.Error(result.message)
+            }
+        }
+    }
+
     fun clear() {
         coroutineScope.cancel()
+        audioRecorder.onCleared()
     }
 }
 

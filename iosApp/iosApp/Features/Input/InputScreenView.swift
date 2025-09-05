@@ -13,6 +13,9 @@ struct InputScreenView: View {
     
     @StateObject private var viewModel = ObservableInputViewModel()
     @EnvironmentObject private var appNavigationState: AppNavigationState
+    var audioState: AudioRecorderState {
+        return viewModel.audioState
+    }
     
     // State variables to control UI based on ViewModel state
     @State private var showSaveDialog: Bool = false
@@ -65,7 +68,7 @@ struct InputScreenView: View {
                             } else {
                                 showAuthSheet = true
                             }
-                           
+                            
                         }
                     )
                 }
@@ -114,85 +117,111 @@ struct InputScreenView: View {
     private var mainContentView: some View {
         VStack(spacing: 16) {
             HStack(spacing: 8) {
+                //doc
                 Button {
                     isShowingDocumentPicker = true
                 } label: {
                     Label("", systemImage: "document.badge.plus")
                         .frame(maxWidth: .infinity)
                         .foregroundColor(.black)
-                        
+                    
                 }
                 .buttonStyle(.bordered)
                 .tint(Color.white)
                 .controlSize(.regular)
                 .overlay(
-                      RoundedRectangle(cornerRadius: 10)
-                          .stroke(Color.gray.opacity(0.4), lineWidth: 1)
-                  )
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.gray.opacity(0.4), lineWidth: 1)
+                )
                 
+                //image
                 Button {
                     showImageSourceOptions = true
                 } label: {
                     Label("", systemImage: "photo.badge.plus")
                         .frame(maxWidth: .infinity)
                         .foregroundColor(.black)
-                        
+                    
                 }
                 .buttonStyle(.bordered)
                 .tint(Color.white)
                 .controlSize(.regular)
                 .overlay(
-                      RoundedRectangle(cornerRadius: 10)
-                          .stroke(Color.gray.opacity(0.4), lineWidth: 1)
-                  )
-            }
-            // Text Editor
-            ZStack(alignment: .topLeading) {
-                if viewModel.inputText.isEmpty {
-                    Text("Enter or extract text here")
-                        .font(AppFonts.bodyLarge)
-                        .foregroundColor(AppColors.mediumGray)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 12)
-                }
-                TextEditor(text: Binding(
-                    get: { viewModel.inputText },
-                    set: { newText in viewModel.onInputTextChanged(newText: newText) }
-                ))
-                .font(AppFonts.bodyLarge)
-                .foregroundColor(AppColors.nearBlack)
-                .frame(maxWidth: .infinity, minHeight: 150, maxHeight: .infinity)
-                .scrollContentBackground(.hidden)
-                .background(Color.clear)
-                .overlay(
-                    RoundedRectangle(cornerRadius: 8)
-                        .stroke(AppColors.lightGray, lineWidth: 1)
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.gray.opacity(0.4), lineWidth: 1)
                 )
-            }
-            .layoutPriority(1)
-            .confirmationDialog("Select Image Source", isPresented: $showImageSourceOptions) {
-                Button("Camera") {
-                    self.imagePickerSourceType = .camera
-                    self.showImagePicker = true
+                
+                //audio
+                Button {
+                    let isRecording = audioState is AudioRecorderState.Recording
+                    if isRecording {
+                        viewModel.stopRecording()
+                    } else {
+                        viewModel.startRecording()
+                    }
+                } label: {
+                    let isRecording = audioState is AudioRecorderState.Recording
+                    Label("", systemImage: isRecording ? "stop.fill" : "mic.fill")
+                        .frame(maxWidth: .infinity)
+                        .foregroundColor(audioState is AudioRecorderState.Recording ? .red : .black)
                 }
-                Button("Photo Library") {
-                    self.imagePickerSourceType = .photoLibrary
-                    self.showImagePicker = true
-                }
-                Button("Cancel", role: .cancel) {}
-            }
+                .buttonStyle(.bordered)
+                .tint(Color.white)
+                .controlSize(.regular)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 10)
+                        .stroke(Color.gray.opacity(0.4), lineWidth: 1)
+                )
+        
             
-            Text("What would you like to do?")
-                .font(AppFonts.interMedium(size: 18))
-                .foregroundColor(AppColors.nearBlack)
-            
-            // Action Buttons
-            VStack(spacing: 10) {
-                ActionButton(text: "Summarize", action: viewModel.onSummarizeClicked)
-                ActionButton(text: "Generate Flashcards", action: viewModel.onGenerateFlashcardsClicked)
-                ActionButton(text: "Generate Q&A", action: viewModel.onGenerateQaClicked)
-            }
         }
+        // Text Editor
+        ZStack(alignment: .topLeading) {
+            if viewModel.inputText.isEmpty {
+                Text("Enter or extract text here")
+                    .font(AppFonts.bodyLarge)
+                    .foregroundColor(AppColors.mediumGray)
+                    .padding(.horizontal, 8)
+                    .padding(.vertical, 12)
+            }
+            TextEditor(text: Binding(
+                get: { viewModel.inputText },
+                set: { newText in viewModel.onInputTextChanged(newText: newText) }
+            ))
+            .font(AppFonts.bodyLarge)
+            .foregroundColor(AppColors.nearBlack)
+            .frame(maxWidth: .infinity, minHeight: 150, maxHeight: .infinity)
+            .scrollContentBackground(.hidden)
+            .background(Color.clear)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(AppColors.lightGray, lineWidth: 1)
+            )
+        }
+        .layoutPriority(1)
+        .confirmationDialog("Select Image Source", isPresented: $showImageSourceOptions) {
+            Button("Camera") {
+                self.imagePickerSourceType = .camera
+                self.showImagePicker = true
+            }
+            Button("Photo Library") {
+                self.imagePickerSourceType = .photoLibrary
+                self.showImagePicker = true
+            }
+            Button("Cancel", role: .cancel) {}
+        }
+        
+        Text("What would you like to do?")
+            .font(AppFonts.interMedium(size: 18))
+            .foregroundColor(AppColors.nearBlack)
+        
+        // Action Buttons
+        VStack(spacing: 10) {
+            ActionButton(text: "Summarize", action: viewModel.onSummarizeClicked)
+            ActionButton(text: "Generate Flashcards", action: viewModel.onGenerateFlashcardsClicked)
+            ActionButton(text: "Generate Q&A", action: viewModel.onGenerateQaClicked)
+        }
+    }
         .padding()
         .onTapGesture { hideKeyboard() }
         .sheet(isPresented: $isShowingDocumentPicker) {
@@ -208,8 +237,8 @@ struct InputScreenView: View {
                 viewModel.getTextFromImage(imageData: byteArray)
             }
         }
-
-    }
+    
+}
 }
 
 @MainActor private func hideKeyboard() {

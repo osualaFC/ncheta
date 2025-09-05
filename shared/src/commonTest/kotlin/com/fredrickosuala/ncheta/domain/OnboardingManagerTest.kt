@@ -2,6 +2,7 @@ package com.fredrickosuala.ncheta.domain
 
 import com.fredrickosuala.ncheta.TestSettings
 import com.fredrickosuala.ncheta.TestSettingsRepository
+import com.fredrickosuala.ncheta.domain.onboarding.OnboardingManager
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.test.runTest
 import kotlin.test.Test

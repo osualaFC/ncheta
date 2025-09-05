@@ -28,4 +28,13 @@ interface ContentGenerationService {
      * @return A Result containing the extracted text or an error.
      */
     suspend fun getTextFromImage(imageData: ByteArray, apiKey: String): Result<String>
+
+    /**
+     * Transcribes text from the given audio data using a multimodal model.
+     * @param audioData The platform-agnostic byte array of the audio.
+     * @param mimeType The MIME type of the audio (e.g., "audio/wav").
+     * @param apiKey The user's API key.
+     * @return A ServiceResult containing the transcribed text or an error.
+     */
+    suspend fun transcribeAudio(audioData: ByteArray, mimeType: String, apiKey: String): Result<String>
 }

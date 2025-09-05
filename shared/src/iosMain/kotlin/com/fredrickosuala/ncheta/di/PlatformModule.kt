@@ -14,6 +14,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import org.koin.core.module.Module
 import org.koin.dsl.module
+import platform.Foundation.*
 
 actual fun platformModule(): Module = module {
 
@@ -36,7 +37,8 @@ actual fun platformModule(): Module = module {
             repository = get(),
             coroutineScope = get(),
             authRepository = get(),
-            settingsRepository = get()
+            settingsRepository = get(),
+            audioRecorder = get()
         )
     }
 

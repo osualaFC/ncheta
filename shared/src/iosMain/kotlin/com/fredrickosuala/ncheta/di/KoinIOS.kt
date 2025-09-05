@@ -1,6 +1,6 @@
 package com.fredrickosuala.ncheta.di
 
-import com.fredrickosuala.ncheta.domain.OnboardingManager
+import com.fredrickosuala.ncheta.domain.onboarding.OnboardingManager
 import com.fredrickosuala.ncheta.features.auth.AuthViewModel
 import com.fredrickosuala.ncheta.features.entrylist.EntryListViewModel
 import com.fredrickosuala.ncheta.features.input.InputViewModel
@@ -10,11 +10,11 @@ import com.fredrickosuala.ncheta.features.paywall.PaywallViewModel
 import org.koin.core.component.KoinComponent
 import org.koin.core.component.inject
 import org.koin.core.context.startKoin
-
+import org.koin.core.module.Module
 
 fun initKoin() {
     startKoin {
-        modules(sharedModule, platformModule())
+        modules(sharedModule, platformModule(), audioRecorderModule())
     }
 }
 

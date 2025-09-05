@@ -26,6 +26,7 @@ import com.fredrickosuala.ncheta.android.features.onboarding.OnboardingScreen
 import com.fredrickosuala.ncheta.android.features.paywall.PaywallScreen
 import com.fredrickosuala.ncheta.android.features.practice.PracticeScreen
 import com.fredrickosuala.ncheta.android.features.settings.SettingsScreen
+import com.fredrickosuala.ncheta.android.navigation.AppHeader
 import com.fredrickosuala.ncheta.android.navigation.BottomNavItem
 import com.fredrickosuala.ncheta.features.main.MainViewModel
 import org.koin.androidx.compose.koinViewModel
@@ -67,7 +68,8 @@ fun MainScreen(
             if (shouldShowTopBar) {
                 TopAppBar(
                     title = {
-                        Text("")
+                        val title = if (currentDestination?.route.orEmpty() == BottomNavItem.Create.route) "Ncheta" else "My Entries"
+                        AppHeader(title, showBackArrow = false) { }
                     },
                     actions = {
                         IconButton(onClick = { navController.navigate("settings") }) {

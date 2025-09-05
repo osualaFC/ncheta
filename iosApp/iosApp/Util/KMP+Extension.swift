@@ -37,6 +37,7 @@ extension AuthUiState: @unchecked @retroactive Sendable {}
 extension SettingsUiState: @unchecked @retroactive Sendable {}
 extension PaywallState: @unchecked @retroactive Sendable {}
 extension PaywallEvent: @unchecked @retroactive Sendable {}
+extension AudioRecorderState: @unchecked @retroactive Sendable {}
 
 
 extension NchetaEntry: @retroactive Identifiable {}

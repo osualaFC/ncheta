@@ -19,6 +19,8 @@ class ObservableInputViewModel: ObservableObject {
     
     @Published var uiState: InputUiState
     
+    @Published var audioState: AudioRecorderState
+    
     @Published var isLoggedInState: Bool = false
     private var authStateWatcherTask: Task<Void, Never>?
     
@@ -29,6 +31,7 @@ class ObservableInputViewModel: ObservableObject {
         
         self.sharedVm = ViewModels().inputViewModel
         self.uiState = sharedVm.uiState.value
+        self.audioState = sharedVm.audioRecorderState.value
         
         
         // Start a Swift Task to observe the inputText Flow (as AsyncSequence)
@@ -54,6 +57,13 @@ class ObservableInputViewModel: ObservableObject {
         self.authStateWatcherTask = Task {
             for await isLoggedIn in self.sharedVm.isLoggedIn {
                 self.isLoggedInState = isLoggedIn as? Bool ?? false
+            }
+        }
+        
+        //Start a Swift Task to observe audioState
+        Task {
+            for await state in self.sharedVm.audioRecorderState {
+                self.audioState = state
             }
         }
         
@@ -96,6 +106,14 @@ class ObservableInputViewModel: ObservableObject {
     
     func clearInputText() {
         sharedVm.clearText()
+    }
+    
+    func startRecording() {
+        sharedVm.startRecording()
+    }
+    
+    func stopRecording() {
+        sharedVm.stopRecording()
     }
     
     deinit {

@@ -1,4 +1,4 @@
-package com.fredrickosuala.ncheta.domain
+package com.fredrickosuala.ncheta.domain.subscription
 
 
 import com.revenuecat.purchases.kmp.models.CustomerInfo

@@ -1,5 +1,6 @@
 package com.fredrickosuala.ncheta.android.features.input
 
+import android.Manifest
 import android.graphics.Bitmap
 import android.net.Uri
 import android.widget.Toast
@@ -9,6 +10,8 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import com.fredrickosuala.ncheta.android.theme.NchetaTheme
 import androidx.compose.foundation.layout.*
@@ -18,11 +21,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.fredrickosuala.ncheta.android.navigation.AppHeader
+import androidx.compose.ui.zIndex
 import com.fredrickosuala.ncheta.features.input.AndroidInputViewModel
 import com.fredrickosuala.ncheta.features.input.InputUiState
 import com.tom_roush.pdfbox.pdmodel.PDDocument
@@ -35,6 +39,7 @@ import java.io.BufferedReader
 import java.io.ByteArrayOutputStream
 import java.io.InputStreamReader
 import com.fredrickosuala.ncheta.android.R
+import com.fredrickosuala.ncheta.domain.audio.AudioRecorderState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,12 +55,25 @@ fun InputScreen(
 
     val inputText by sharedVm.inputText.collectAsState()
     val uiState by sharedVm.uiState.collectAsState()
+    val audioState by sharedVm.audioRecorderState.collectAsState()
+
+    val isRecording = audioState is AudioRecorderState.Recording
+
     var showSaveDialog by remember { mutableStateOf(false) }
     var showImageSourceDialog by remember { mutableStateOf(false) }
-
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
+    val density = LocalDensity.current
     val keyboardController = LocalSoftwareKeyboardController.current
+
+    val permissionLauncher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission(),
+        onResult = { isGranted: Boolean ->
+            if (isGranted) {
+                sharedVm.startRecording()
+            }
+        }
+    )
 
     val galleryLauncher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.PickVisualMedia(),
@@ -208,8 +226,6 @@ fun InputScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            //Header
-            AppHeader("NCHETA", showBackArrow = false) { }
             //upload buttons
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -235,6 +251,24 @@ fun InputScreen(
                         tint = Color.Black
                     )
                 }
+                OutlinedButton(
+                    onClick = {
+                        if (isRecording) {
+                            sharedVm.stopRecording()
+                        } else {
+                            permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+                        }
+                              },
+                    modifier = Modifier.weight(1f)
+                ) {
+                    Icon(
+                        painter = if (isRecording)
+                            painterResource(R.drawable.ic_stop)
+                            else painterResource(id = R.drawable.ic_mic),
+                        contentDescription = "Record Voice",
+                        tint = if (isRecording) MaterialTheme.colorScheme.error else Color.Black
+                    )
+                }
             }
             // Main Text Field
             OutlinedTextField(
@@ -245,7 +279,7 @@ fun InputScreen(
                     .weight(1f),
                 label = { Text("Enter or extract text here") },
                 textStyle = MaterialTheme.typography.bodyLarge,
-                enabled = uiState !is InputUiState.Loading,
+                enabled = uiState !is InputUiState.Loading || audioState !is AudioRecorderState.Recording,
                 colors = OutlinedTextFieldDefaults.colors(
                     focusedBorderColor = MaterialTheme.colorScheme.primary,
                     unfocusedBorderColor = MaterialTheme.colorScheme.outline,
@@ -298,6 +332,20 @@ fun InputScreen(
             ) {
                 CircularProgressIndicator()
             }
+        }
+
+        // --- Voice Recording Indicator ---
+        AnimatedVisibility(
+            visible = audioState == AudioRecorderState.Recording,
+            enter = slideInVertically { with(density) { -40.dp.roundToPx() } } + fadeIn(),
+            exit = slideOutVertically { with(density) { -40.dp.roundToPx() } } + fadeOut(),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+
+                .padding(bottom = 40.dp)
+                .zIndex(1f)
+        ) {
+            VoiceRecordingIndicator(audioState = audioState, context = context)
         }
     }
 }
