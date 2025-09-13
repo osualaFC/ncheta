@@ -1,9 +1,7 @@
 package com.fredrickosuala.ncheta.domain.audio
 
-import kotlinx.cinterop.COpaquePointer
 import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.addressOf
-import kotlinx.cinterop.refTo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
@@ -14,8 +12,8 @@ import platform.Foundation.NSTemporaryDirectory
 import platform.Foundation.NSURL
 import platform.Foundation.dataWithContentsOfURL
 import platform.Foundation.getBytes
-import kotlinx.cinterop.refTo
 import kotlinx.cinterop.usePinned
+import platform.Foundation.NSNumber
 import platform.darwin.dispatch_after
 import platform.darwin.dispatch_get_main_queue
 import platform.darwin.dispatch_time
@@ -37,31 +35,41 @@ actual class AudioRecorder {
                 return@requestRecordPermission
             }
 
-            // Setup file path and recording settings
             val fileName = "audiorecord.m4a"
             val fileUrl = NSURL.fileURLWithPathComponents(listOf(NSTemporaryDirectory(), fileName))!!
             this.audioFileUrl = fileUrl
 
-            val settings: Map<Any?, *> = mapOf(
+            val settings: Map<Any?, Any?> = mapOf(
                 AVFormatIDKey to kAudioFormatMPEG4AAC,
-                AVSampleRateKey to 44100.0,
-                AVNumberOfChannelsKey to 1,
-                AVEncoderAudioQualityKey to AVAudioQuality.MAX_VALUE
+                AVSampleRateKey to NSNumber(double = 44100.0),
+                AVNumberOfChannelsKey to NSNumber(int = 1),
+                AVEncoderAudioQualityKey to NSNumber(int = AVAudioQualityHigh.toInt())
             )
 
             try {
-                audioSession.setCategory(category = AVAudioSessionCategoryPlayAndRecord, mode = AVAudioSessionModeDefault, options = AVAudioSessionCategoryOptions.MAX_VALUE, error = null)
+                audioSession.setCategory(
+                    category = AVAudioSessionCategoryPlayAndRecord,
+                    mode = AVAudioSessionModeDefault,
+                    options = 0u,
+                    error = null
+                )
                 audioSession.setActive(true, null)
 
-                recorder = AVAudioRecorder(fileUrl, settings = settings, error = null).apply {
+                recorder = AVAudioRecorder(fileUrl, settings, null)?.apply {
                     record()
                 }
-                _state.update { AudioRecorderState.Recording }
+
+                if (recorder == null) {
+                    _state.update { AudioRecorderState.Error("Failed to initialize recorder.") }
+                } else {
+                    _state.update { AudioRecorderState.Recording }
+                }
             } catch (e: Exception) {
                 _state.update { AudioRecorderState.Error("Failed to start recording: ${e.message}") }
             }
         }
     }
+
 
     actual fun stopRecording() {
         recorder?.stop()

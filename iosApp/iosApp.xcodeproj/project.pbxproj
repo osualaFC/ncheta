@@ -33,6 +33,8 @@
 		0F78786E2E5F0B98004EA53B /* PurchasesHybridCommonUI in Frameworks */ = {isa = PBXBuildFile; productRef = 0F78786D2E5F0B98004EA53B /* PurchasesHybridCommonUI */; };
 		0F7878712E612369004EA53B /* ObservablePaywallViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F7878702E61233B004EA53B /* ObservablePaywallViewModel.swift */; };
 		0F7878732E612909004EA53B /* PaywallView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F7878722E612905004EA53B /* PaywallView.swift */; };
+		0F7878772E718833004EA53B /* SplashView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F7878762E71882C004EA53B /* SplashView.swift */; };
+		0F7878792E718D1F004EA53B /* Launch Screen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0F7878782E718D1F004EA53B /* Launch Screen.storyboard */; };
 		0F7AB9152E3DD49900402F8F /* DocumentPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F7AB9142E3DD49000402F8F /* DocumentPicker.swift */; };
 		0F7AB9172E3DE43B00402F8F /* ImagePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F7AB9162E3DE43700402F8F /* ImagePicker.swift */; };
 		0F9A7E582E55D9E1007CBCC1 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 0F9A7E572E55D9E1007CBCC1 /* FirebaseFirestore */; };
@@ -83,6 +85,8 @@
 		0F6986E72DE9CD06001A8127 /* ObservableInputViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableInputViewModel.swift; sourceTree = "<group>"; };
 		0F7878702E61233B004EA53B /* ObservablePaywallViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservablePaywallViewModel.swift; sourceTree = "<group>"; };
 		0F7878722E612905004EA53B /* PaywallView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PaywallView.swift; sourceTree = "<group>"; };
+		0F7878762E71882C004EA53B /* SplashView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SplashView.swift; sourceTree = "<group>"; };
+		0F7878782E718D1F004EA53B /* Launch Screen.storyboard */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; path = "Launch Screen.storyboard"; sourceTree = "<group>"; };
 		0F7AB9142E3DD49000402F8F /* DocumentPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DocumentPicker.swift; sourceTree = "<group>"; };
 		0F7AB9162E3DE43700402F8F /* ImagePicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImagePicker.swift; sourceTree = "<group>"; };
 		0FFCEA6D2E3775D300CF5BA3 /* ObservableSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ObservableSettingsViewModel.swift; sourceTree = "<group>"; };
@@ -183,6 +187,8 @@
 		0F6986DE2DE9BF8C001A8127 /* Theme */ = {
 			isa = PBXGroup;
 			children = (
+				0F7878782E718D1F004EA53B /* Launch Screen.storyboard */,
+				0F7878762E71882C004EA53B /* SplashView.swift */,
 				0F6986DF2DE9BFA6001A8127 /* AppColor.swift */,
 				0F6986E12DE9C000001A8127 /* AppFonts.swift */,
 			);
@@ -350,6 +356,7 @@
 			files = (
 				058557D9273AAEEB004C7B11 /* Preview Assets.xcassets in Resources */,
 				058557BB273AAA24004C7B11 /* Assets.xcassets in Resources */,
+				0F7878792E718D1F004EA53B /* Launch Screen.storyboard in Resources */,
 				0F06F27B2E229632005D9745 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -407,6 +414,7 @@
 				0F06F25B2E212353005D9745 /* PracticeView.swift in Sources */,
 				0FFCEA722E377AEA00CF5BA3 /* AppEntryPointView.swift in Sources */,
 				0F03EED12DFD6EE100B563D6 /* KoinHelper.swift in Sources */,
+				0F7878772E718833004EA53B /* SplashView.swift in Sources */,
 				0FFFF59A2E18D18D00FDD1F9 /* EntryListView.swift in Sources */,
 				0F5F01C22E30E62100AD071C /* OnboardingView.swift in Sources */,
 			);
@@ -535,6 +543,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
 				DEVELOPMENT_TEAM = 6R745W9P4G;
@@ -544,6 +553,7 @@
 					"$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				INFOPLIST_FILE = iosApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Nchèta";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -566,6 +576,7 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_INCLUDE_ALL_APPICON_ASSETS = YES;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
 				DEVELOPMENT_TEAM = 6R745W9P4G;
@@ -575,6 +586,7 @@
 					"$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				INFOPLIST_FILE = iosApp/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = "Nchèta";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
 				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
 				LD_RUNPATH_SEARCH_PATHS = (

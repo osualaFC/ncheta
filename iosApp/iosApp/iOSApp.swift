@@ -11,12 +11,21 @@ struct iOSApp: App {
         
         KoinHelper.doInit()
         
-        RevenueCatModuleKt.initializeRevenueCat()
+      //  RevenueCatModuleKt.initializeRevenueCat()
     }
     
-	var body: some Scene {
-		WindowGroup {
-            AppEntryPointView()
-		}
-	}
+    @State private var isActive = false
+
+       var body: some Scene {
+           WindowGroup {
+               Group {
+                   if isActive {
+                       AppEntryPointView()
+                   } else {
+                       SplashView(isActive: $isActive)
+                   }
+               }
+               .animation(.none, value: isActive) // avoid implicit animation for view swap
+           }
+       }
 }

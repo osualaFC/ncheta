@@ -26,6 +26,7 @@ class ObservableInputViewModel: ObservableObject {
     
     private var inputTextWatcherTask: Task<Void, Error>?
     private var uiStateWatcherTask: Task<Void, Never>?
+    private var audioStateWatcherTask: Task<Void, Never>?
     
     init() {
         
@@ -61,8 +62,9 @@ class ObservableInputViewModel: ObservableObject {
         }
         
         //Start a Swift Task to observe audioState
-        Task {
+        self.authStateWatcherTask = Task {
             for await state in self.sharedVm.audioRecorderState {
+                print("\(state)")
                 self.audioState = state
             }
         }
@@ -119,6 +121,7 @@ class ObservableInputViewModel: ObservableObject {
     deinit {
         inputTextWatcherTask?.cancel()
         uiStateWatcherTask?.cancel()
+        authStateWatcherTask?.cancel()
         authStateWatcherTask?.cancel()
         sharedVm.clear()
         print("ObservableInputViewModel: deinit called, observationTask cancelled, sharedViewModel cleared.")

@@ -83,4 +83,6 @@ dependencies {
     
     // Debug testing dependencies
     debugImplementation(libs.compose.ui.test.manifest)
+
+    implementation("androidx.core:core-splashscreen:1.0.1")
 }
