@@ -12,8 +12,8 @@ android {
         applicationId = "com.fredrickosuala.ncheta.android"
         minSdk = 26
         targetSdk = 35
-        versionCode = 7
-        versionName = "1.0-test-7"
+        versionCode = 8
+        versionName = "1.0-test-8"
         
         testInstrumentationRunner = "com.fredrickosuala.ncheta.android.CustomTestRunner"
     }

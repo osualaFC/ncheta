@@ -173,7 +173,8 @@ fun MainScreen(
                             popUpTo(BottomNavItem.Create.route) { inclusive = true }
                         }
                     },
-                    onNavigateToAuth = { navController.navigate("auth") }
+                    onNavigateToAuth = { navController.navigate("auth") },
+                    onNavigateToPayWall = { navController.navigate("paywall") }
                 )
             }
             composable(BottomNavItem.Entries.route) {

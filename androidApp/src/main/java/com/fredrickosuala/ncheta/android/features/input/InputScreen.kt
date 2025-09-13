@@ -46,6 +46,7 @@ import com.fredrickosuala.ncheta.domain.audio.AudioRecorderState
 fun InputScreen(
     onSaved: () -> Unit = {},
     onNavigateToAuth: () -> Unit,
+    onNavigateToPayWall: () -> Unit = {},
     viewModel: AndroidInputViewModel = koinViewModel()
 ) {
 
@@ -167,6 +168,10 @@ fun InputScreen(
             }
             is InputUiState.Success -> {
                 showSaveDialog = true
+            }
+            is InputUiState.PremiumFeatureLocked -> {
+                onNavigateToPayWall()
+                sharedVm.resetUiState()
             }
             else -> {}
         }

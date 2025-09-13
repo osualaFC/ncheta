@@ -7,6 +7,7 @@ import com.fredrickosuala.ncheta.data.model.MultipleChoiceQuestion
 import com.fredrickosuala.ncheta.data.model.NchetaEntry
 import com.fredrickosuala.ncheta.domain.audio.AudioRecorderState
 import com.fredrickosuala.ncheta.domain.audio.AudioRecorder
+import com.fredrickosuala.ncheta.domain.subscription.SubscriptionManager
 import com.fredrickosuala.ncheta.repository.AuthRepository
 import com.fredrickosuala.ncheta.repository.NchetaRepository
 import com.fredrickosuala.ncheta.repository.SettingsRepository
@@ -33,6 +34,7 @@ class InputViewModel(
     private val authRepository: AuthRepository,
     private val settingsRepository: SettingsRepository,
     private val audioRecorder: AudioRecorder,
+    private val subscriptionManager: SubscriptionManager
 ) {
 
     val isLoggedIn = authRepository.observeAuthState()
@@ -45,11 +47,12 @@ class InputViewModel(
 
     val audioRecorderState = audioRecorder.state
 
-    val handler = CoroutineExceptionHandler { _, throwable ->
-        println("Caught coroutine exception: $throwable")
-    }
-
-
+    val isPremium: StateFlow<Boolean> = subscriptionManager.isPremium()
+        .stateIn(
+            coroutineScope,
+            SharingStarted.WhileSubscribed(5000),
+            false
+        )
 
     init {
         // 3. Listen for a successful recording from the recorder
@@ -213,7 +216,11 @@ class InputViewModel(
     }
 
     fun startRecording() {
-        audioRecorder.startRecording()
+        if (isPremium.value) {
+            audioRecorder.startRecording()
+        } else {
+            _uiState.value = InputUiState.PremiumFeatureLocked
+        }
     }
 
     fun stopRecording() {
@@ -252,6 +259,7 @@ sealed class InputUiState {
     data object Idle: InputUiState()
     data object Loading: InputUiState()
     data object Saved: InputUiState()
+    data object PremiumFeatureLocked : InputUiState()
     data class Success(val data: Any): InputUiState()
     data class Error(val message: String): InputUiState()
 }

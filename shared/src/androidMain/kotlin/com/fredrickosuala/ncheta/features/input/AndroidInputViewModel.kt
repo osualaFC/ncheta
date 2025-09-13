@@ -3,6 +3,7 @@ package com.fredrickosuala.ncheta.features.input
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fredrickosuala.ncheta.domain.audio.AudioRecorder
+import com.fredrickosuala.ncheta.domain.subscription.SubscriptionManager
 import com.fredrickosuala.ncheta.repository.AuthRepository
 import com.fredrickosuala.ncheta.repository.NchetaRepository
 import com.fredrickosuala.ncheta.repository.SettingsRepository
@@ -13,7 +14,8 @@ open class AndroidInputViewModel(
     repository: NchetaRepository,
     authRepository: AuthRepository,
     settingsRepository: SettingsRepository,
-    audioRecorder: AudioRecorder
+    audioRecorder: AudioRecorder,
+    subscriptionManager: SubscriptionManager
 ) : ViewModel() {
 
     val inputViewModel = InputViewModel(
@@ -22,7 +24,8 @@ open class AndroidInputViewModel(
         repository = repository,
         authRepository = authRepository,
         settingsRepository = settingsRepository,
-        audioRecorder = audioRecorder
+        audioRecorder = audioRecorder,
+        subscriptionManager = subscriptionManager
     )
 
     override fun onCleared() {

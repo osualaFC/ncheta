@@ -1,6 +1,5 @@
 package com.fredrickosuala.ncheta.di
 
-import android.util.Base64
 import com.fredrickosuala.ncheta.database.DatabaseDriverFactory
 import com.fredrickosuala.ncheta.features.auth.AndroidAuthViewModel
 import com.fredrickosuala.ncheta.features.entrylist.AndroidEntryListViewModel
@@ -9,7 +8,6 @@ import com.fredrickosuala.ncheta.features.main.MainViewModel
 import com.fredrickosuala.ncheta.features.paywall.AndroidPaywallViewModel
 import com.fredrickosuala.ncheta.features.practice.AndroidPracticeViewModel
 import com.fredrickosuala.ncheta.features.settings.AndroidSettingsViewModel
-import com.fredrickosuala.ncheta.features.settings.SettingsViewModel
 import com.russhwolf.settings.Settings
 import com.russhwolf.settings.SharedPreferencesSettings
 import org.koin.android.ext.koin.androidContext
@@ -35,7 +33,8 @@ actual fun platformModule(): Module = module {
            repository = get(),
            authRepository = get(),
            settingsRepository = get(),
-           audioRecorder = get()
+           audioRecorder = get(),
+           subscriptionManager = get()
        )
    }
 
