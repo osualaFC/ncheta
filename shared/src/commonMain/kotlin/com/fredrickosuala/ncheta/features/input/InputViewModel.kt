@@ -38,6 +38,7 @@ class InputViewModel(
 ) {
 
     val isLoggedIn = authRepository.observeAuthState()
+    val currentUser = authRepository.getCurrentUser()
 
     private val _uiState = MutableStateFlow<InputUiState>(InputUiState.Idle)
     val uiState: StateFlow<InputUiState> = _uiState.asStateFlow()
@@ -47,7 +48,7 @@ class InputViewModel(
 
     val audioRecorderState = audioRecorder.state
 
-    val isPremium: StateFlow<Boolean> = subscriptionManager.isPremium()
+    val isPremium: StateFlow<Boolean> = subscriptionManager.isPremium(currentUser?.uid ?: "")
         .stateIn(
             coroutineScope,
             SharingStarted.WhileSubscribed(5000),

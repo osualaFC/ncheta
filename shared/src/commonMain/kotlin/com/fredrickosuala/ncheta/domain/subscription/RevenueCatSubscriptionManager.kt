@@ -20,13 +20,27 @@ class RevenueCatSubscriptionManager : SubscriptionManager {
         private const val POLL_INTERVAL_MS = 5_000L
     }
 
-    override fun isPremium(): Flow<Boolean> = flow {
+    override fun isPremium(userId: String): Flow<Boolean> = flow {
+
+        if (userId.isBlank()) {
+            emit(false)
+            return@flow
+        }
+
+        val loginResult = try {
+            Purchases.sharedInstance.awaitLogIn(userId)
+        } catch (e: Exception) {
+            emit(false)
+            return@flow
+        }
+
         var lastValue: Boolean? = null
+
         while (true) {
             try {
+                // Use getCustomerInfo instead of logging in again
                 val customerInfo = Purchases.sharedInstance.awaitCustomerInfo()
-                val isActive =
-                    customerInfo.entitlements.active[PREMIUM_ENTITLEMENT_ID]?.isActive == true
+                val isActive = customerInfo.entitlements[PREMIUM_ENTITLEMENT_ID]?.isActive == true
 
                 if (lastValue != isActive) {
                     emit(isActive)

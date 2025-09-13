@@ -39,7 +39,11 @@ class FirebaseAuthRepositoryImpl(
     override suspend fun signUp(email: String, password: String): AuthResult {
         return try {
             val result = firebaseAuth.createUserWithEmailAndPassword(email, password)
-            subscriptionManager.logIn(result.user?.uid.orEmpty())
+            val userId = result.user?.uid
+                ?: return AuthResult.Error("User ID is null after sign-in.")
+
+            subscriptionManager.logIn(userId)
+            subscriptionManager.restorePurchases()
             AuthResult.Success
         } catch (e: Exception) {
             AuthResult.Error(e.message ?: "An unknown signup error occurred.")
@@ -49,7 +53,12 @@ class FirebaseAuthRepositoryImpl(
     override suspend fun signIn(email: String, password: String): AuthResult {
         return try {
             val result = firebaseAuth.signInWithEmailAndPassword(email, password)
-            subscriptionManager.logIn(result.user?.uid.orEmpty())
+            val userId = result.user?.uid
+                ?: return AuthResult.Error("User ID is null after sign-in.")
+
+            subscriptionManager.logIn(userId)
+            subscriptionManager.restorePurchases()
+
             AuthResult.Success
         } catch (e: Exception) {
             AuthResult.Error(e.message ?: "An unknown sign-in error occurred.")
@@ -69,7 +78,12 @@ class FirebaseAuthRepositoryImpl(
         return try {
             val credential = GoogleAuthProvider.credential(idToken = idToken, accessToken = null)
             val result = firebaseAuth.signInWithCredential(credential)
-            subscriptionManager.logIn(result.user?.uid.orEmpty())
+            val userId = result.user?.uid
+                ?: return AuthResult.Error("User ID is null after Google Sign-In.")
+
+            subscriptionManager.logIn(userId)
+            subscriptionManager.restorePurchases()
+
             AuthResult.Success
         } catch (e: Exception) {
             AuthResult.Error(e.message ?: "An unknown Google Sign-In error occurred.")
@@ -84,7 +98,11 @@ class FirebaseAuthRepositoryImpl(
                 rawNonce = nonce
             )
             val result = firebaseAuth.signInWithCredential(credential)
-            subscriptionManager.logIn(result.user?.uid.orEmpty())
+            val userId = result.user?.uid
+                ?: return AuthResult.Error("User ID is null after Google Sign-In.")
+
+            subscriptionManager.logIn(userId)
+            subscriptionManager.restorePurchases()
             AuthResult.Success
         } catch (e: Exception) {
             AuthResult.Error(e.message ?: "An unknown Apple Sign-In error occurred.")

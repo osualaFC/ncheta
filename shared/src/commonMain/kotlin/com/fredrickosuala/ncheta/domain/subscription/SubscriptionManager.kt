@@ -10,7 +10,7 @@ interface SubscriptionManager {
     /**
      * A flow that emits true if the user has an active "premium" entitlement.
      */
-    fun isPremium(): Flow<Boolean>
+    fun isPremium(userId: String): Flow<Boolean>
 
     /**
      * Fetches the current offerings (e.g., "monthly", "annual" plans) from RevenueCat.
