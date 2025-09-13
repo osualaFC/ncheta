@@ -18,7 +18,9 @@ class NchetaRepositoryImpl(
     private val subscriptionManager: SubscriptionManager
 ) : NchetaRepository {
 
-    private val isPremium = subscriptionManager.isPremium()
+    val currentUser = authRepository.getCurrentUser()
+
+    private val isPremium = subscriptionManager.isPremium(currentUser?.uid.orEmpty())
         .stateIn(
             scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
             started = SharingStarted.Eagerly,
