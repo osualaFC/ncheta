@@ -38,7 +38,7 @@ val sharedModule = module {
             subscriptionManager = get()
         )
     }
-    single<AuthRepository> { FirebaseAuthRepositoryImpl() }
+    single<AuthRepository> { FirebaseAuthRepositoryImpl(subscriptionManager = get()) }
     single { OnboardingManager(settings = get(), settingsRepository = get()) }
     single<SettingsRepository> { SettingsRepositoryImpl(settings = get()) }
 

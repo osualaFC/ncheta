@@ -27,6 +27,9 @@ interface SubscriptionManager {
      * Restores a user's previous purchases.
      */
     suspend fun restorePurchases(): Result<Boolean>
+
+    suspend fun logIn(userId: String): Result<Boolean>
+    suspend fun logOut(): Result<Boolean>
 }
 
 sealed class PurchaseResult {

@@ -2,6 +2,8 @@ package com.fredrickosuala.ncheta.domain.subscription
 
 import com.revenuecat.purchases.kmp.Purchases
 import com.revenuecat.purchases.kmp.ktx.awaitCustomerInfo
+import com.revenuecat.purchases.kmp.ktx.awaitLogIn
+import com.revenuecat.purchases.kmp.ktx.awaitLogOut
 import com.revenuecat.purchases.kmp.ktx.awaitOfferings
 import com.revenuecat.purchases.kmp.models.Offering
 import com.revenuecat.purchases.kmp.models.Package
@@ -62,5 +64,20 @@ class RevenueCatSubscriptionManager : SubscriptionManager {
         } catch (e: Exception) {
             Result.failure(e)
         }
+    }
+
+    override suspend fun logIn(userId: String): Result<Boolean> = try {
+        val logInResult = Purchases.sharedInstance.awaitLogIn(userId)
+        restorePurchases()
+        Result.success(logInResult.created)
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+
+    override suspend fun logOut(): Result<Boolean> = try {
+        Purchases.sharedInstance.awaitLogOut()
+        Result.success(true)
+    } catch (e: Exception) {
+        Result.failure(e)
     }
 }

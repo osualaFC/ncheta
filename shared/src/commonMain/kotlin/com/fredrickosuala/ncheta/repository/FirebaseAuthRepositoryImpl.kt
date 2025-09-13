@@ -1,5 +1,6 @@
 package com.fredrickosuala.ncheta.repository
 
+import com.fredrickosuala.ncheta.domain.subscription.SubscriptionManager
 import dev.gitlive.firebase.Firebase
 import dev.gitlive.firebase.auth.GoogleAuthProvider
 import dev.gitlive.firebase.auth.OAuthProvider
@@ -11,7 +12,9 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 
-class FirebaseAuthRepositoryImpl : AuthRepository {
+class FirebaseAuthRepositoryImpl(
+    val subscriptionManager: SubscriptionManager
+) : AuthRepository {
 
     private val firebaseAuth = Firebase.auth
 
@@ -35,7 +38,8 @@ class FirebaseAuthRepositoryImpl : AuthRepository {
 
     override suspend fun signUp(email: String, password: String): AuthResult {
         return try {
-            firebaseAuth.createUserWithEmailAndPassword(email, password)
+            val result = firebaseAuth.createUserWithEmailAndPassword(email, password)
+            subscriptionManager.logIn(result.user?.uid.orEmpty())
             AuthResult.Success
         } catch (e: Exception) {
             AuthResult.Error(e.message ?: "An unknown signup error occurred.")
@@ -44,7 +48,8 @@ class FirebaseAuthRepositoryImpl : AuthRepository {
 
     override suspend fun signIn(email: String, password: String): AuthResult {
         return try {
-            firebaseAuth.signInWithEmailAndPassword(email, password)
+            val result = firebaseAuth.signInWithEmailAndPassword(email, password)
+            subscriptionManager.logIn(result.user?.uid.orEmpty())
             AuthResult.Success
         } catch (e: Exception) {
             AuthResult.Error(e.message ?: "An unknown sign-in error occurred.")
@@ -54,6 +59,7 @@ class FirebaseAuthRepositoryImpl : AuthRepository {
     override suspend fun signOut() {
         try {
             firebaseAuth.signOut()
+            subscriptionManager.logOut()
         } catch (e: Exception) {
             println("Error signing out: ${e.message}")
         }
@@ -62,7 +68,8 @@ class FirebaseAuthRepositoryImpl : AuthRepository {
     override suspend fun signInWithGoogle(idToken: String): AuthResult {
         return try {
             val credential = GoogleAuthProvider.credential(idToken = idToken, accessToken = null)
-            firebaseAuth.signInWithCredential(credential)
+            val result = firebaseAuth.signInWithCredential(credential)
+            subscriptionManager.logIn(result.user?.uid.orEmpty())
             AuthResult.Success
         } catch (e: Exception) {
             AuthResult.Error(e.message ?: "An unknown Google Sign-In error occurred.")
@@ -76,7 +83,8 @@ class FirebaseAuthRepositoryImpl : AuthRepository {
                 idToken = idToken,
                 rawNonce = nonce
             )
-            firebaseAuth.signInWithCredential(credential)
+            val result = firebaseAuth.signInWithCredential(credential)
+            subscriptionManager.logIn(result.user?.uid.orEmpty())
             AuthResult.Success
         } catch (e: Exception) {
             AuthResult.Error(e.message ?: "An unknown Apple Sign-In error occurred.")
