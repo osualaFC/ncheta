@@ -1,5 +1,7 @@
 [versions]
 agp = "8.11.0"
+appUpdateKtx = "2.1.0"
+coreSplashscreen = "1.0.1"
 credentials = "1.5.0"
 firebaseAuth = "1.13.0"
 generativeaiGoogle = "0.9.0-1.1.0"
@@ -32,11 +34,13 @@ okio = "3.9.0"
 revenuecat = "8.1.1"
 
 [libraries]
+androidx-core-splashscreen = { module = "androidx.core:core-splashscreen", version.ref = "coreSplashscreen" }
 androidx-credentials = { module = "androidx.credentials:credentials", version.ref = "credentials" }
 androidx-credentials-play-services-auth = { module = "androidx.credentials:credentials-play-services-auth", version.ref = "credentials" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelKtx" }
 androidx-lifecycle-viewmodel-ktx = { module = "androidx.lifecycle:lifecycle-viewmodel-ktx", version.ref = "lifecycleViewmodelKtx" }
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
+app-update-ktx = { module = "com.google.android.play:app-update-ktx", version.ref = "appUpdateKtx" }
 firebase-auth = { module = "dev.gitlive:firebase-auth", version.ref = "firebaseAuth" }
 generativeai-google = { module = "dev.shreyaspatil.generativeai:generativeai-google", version.ref = "generativeaiGoogle" }
 googleid = { module = "com.google.android.libraries.identity.googleid:googleid", version.ref = "googleid" }

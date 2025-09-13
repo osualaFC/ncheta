@@ -12,8 +12,8 @@ android {
         applicationId = "com.fredrickosuala.ncheta.android"
         minSdk = 26
         targetSdk = 35
-        versionCode = 4
-        versionName = "1.0-test-4"
+        versionCode = 7
+        versionName = "1.0-test-7"
         
         testInstrumentationRunner = "com.fredrickosuala.ncheta.android.CustomTestRunner"
     }
@@ -84,5 +84,6 @@ dependencies {
     // Debug testing dependencies
     debugImplementation(libs.compose.ui.test.manifest)
 
-    implementation("androidx.core:core-splashscreen:1.0.1")
+    implementation(libs.androidx.core.splashscreen)
+    implementation(libs.app.update.ktx)
 }

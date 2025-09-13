@@ -19,6 +19,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.fredrickosuala.ncheta.android.InAppUpdateManager
 import com.fredrickosuala.ncheta.android.features.auth.AuthScreen
 import com.fredrickosuala.ncheta.android.features.entrylist.EntryListScreen
 import com.fredrickosuala.ncheta.android.features.input.InputScreen
@@ -40,6 +41,7 @@ fun MainScreen(
     val hasCompletedOnboarding by mainViewModel.hasCompletedOnboarding.collectAsState()
     val isReadyToUseApp by mainViewModel.isReadyToUseApp.collectAsState()
     val navController = rememberNavController()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     val startDestination = remember(hasCompletedOnboarding, isReadyToUseApp) {
         when {
@@ -57,7 +59,11 @@ fun MainScreen(
         return
     }
 
+    //InApp update
+    InAppUpdateManager(snackbarHostState = snackbarHostState)
+
     Scaffold(
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentDestination = navBackStackEntry?.destination

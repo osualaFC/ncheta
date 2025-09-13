@@ -14,6 +14,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "378616500590-5ii0ghk86qtgguitc5lq0297mccs5ej2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.fredrickosuala.ncheta.android",
+            "certificate_hash": "5106cb00f4eef5fab605581a4c47fc3178d3f30d"
+          }
+        },
+        {
           "client_id": "378616500590-nbafoe3396pj2q0scj5fl6dtau7r40r1.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
