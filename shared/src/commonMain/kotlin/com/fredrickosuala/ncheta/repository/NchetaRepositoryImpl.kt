@@ -2,13 +2,8 @@ package com.fredrickosuala.ncheta.repository
 
 import com.fredrickosuala.ncheta.data.model.NchetaEntry
 import com.fredrickosuala.ncheta.domain.subscription.SubscriptionManager
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.IO
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.withContext
 
 class NchetaRepositoryImpl(
@@ -18,19 +13,10 @@ class NchetaRepositoryImpl(
     private val subscriptionManager: SubscriptionManager
 ) : NchetaRepository {
 
-    val currentUser = authRepository.getCurrentUser()
-
-    private val isPremium = subscriptionManager.isPremium(currentUser?.uid.orEmpty())
-        .stateIn(
-            scope = CoroutineScope(Dispatchers.IO + SupervisorJob()),
-            started = SharingStarted.Eagerly,
-            initialValue = false
-        )
-
-    override suspend fun insertEntry(entry: NchetaEntry) {
+    override suspend fun insertEntry(entry: NchetaEntry, isPremium: Boolean) {
         localDataSource.insertEntry(entry)
         val currentUser = authRepository.getCurrentUser()
-        if (currentUser != null && isPremium.value) {
+        if (currentUser != null && isPremium) {
             remoteDataSource.saveEntry(currentUser.uid, entry)
         }
     }
@@ -51,9 +37,9 @@ class NchetaRepositoryImpl(
         }
     }
 
-    override suspend fun syncRemoteEntries() {
+    override suspend fun syncRemoteEntries(isPremium: Boolean) {
         val currentUser = authRepository.getCurrentUser()
-        if (isPremium.value && currentUser != null) {
+        if (isPremium && currentUser != null) {
             try {
                 val remoteEntries = remoteDataSource.getEntries(currentUser.uid)
                 localDataSource.replaceAll(remoteEntries)

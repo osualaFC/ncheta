@@ -7,7 +7,7 @@ interface NchetaRepository {
     /**
      * Inserts a new NchetaEntry into the database.
      */
-    suspend fun insertEntry(entry: NchetaEntry)
+    suspend fun insertEntry(entry: NchetaEntry, isPremium: Boolean)
 
     /**
      * Retrieves a single NchetaEntry by its unique ID.
@@ -29,6 +29,6 @@ interface NchetaRepository {
     /**
      * Synchronizes local entries with the remote data source.
      */
-    suspend fun syncRemoteEntries()
+    suspend fun syncRemoteEntries(isPremium: Boolean)
 
 }

@@ -30,7 +30,7 @@ data class InlineData(
 
 @Serializable
 data class GeminiResponse(
-    val candidates: List<Candidate>?,
+    val candidates: List<Candidate>? = null,
     val promptFeedback: PromptFeedback? = null
 )
 

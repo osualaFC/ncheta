@@ -48,16 +48,17 @@ class InputViewModel(
 
     val audioRecorderState = audioRecorder.state
 
-    val isPremium: StateFlow<Boolean> = subscriptionManager.isPremium(currentUser?.uid ?: "")
-        .stateIn(
-            coroutineScope,
-            SharingStarted.WhileSubscribed(5000),
-            false
-        )
+    private val _isPremium = MutableStateFlow(false)
+    val isPremium: StateFlow<Boolean> = _isPremium.asStateFlow()
+
+    private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
+        _uiState.value = InputUiState.Error("Unexpected error: ${throwable.message}")
+    }
+
 
     init {
         // 3. Listen for a successful recording from the recorder
-        coroutineScope.launch {
+        launchSafe {
             audioRecorder.state.collectLatest { state ->
                 if (state is AudioRecorderState.Success) {
                     // When recording is successful, send the audio for transcription
@@ -65,6 +66,13 @@ class InputViewModel(
                 }
             }
         }
+
+       launchSafe {
+           _isPremium.value = subscriptionManager.getCustomerInfo().let {
+               it.entitlements["premium"]?.isActive == true
+           }
+           repository.syncRemoteEntries(_isPremium.value)
+       }
     }
 
 
@@ -82,7 +90,7 @@ class InputViewModel(
     fun onSummarizeClicked() {
         if (!validateInputs()) return
 
-        coroutineScope.launch {
+        launchSafe {
             _uiState.value = InputUiState.Loading
             when(val result = generationService.generateSummary(_inputText.value, userApiKey.value!!)) {
                 is Result.Success -> _uiState.value = InputUiState.Success(result.data)
@@ -94,7 +102,7 @@ class InputViewModel(
     fun onGenerateFlashcardsClicked() {
         if (!validateInputs()) return
 
-        coroutineScope.launch {
+        launchSafe {
             _uiState.value = InputUiState.Loading
             when(val result = generationService.generateFlashcards(_inputText.value, userApiKey.value!!)) {
                 is Result.Success -> _uiState.value = InputUiState.Success(result.data)
@@ -106,7 +114,7 @@ class InputViewModel(
     fun onGenerateQaClicked() {
         if (!validateInputs()) return
 
-        coroutineScope.launch {
+        launchSafe {
             _uiState.value = InputUiState.Loading
             when(val result = generationService.generateMcqs(_inputText.value, userApiKey.value!!)) {
                 is Result.Success -> _uiState.value = InputUiState.Success(result.data)
@@ -118,7 +126,7 @@ class InputViewModel(
     fun getTextFromImage(imageData: ByteArray) {
         if (!validateInputs(true)) return
 
-        coroutineScope.launch {
+        launchSafe {
             _uiState.value = InputUiState.Loading
             when (val result = generationService.getTextFromImage(imageData, userApiKey.value!!)) {
                 is Result.Success -> {
@@ -201,8 +209,8 @@ class InputViewModel(
             )
 
             try {
-                coroutineScope.launch {
-                    repository.insertEntry(newEntry)
+                launchSafe {
+                    repository.insertEntry(newEntry, _isPremium.value)
                 }
                 _uiState.value = InputUiState.Saved
             } catch (e: Exception) {
@@ -217,17 +225,16 @@ class InputViewModel(
     }
 
     fun startRecording() {
-        if (isPremium.value) {
-            audioRecorder.startRecording()
-        } else {
-            _uiState.value = InputUiState.PremiumFeatureLocked
-        }
+        audioRecorder.startRecording()
+//        if (_isPremium.value) {
+//            audioRecorder.startRecording()
+//        } else {
+//            _uiState.value = InputUiState.PremiumFeatureLocked
+//        }
     }
 
     fun stopRecording() {
-        coroutineScope.launch(Dispatchers.Main) {
-            audioRecorder.stopRecording()
-        }
+        audioRecorder.stopRecording()
     }
 
 
@@ -239,7 +246,7 @@ class InputViewModel(
         }
 
         _uiState.value = InputUiState.Loading
-        coroutineScope.launch {
+        launchSafe {
             when (val result = generationService.transcribeAudio(audioData, mimeType, currentApiKey)) {
                 is Result.Success -> {
                     _inputText.value = result.data
@@ -249,6 +256,18 @@ class InputViewModel(
             }
         }
     }
+
+    private fun launchSafe(block: suspend CoroutineScope.() -> Unit) {
+        coroutineScope.launch(exceptionHandler) {
+            try {
+                block()
+            } catch (e: Exception) {
+                _uiState.value = InputUiState.Error("Unexpected error: ${e.message}")
+            }
+        }
+    }
+
+
 
     fun clear() {
         coroutineScope.cancel()

@@ -7,6 +7,8 @@ import com.revenuecat.purchases.kmp.models.Package
 import kotlinx.coroutines.flow.Flow
 
 interface SubscriptionManager {
+
+    suspend fun getCustomerInfo(): CustomerInfo
     /**
      * A flow that emits true if the user has an active "premium" entitlement.
      */

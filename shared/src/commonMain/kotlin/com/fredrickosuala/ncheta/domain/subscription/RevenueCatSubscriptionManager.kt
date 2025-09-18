@@ -5,6 +5,7 @@ import com.revenuecat.purchases.kmp.ktx.awaitCustomerInfo
 import com.revenuecat.purchases.kmp.ktx.awaitLogIn
 import com.revenuecat.purchases.kmp.ktx.awaitLogOut
 import com.revenuecat.purchases.kmp.ktx.awaitOfferings
+import com.revenuecat.purchases.kmp.models.CustomerInfo
 import com.revenuecat.purchases.kmp.models.Offering
 import com.revenuecat.purchases.kmp.models.Package
 import kotlinx.coroutines.delay
@@ -18,6 +19,10 @@ class RevenueCatSubscriptionManager : SubscriptionManager {
         // This is the Entitlement ID you created in your RevenueCat dashboard
         private const val PREMIUM_ENTITLEMENT_ID = "premium"
         private const val POLL_INTERVAL_MS = 5_000L
+    }
+
+    override suspend fun getCustomerInfo(): CustomerInfo {
+        return Purchases.sharedInstance.awaitCustomerInfo()
     }
 
     override fun isPremium(userId: String): Flow<Boolean> = flow {

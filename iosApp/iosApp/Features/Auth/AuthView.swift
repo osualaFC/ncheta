@@ -213,6 +213,7 @@ func randomNonceString(length: Int = 32) -> String {
     return result
 }
 
+@available(iOS 13.0, *)
 func sha256(_ input: String) -> String {
     let inputData = Data(input.utf8)
     let hashedData = SHA256.hash(data: inputData)

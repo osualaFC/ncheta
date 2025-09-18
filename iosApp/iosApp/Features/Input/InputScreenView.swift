@@ -121,7 +121,7 @@ struct InputScreenView: View {
                 Button {
                     isShowingDocumentPicker = true
                 } label: {
-                    Label("", systemImage: "document.badge.plus")
+                    Label("", systemImage: "doc.badge.plus")
                         .frame(maxWidth: .infinity)
                         .foregroundColor(.black)
                     
