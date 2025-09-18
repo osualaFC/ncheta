@@ -11,6 +11,8 @@ import SwiftUI
 struct AppEntryPointView: View {
     
     @StateObject private var viewModel = MainViewModel()
+    @State private var showAuthSheet = false
+    @State private var showPaywallSheet = false
 
     var body: some View {
         // Use a switch on our two state variables to determine the correct view
@@ -26,7 +28,9 @@ struct AppEntryPointView: View {
             
         // Onboarding is done, but the app isn't ready (API key is missing)
         case (true, false):
-            SettingsView(isPresentedModally: false)
+            NavigationView {
+                  SettingsView(isFirstTimeSetup: true)
+              }
             
         // Onboarding is done and the app is ready to use
         case (true, true):

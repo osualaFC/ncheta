@@ -39,5 +39,7 @@ extension PaywallState: @unchecked @retroactive Sendable {}
 extension PaywallEvent: @unchecked @retroactive Sendable {}
 extension AudioRecorderState: @unchecked @retroactive Sendable {}
 
+extension NchetaUser: @unchecked @retroactive Sendable {}
+
 
 extension NchetaEntry: @retroactive Identifiable {}

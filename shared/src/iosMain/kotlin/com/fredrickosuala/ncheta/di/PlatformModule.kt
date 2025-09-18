@@ -26,6 +26,8 @@ actual fun platformModule(): Module = module {
     factory {
         SettingsViewModel(
             settingsRepository = get(),
+            authRepository = get(),
+            subscriptionManager = get(),
             coroutineScope = get()
         )
     }

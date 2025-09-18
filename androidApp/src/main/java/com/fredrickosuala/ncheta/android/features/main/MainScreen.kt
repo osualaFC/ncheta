@@ -78,7 +78,7 @@ fun MainScreen(
                         AppHeader(title, showBackArrow = false) { }
                     },
                     actions = {
-                        IconButton(onClick = { navController.navigate("settings") }) {
+                        IconButton(onClick = { navController.navigate("settings?isFirstTime=false") }) {
                             Icon(
                                 imageVector = Icons.Default.Settings,
                                 contentDescription = "Settings"
@@ -138,14 +138,21 @@ fun MainScreen(
             composable("onboarding") {
                 OnboardingScreen(onOnboardingComplete = {
                     mainViewModel.setOnboardingComplete()
-                    navController.navigate("settings") {
+                    navController.navigate("settings?isFirstTime=true") {
                         popUpTo("onboarding") {
                             inclusive = true
                         }
                     }
                 })
             }
-            composable("settings") {
+            composable(
+                route = "settings?isFirstTime={isFirstTime}",
+                arguments = listOf(navArgument("isFirstTime") {
+                    type = NavType.BoolType
+                    defaultValue = false
+                })
+            ) { backStackEntry ->
+                val isFirstTime = backStackEntry.arguments?.getBoolean("isFirstTime") ?: false
                 SettingsScreen(
                     onNavigateBack = { navController.popBackStack() },
                     onKeySaved = {
@@ -153,7 +160,9 @@ fun MainScreen(
                             popUpTo(navController.graph.id) { inclusive = true }
                         }
                     },
-                    onNavigateToPaywall = { navController.navigate("paywall") }
+                    onNavigateToPaywall = { navController.navigate("paywall") },
+                    onNavigateToAuth = { navController.navigate("auth") },
+                    isFirstTimeSetup = isFirstTime
                 )
             }
             composable("paywall") {

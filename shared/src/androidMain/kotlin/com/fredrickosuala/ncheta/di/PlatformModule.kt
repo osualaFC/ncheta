@@ -25,7 +25,13 @@ actual fun platformModule(): Module = module {
 
     viewModel { MainViewModel(onboardingManager = get()) }
 
-    viewModel { AndroidSettingsViewModel(settingsRepository = get()) }
+    viewModel {
+        AndroidSettingsViewModel(
+            settingsRepository = get(),
+            authRepository = get(),
+            subscriptionManager = get()
+        )
+    }
 
    viewModel {
        AndroidInputViewModel(

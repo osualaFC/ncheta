@@ -17,13 +17,19 @@ class ObservableSettingsViewModel: ObservableObject {
 
     @Published var apiKey: String = ""
     @Published var uiState: SettingsUiState
+    @Published var user: NchetaUser?
+    @Published var isPremium: Bool
 
     private var stateWatcher: Task<Void, Never>?
     private var apiKeyWatcher: Task<Void, Never>?
+    private var userWatcher: Task<Void, Never>?
+    private var isPremiumWatcher: Task<Void, Never>?
 
     init() {
         self.sharedVm = ViewModels().settingsViewModel
         self.uiState = self.sharedVm.uiState.value
+        self.user = self.sharedVm.user.value
+        self.isPremium = false//self.sharedVm.isPremium.value as! Bool
 
         self.apiKey = self.sharedVm.apiKey.value as? String ?? ""
         self.apiKeyWatcher = Task {
@@ -37,6 +43,20 @@ class ObservableSettingsViewModel: ObservableObject {
                 self.uiState = state
             }
         }
+        
+        self.userWatcher = Task {
+            for await user in self.sharedVm.user {
+                self.user = user
+            }
+        }
+        
+        //revenuecat is yet to be configured
+        
+//        self.isPremiumWatcher = Task {
+//            for await isPremium in self.sharedVm.isPremium {
+//                self.isPremium = isPremium as! Bool
+//            }
+//        }
     }
     
     func onApiKeyChanged(_ newKey: String) {
@@ -51,9 +71,15 @@ class ObservableSettingsViewModel: ObservableObject {
         sharedVm.resetUiState()
     }
     
+    func signOut() {
+        sharedVm.signOut()
+    }
+    
     deinit {
         stateWatcher?.cancel()
         apiKeyWatcher?.cancel()
+        userWatcher?.cancel()
+        isPremiumWatcher?.cancel()
         sharedVm.clear()
     }
 }

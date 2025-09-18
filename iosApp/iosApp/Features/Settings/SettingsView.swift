@@ -9,65 +9,92 @@
 import SwiftUI
 import shared
 
+import SwiftUI
+import shared
+
 struct SettingsView: View {
-    
     @StateObject private var viewModel = ObservableSettingsViewModel()
     @Environment(\.dismiss) private var dismiss
-    var isPresentedModally: Bool = true
-    @State private var showPaywall = false
+    
+    @State private var showAuthSheet = false
+    @State private var showPaywallSheet = false
+    
+    var isFirstTimeSetup: Bool = false
     
     var body: some View {
         let isSaving = viewModel.uiState is SettingsUiState.Saving
+        let user = viewModel.user
+        let isPremium = viewModel.isPremium
         
         NavigationView {
             Form {
+                // --- API Key Section ---
                 Section(header: Text("API Key")) {
                     SecureField("Enter your Gemini API Key", text: $viewModel.apiKey)
-                        .onChange(of: viewModel.apiKey) { newValue in
-                            viewModel.onApiKeyChanged(newValue)
+                        .onChange(of: viewModel.apiKey) { viewModel.onApiKeyChanged($0) }
+                    
+                    Button("Save API Key") { viewModel.saveApiKey() }
+                        .disabled(isSaving)
+                }
+                
+                // --- Instructional Text ---
+                Section(footer: Text("Ncheta uses the Gemini API. You must provide your own free developer key.")) {
+                    Link("Click here to get your Gemini API key", destination: URL(string: "https://aistudio.google.com/app/apikey")!)
+                }
+                
+                // --- Account & Premium Sections ---
+                if !isFirstTimeSetup {
+                    // --- Account Section ---
+                    Section(header: Text("Account")) {
+                        if user == nil {
+                            // 2. CHANGED: Button action now just toggles the local state
+                            Button("Sign In") {
+                                showAuthSheet = true
+                            }
+                        } else {
+                            HStack {
+                                Text(user?.email ?? "Logged In")
+                                Spacer()
+                                if isPremium {
+                                    Image(systemName: "checkmark.circle.fill")
+                                        .foregroundColor(.green)
+                                }
+                            }
+                            Button("Sign Out", role: .destructive) { viewModel.signOut() }
                         }
-                }
-                
-                Section(footer: Text("Ncheta uses the Gemini API for content generation. You must provide your own free developer key.")) {
-                    Link("Click here to get your Gemini API key from Google AI Studio", destination: URL(string: "https://aistudio.google.com/app/apikey")!)
-                }
-                
-                Section(header: Text("Premium")) {
-                    Button("Upgrade to Premium") {
-                        showPaywall = true
+                    }
+                    
+                    // --- Premium Section ---
+                    if !isPremium {
+                        Section(header: Text("Premium")) {
+                            Button("Upgrade to Premium") {
+                                showPaywallSheet = true
+                            }
+                        }
                     }
                 }
             }
             .navigationTitle("Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                if isPresentedModally {
+                if !isFirstTimeSetup {
                     ToolbarItem(placement: .cancellationAction) {
-                        Button("Cancel") {
-                            dismiss()
-                        }
+                        Button("Done") { dismiss() }
                     }
-                }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        viewModel.saveApiKey()
-                    }
-                    .disabled(isSaving)
                 }
             }
             .onChange(of: viewModel.uiState) { newState in
                 if newState is SettingsUiState.Success {
-                    dismiss()
+                    if !isFirstTimeSetup { dismiss() }
                 }
             }
-            .sheet(isPresented: $showPaywall) {
+            .sheet(isPresented: $showAuthSheet) {
+                AuthView(onAuthSuccess: { showAuthSheet = false })
+            }
+            .sheet(isPresented: $showPaywallSheet) {
                 PaywallView(
-                    onPurchaseSuccess: {
-                        showPaywall = false
-                    },
-                    onDismiss: {
-                        showPaywall = false
-                    }
+                    onPurchaseSuccess: { showPaywallSheet = false },
+                    onDismiss: { showPaywallSheet = false }
                 )
             }
         }
