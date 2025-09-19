@@ -11,7 +11,7 @@ struct iOSApp: App {
         
         KoinHelper.doInit()
         
-      //  RevenueCatModuleKt.initializeRevenueCat()
+        RevenueCatModuleKt.initializeRevenueCat()
     }
     
     @State private var isActive = false

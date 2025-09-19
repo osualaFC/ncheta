@@ -225,12 +225,11 @@ class InputViewModel(
     }
 
     fun startRecording() {
-        audioRecorder.startRecording()
-//        if (_isPremium.value) {
-//            audioRecorder.startRecording()
-//        } else {
-//            _uiState.value = InputUiState.PremiumFeatureLocked
-//        }
+        if (_isPremium.value) {
+            audioRecorder.startRecording()
+        } else {
+            _uiState.value = InputUiState.PremiumFeatureLocked
+        }
     }
 
     fun stopRecording() {

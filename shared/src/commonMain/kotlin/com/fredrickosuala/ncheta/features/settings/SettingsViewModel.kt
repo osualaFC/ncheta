@@ -40,11 +40,11 @@ class SettingsViewModel(
         coroutineScope.launch {
             _apiKey.value = settingsRepository.getApiKey().first() ?: ""
         }
-//        coroutineScope.launch {
-//            _isPremium.value = subscriptionManager.getCustomerInfo().let {
-//                it.entitlements["premium"]?.isActive == true
-//            }
-//        }
+        coroutineScope.launch {
+            _isPremium.value = subscriptionManager.getCustomerInfo().let {
+                it.entitlements["premium"]?.isActive == true
+            }
+        }
     }
 
     fun onApiKeyChanged(newKey: String) {

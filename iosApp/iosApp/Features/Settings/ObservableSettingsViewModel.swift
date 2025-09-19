@@ -29,7 +29,7 @@ class ObservableSettingsViewModel: ObservableObject {
         self.sharedVm = ViewModels().settingsViewModel
         self.uiState = self.sharedVm.uiState.value
         self.user = self.sharedVm.user.value
-        self.isPremium = false//self.sharedVm.isPremium.value as! Bool
+        self.isPremium = self.sharedVm.isPremium.value as? Bool ?? false
 
         self.apiKey = self.sharedVm.apiKey.value as? String ?? ""
         self.apiKeyWatcher = Task {
@@ -50,13 +50,11 @@ class ObservableSettingsViewModel: ObservableObject {
             }
         }
         
-        //revenuecat is yet to be configured
-        
-//        self.isPremiumWatcher = Task {
-//            for await isPremium in self.sharedVm.isPremium {
-//                self.isPremium = isPremium as! Bool
-//            }
-//        }
+        self.isPremiumWatcher = Task {
+            for await isPremium in self.sharedVm.isPremium {
+                self.isPremium = isPremium as! Bool
+            }
+        }
     }
     
     func onApiKeyChanged(_ newKey: String) {

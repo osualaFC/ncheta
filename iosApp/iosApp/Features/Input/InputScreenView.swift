@@ -28,6 +28,7 @@ struct InputScreenView: View {
     @State private var showImagePicker = false
     @State private var imagePickerSourceType: ImagePicker.SourceType = .photoLibrary
     @State private var showImageSourceOptions = false
+    @State private var showPaywallSheet = false
     
     var body: some View {
         
@@ -73,7 +74,7 @@ struct InputScreenView: View {
                     )
                 }
             }
-            .navigationTitle("NCHETA")
+            .navigationTitle("Nchèta")
             .navigationBarTitleDisplayMode(.inline)
             .background(AppColors.subtleOffWhite.ignoresSafeArea())
             .toolbar {
@@ -95,7 +96,11 @@ struct InputScreenView: View {
                 } else if newState is InputUiState.Saved {
                     alertMessage = "Saved successfully!"
                     showConfirmationAlert = true
-                } else if let errorState = newState as? InputUiState.Error {
+                } else if newState is InputUiState.PremiumFeatureLocked {
+                    showPaywallSheet = true
+                    viewModel.resetUiState()
+                }
+                else if let errorState = newState as? InputUiState.Error {
                     alertMessage = errorState.message
                     showConfirmationAlert = true
                 }
@@ -236,6 +241,12 @@ struct InputScreenView: View {
                 let byteArray = [UInt8](data)
                 viewModel.getTextFromImage(imageData: byteArray)
             }
+        }
+        .sheet(isPresented: $showPaywallSheet) {
+            PaywallView(
+                onPurchaseSuccess: { showPaywallSheet = false },
+                onDismiss: { showPaywallSheet = false }
+            )
         }
         
     }
