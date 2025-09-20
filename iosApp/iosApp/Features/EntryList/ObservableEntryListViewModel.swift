@@ -17,9 +17,10 @@ class ObservableEntryListViewModel: ObservableObject {
     private let sharedVm: EntryListViewModel
     
     @Published var entries: [NchetaEntry] = []
+    @Published var isSyncing: Bool = false
     
     private var observationTask: Task<Void, Never>?
-
+    
     init() {
         // Use the Koin helper to get the shared ViewModel instance
         self.sharedVm = ViewModels().entryListViewModel
@@ -35,11 +36,21 @@ class ObservableEntryListViewModel: ObservableObject {
                 }
             }
         }
+        
+        Task {
+            for await syncing in self.sharedVm.isSyncing {
+                self.isSyncing = syncing as? Bool ?? false
+            }
+        }
     }
     
-    func deleteEntry(entryId: String) {
-           sharedVm.deleteEntry(entryId: entryId)
+    func syncEntries() {
+           sharedVm.syncEntries()
        }
+    
+    func deleteEntry(entryId: String) {
+        sharedVm.deleteEntry(entryId: entryId)
+    }
     
     deinit {
         observationTask?.cancel()

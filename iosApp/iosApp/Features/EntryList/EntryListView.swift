@@ -44,10 +44,14 @@ struct EntryListView: View {
             .navigationTitle("My Entries")
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
-                    Button {
-                        showSettings = true
-                    } label: {
-                        Image(systemName: "gearshape.fill")
+                    if viewModel.isSyncing {
+                        ProgressView()
+                    } else {
+                        Button {
+                            showSettings = true
+                        } label: {
+                            Image(systemName: "gearshape.fill")
+                        }
                     }
                 }
             }
@@ -68,6 +72,9 @@ struct EntryListView: View {
             }
             .fullScreenCover(item: $entryToPractice) { entry in
                 PracticeView(entryId: entry.id)
+            }
+            .onAppear {
+                viewModel.syncEntries()
             }
         }
     }

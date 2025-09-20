@@ -47,7 +47,8 @@ actual fun platformModule(): Module = module {
     factory {
         EntryListViewModel(
             repository = get(),
-            coroutineScope = get()
+            coroutineScope = get(),
+            subscriptionManager = get()
         )
     }
 

@@ -139,7 +139,7 @@ fun MainScreen(
                 OnboardingScreen(
                     onOnboardingComplete = {
                         mainViewModel.setOnboardingComplete()
-                        navController.navigate("settings/true") {
+                        navController.navigate("settings?isFirstTime=true") {
                             popUpTo("onboarding") {
                                 inclusive = true
                             }
@@ -149,7 +149,7 @@ fun MainScreen(
             }
 
             composable(
-                route = "settings/{isFirstTime}",
+                route = "settings?isFirstTime={isFirstTime}",
                 arguments = listOf(
                     navArgument("isFirstTime") {
                         type = NavType.BoolType

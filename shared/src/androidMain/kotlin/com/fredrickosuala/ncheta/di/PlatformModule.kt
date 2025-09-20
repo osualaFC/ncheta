@@ -46,7 +46,8 @@ actual fun platformModule(): Module = module {
 
     viewModel {
         AndroidEntryListViewModel(
-            repository = get()
+            repository = get(),
+            subscriptionManager = get()
         )
     }
 
