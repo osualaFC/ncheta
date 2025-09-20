@@ -53,8 +53,8 @@ class ObservableAuthViewModel: ObservableObject {
     func onPasswordChanged(newPassword: String) {
         sharedVm.onPasswordChanged(newPassword: newPassword)
     }
-    func signInWithGoogleToken(idToken: String) {
-        sharedVm.signInWithGoogleToken(idToken: idToken)
+    func signInWithGoogleToken(idToken: String, accessToken: String) {
+        sharedVm.signInWithGoogleToken(idToken: idToken, accessToken: accessToken)
     }
     func signInWithApple(idToken: String, nonce: String) {
         sharedVm.signInWithApple(idToken: idToken, nonce: nonce)

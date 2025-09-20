@@ -50,10 +50,10 @@ class AuthViewModel(
         }
     }
 
-    fun signInWithGoogleToken(idToken: String) {
+    fun signInWithGoogleToken(idToken: String, accessToken: String? = null) {
         _uiState.value = AuthUiState.Loading
         coroutineScope.launch {
-            when (val result = authRepository.signInWithGoogle(idToken)) {
+            when (val result = authRepository.signInWithGoogle(idToken, accessToken)) {
                 is AuthResult.Success -> _uiState.value = AuthUiState.Success
                 is AuthResult.Error -> _uiState.value = AuthUiState.Error(result.message)
             }

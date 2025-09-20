@@ -31,7 +31,7 @@ interface AuthRepository {
     /**
      * Signs in a user using an ID token obtained from Google Sign-In.
      */
-    suspend fun signInWithGoogle(idToken: String): AuthResult
+    suspend fun signInWithGoogle(idToken: String, accessToken: String? = null): AuthResult
 
     /**
      * Signs in a user using credentials obtained from Sign in with Apple.

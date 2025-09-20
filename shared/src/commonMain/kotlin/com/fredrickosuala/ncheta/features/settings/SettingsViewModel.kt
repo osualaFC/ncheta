@@ -6,6 +6,7 @@ import com.fredrickosuala.ncheta.repository.NchetaUser
 import com.fredrickosuala.ncheta.repository.SettingsRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -13,6 +14,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 
 class SettingsViewModel(
@@ -41,8 +43,11 @@ class SettingsViewModel(
             _apiKey.value = settingsRepository.getApiKey().first() ?: ""
         }
         coroutineScope.launch {
-            _isPremium.value = subscriptionManager.getCustomerInfo().let {
-                it.entitlements["premium"]?.isActive == true
+            while (isActive) {
+                _isPremium.value = subscriptionManager.getCustomerInfo().let {
+                    it.entitlements["premium"]?.isActive == true
+                }
+                delay(5000)
             }
         }
     }

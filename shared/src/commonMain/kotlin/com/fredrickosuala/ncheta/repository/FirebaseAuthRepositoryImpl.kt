@@ -74,9 +74,9 @@ class FirebaseAuthRepositoryImpl(
         }
     }
 
-    override suspend fun signInWithGoogle(idToken: String): AuthResult {
+    override suspend fun signInWithGoogle(idToken: String, accessToken: String?): AuthResult {
         return try {
-            val credential = GoogleAuthProvider.credential(idToken = idToken, accessToken = null)
+            val credential = GoogleAuthProvider.credential(idToken = idToken, accessToken = accessToken)
             val result = firebaseAuth.signInWithCredential(credential)
             val userId = result.user?.uid
                 ?: return AuthResult.Error("User ID is null after Google Sign-In.")

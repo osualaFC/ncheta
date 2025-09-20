@@ -22,21 +22,19 @@ class ObservableInputViewModel: ObservableObject {
     @Published var audioState: AudioRecorderState
     
     @Published var isLoggedInState: Bool = false
-    @Published var isPremium: Bool
     
     
     private var authStateWatcherTask: Task<Void, Never>?
     private var inputTextWatcherTask: Task<Void, Error>?
     private var uiStateWatcherTask: Task<Void, Never>?
     private var audioStateWatcherTask: Task<Void, Never>?
-    private var isPremiumWatcher: Task<Void, Never>?
     
     init() {
         
         self.sharedVm = ViewModels().inputViewModel
         self.uiState = sharedVm.uiState.value
         self.audioState = sharedVm.audioRecorderState.value
-        self.isPremium = sharedVm.isPremium.value as? Bool ?? false
+
         
         
         // Start a Swift Task to observe the inputText Flow (as AsyncSequence)
@@ -70,12 +68,6 @@ class ObservableInputViewModel: ObservableObject {
             for await state in self.sharedVm.audioRecorderState {
                 print("\(state)")
                 self.audioState = state
-            }
-        }
-        
-        self.isPremiumWatcher = Task {
-            for await isPremium in self.sharedVm.isPremium {
-                self.isPremium = isPremium as! Bool
             }
         }
         
@@ -133,7 +125,6 @@ class ObservableInputViewModel: ObservableObject {
         uiStateWatcherTask?.cancel()
         authStateWatcherTask?.cancel()
         authStateWatcherTask?.cancel()
-        isPremiumWatcher?.cancel()
         sharedVm.clear()
         print("ObservableInputViewModel: deinit called, observationTask cancelled, sharedViewModel cleared.")
     }

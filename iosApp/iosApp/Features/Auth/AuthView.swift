@@ -144,12 +144,9 @@ struct AuthView: View {
         // We still launch a Task to perform the async work
         Task {
             // We will call a new helper function that safely wraps the Google SDK call
-            let idToken = await getGoogleIdToken()
-            
-            if let token = idToken {
-                // If we got a token, pass it to the ViewModel
-                viewModel.signInWithGoogleToken(idToken: token)
-            } else {
+            if let tokens = await getGoogleTokens() {
+                   viewModel.signInWithGoogleToken(idToken: tokens.idToken, accessToken: tokens.accessToken)
+               } else {
                 // If it's nil, it means sign-in failed or was cancelled
                 socialSignInError = "Google Sign-In failed or was cancelled."
                 isShowingSocialError = true
@@ -158,15 +155,17 @@ struct AuthView: View {
     }
 }
 
-private func getGoogleIdToken() async -> String? {
-    // Get the top-most view controller
+struct GoogleTokens {
+    let idToken: String
+    let accessToken: String
+}
+
+private func getGoogleTokens() async -> GoogleTokens? {
     guard let presentingViewController = await UIApplication.shared.topMostViewController() else {
         return nil
     }
     
-    // Use withCheckedContinuation to bridge the callback-style API
     return await withCheckedContinuation { continuation in
-        // Call the native Google Sign-In method
         GIDSignIn.sharedInstance.signIn(withPresenting: presentingViewController) { result, error in
             if let error = error {
                 print("Google Sign-In Error: \(error.localizedDescription)")
@@ -174,17 +173,18 @@ private func getGoogleIdToken() async -> String? {
                 return
             }
             
-            guard let idToken = result?.user.idToken?.tokenString else {
-                print("ID Token not found in Google Sign-In result")
+            guard let idToken = result?.user.idToken?.tokenString,
+                  let accessToken = result?.user.accessToken.tokenString else {
+                print("ID Token or Access Token missing")
                 continuation.resume(returning: nil)
                 return
             }
             
-            // If we successfully get the token, resume the continuation with it
-            continuation.resume(returning: idToken)
+            continuation.resume(returning: GoogleTokens(idToken: idToken, accessToken: accessToken))
         }
     }
 }
+
 
 func randomNonceString(length: Int = 32) -> String {
     precondition(length > 0)

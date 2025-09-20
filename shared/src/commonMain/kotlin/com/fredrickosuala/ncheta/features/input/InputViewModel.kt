@@ -48,9 +48,6 @@ class InputViewModel(
 
     val audioRecorderState = audioRecorder.state
 
-    private val _isPremium = MutableStateFlow(false)
-    val isPremium: StateFlow<Boolean> = _isPremium.asStateFlow()
-
     private val exceptionHandler = CoroutineExceptionHandler { _, throwable ->
         _uiState.value = InputUiState.Error("Unexpected error: ${throwable.message}")
     }
@@ -68,11 +65,14 @@ class InputViewModel(
         }
 
        launchSafe {
-           _isPremium.value = subscriptionManager.getCustomerInfo().let {
-               it.entitlements["premium"]?.isActive == true
-           }
-           repository.syncRemoteEntries(_isPremium.value)
+           repository.syncRemoteEntries(isPremium())
        }
+    }
+
+    private suspend fun isPremium(): Boolean {
+   return subscriptionManager.getCustomerInfo().let {
+            it.entitlements["premium"]?.isActive == true
+        }
     }
 
 
@@ -210,7 +210,7 @@ class InputViewModel(
 
             try {
                 launchSafe {
-                    repository.insertEntry(newEntry, _isPremium.value)
+                    repository.insertEntry(newEntry, isPremium())
                 }
                 _uiState.value = InputUiState.Saved
             } catch (e: Exception) {
@@ -225,10 +225,12 @@ class InputViewModel(
     }
 
     fun startRecording() {
-        if (_isPremium.value) {
-            audioRecorder.startRecording()
-        } else {
-            _uiState.value = InputUiState.PremiumFeatureLocked
+        launchSafe {
+            if (isPremium()) {
+                audioRecorder.startRecording()
+            } else {
+                _uiState.value = InputUiState.PremiumFeatureLocked
+            }
         }
     }
 

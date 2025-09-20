@@ -136,21 +136,26 @@ fun MainScreen(
             modifier = Modifier.padding(innerPadding)
         ) {
             composable("onboarding") {
-                OnboardingScreen(onOnboardingComplete = {
-                    mainViewModel.setOnboardingComplete()
-                    navController.navigate("settings?isFirstTime=true") {
-                        popUpTo("onboarding") {
-                            inclusive = true
+                OnboardingScreen(
+                    onOnboardingComplete = {
+                        mainViewModel.setOnboardingComplete()
+                        navController.navigate("settings/true") {
+                            popUpTo("onboarding") {
+                                inclusive = true
+                            }
                         }
                     }
-                })
+                )
             }
+
             composable(
-                route = "settings?isFirstTime={isFirstTime}",
-                arguments = listOf(navArgument("isFirstTime") {
-                    type = NavType.BoolType
-                    defaultValue = false
-                })
+                route = "settings/{isFirstTime}",
+                arguments = listOf(
+                    navArgument("isFirstTime") {
+                        type = NavType.BoolType
+                        defaultValue = false
+                    }
+                )
             ) { backStackEntry ->
                 val isFirstTime = backStackEntry.arguments?.getBoolean("isFirstTime") ?: false
                 SettingsScreen(
@@ -165,6 +170,7 @@ fun MainScreen(
                     isFirstTimeSetup = isFirstTime
                 )
             }
+
             composable("paywall") {
                 PaywallScreen(
                     onPurchaseSuccess = {
