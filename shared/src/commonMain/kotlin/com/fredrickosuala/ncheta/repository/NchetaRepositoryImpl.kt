@@ -17,7 +17,7 @@ class NchetaRepositoryImpl(
         localDataSource.insertEntry(entry)
         val currentUser = authRepository.getCurrentUser()
         if (currentUser != null && isPremium) {
-            remoteDataSource.saveEntry(currentUser.email.orEmpty(), entry)
+            remoteDataSource.saveEntry(currentUser.uid, entry)
         }
     }
 
@@ -41,7 +41,7 @@ class NchetaRepositoryImpl(
         val currentUser = authRepository.getCurrentUser()
         if (isPremium && currentUser != null) {
             try {
-                val remoteEntries = remoteDataSource.getEntries(currentUser.email.orEmpty())
+                val remoteEntries = remoteDataSource.getEntries(currentUser.uid)
                 localDataSource.replaceAll(remoteEntries)
             } catch (e: Exception) {
                 println("Error syncing remote entries: ${e.message}")

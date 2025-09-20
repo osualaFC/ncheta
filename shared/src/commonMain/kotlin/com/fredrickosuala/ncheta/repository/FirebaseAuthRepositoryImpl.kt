@@ -39,7 +39,7 @@ class FirebaseAuthRepositoryImpl(
     override suspend fun signUp(email: String, password: String): AuthResult {
         return try {
             val result = firebaseAuth.createUserWithEmailAndPassword(email, password)
-            val userId = result.user?.email
+            val userId = result.user?.uid
                 ?: return AuthResult.Error("User ID is null after sign-in.")
 
             subscriptionManager.logIn(userId)
@@ -53,7 +53,7 @@ class FirebaseAuthRepositoryImpl(
     override suspend fun signIn(email: String, password: String): AuthResult {
         return try {
             val result = firebaseAuth.signInWithEmailAndPassword(email, password)
-            val userId = result.user?.email
+            val userId = result.user?.uid
                 ?: return AuthResult.Error("User ID is null after sign-in.")
 
             subscriptionManager.logIn(userId)
@@ -78,7 +78,7 @@ class FirebaseAuthRepositoryImpl(
         return try {
             val credential = GoogleAuthProvider.credential(idToken = idToken, accessToken = null)
             val result = firebaseAuth.signInWithCredential(credential)
-            val userId = result.user?.email
+            val userId = result.user?.uid
                 ?: return AuthResult.Error("User ID is null after Google Sign-In.")
 
             subscriptionManager.logIn(userId)
@@ -98,7 +98,7 @@ class FirebaseAuthRepositoryImpl(
                 rawNonce = nonce
             )
             val result = firebaseAuth.signInWithCredential(credential)
-            val userId = result.user?.email
+            val userId = result.user?.uid
                 ?: return AuthResult.Error("User ID is null after Google Sign-In.")
 
             subscriptionManager.logIn(userId)
