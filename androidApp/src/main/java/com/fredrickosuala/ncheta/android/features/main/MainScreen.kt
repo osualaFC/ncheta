@@ -74,7 +74,7 @@ fun MainScreen(
             if (shouldShowTopBar) {
                 TopAppBar(
                     title = {
-                        val title = if (currentDestination?.route.orEmpty() == BottomNavItem.Create.route) "Ncheta" else "My Entries"
+                        val title = if (currentDestination?.route.orEmpty() == BottomNavItem.Create.route) "Nchèta" else "My Entries"
                         AppHeader(title, showBackArrow = false) { }
                     },
                     actions = {

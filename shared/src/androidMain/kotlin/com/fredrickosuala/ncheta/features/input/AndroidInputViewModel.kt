@@ -8,6 +8,8 @@ import com.fredrickosuala.ncheta.repository.AuthRepository
 import com.fredrickosuala.ncheta.repository.NchetaRepository
 import com.fredrickosuala.ncheta.repository.SettingsRepository
 import com.fredrickosuala.ncheta.services.ContentGenerationService
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 
 open class AndroidInputViewModel(
     generationService: ContentGenerationService,
@@ -27,6 +29,13 @@ open class AndroidInputViewModel(
         audioRecorder = audioRecorder,
         subscriptionManager = subscriptionManager
     )
+
+    private val _saveDialogTitle = MutableStateFlow("")
+    val saveDialogTitle = _saveDialogTitle.asStateFlow()
+
+    fun onSaveDialogTitleChanged(newTitle: String) {
+        _saveDialogTitle.value = newTitle
+    }
 
     override fun onCleared() {
         super.onCleared()

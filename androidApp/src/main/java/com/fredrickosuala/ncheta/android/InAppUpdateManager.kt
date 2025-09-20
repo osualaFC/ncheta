@@ -61,7 +61,7 @@ fun InAppUpdateManager(
                 coroutineScope.launch {
                     val result = snackbarHostState.showSnackbar(
                         message = "A new version is ready to be installed.",
-                        actionLabel = "Restart",
+                        actionLabel = "Update",
                         duration = SnackbarDuration.Indefinite
                     )
                     if (result != SnackbarResult.ActionPerformed) {

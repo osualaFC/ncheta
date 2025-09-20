@@ -13,20 +13,21 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun SaveContentDialog(
+    title: String,
+    onTitleChanged: (String) -> Unit,
     onDismissRequest: () -> Unit,
-    onSaveClicked: (title: String) -> Unit
+    onSaveClicked: () -> Unit
 ) {
-    var title by remember { mutableStateOf("") }
 
     AlertDialog(
         onDismissRequest = onDismissRequest,
         title = { Text("Content Generated Successfully") },
         text = {
             Column {
-                Text("Please provide a title for this entry to save it for later practice.")
+                Text("Please provide a title for this entry.")
                 OutlinedTextField(
                     value = title,
-                    onValueChange = { title = it },
+                    onValueChange = { onTitleChanged(it) },
                     modifier = Modifier.fillMaxWidth().padding(top = 16.dp),
                     label = { Text("Title") },
                     singleLine = true
@@ -35,9 +36,7 @@ fun SaveContentDialog(
         },
         confirmButton = {
             TextButton(
-                onClick = {
-                    onSaveClicked(title)
-                },
+                onClick = onSaveClicked,
                 enabled = title.isNotBlank()
             ) {
                 Text("Save")

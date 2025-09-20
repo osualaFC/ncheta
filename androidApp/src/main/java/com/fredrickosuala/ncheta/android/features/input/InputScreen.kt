@@ -57,6 +57,7 @@ fun InputScreen(
     val inputText by sharedVm.inputText.collectAsState()
     val uiState by sharedVm.uiState.collectAsState()
     val audioState by sharedVm.audioRecorderState.collectAsState()
+    val saveDialogTitle by viewModel.saveDialogTitle.collectAsState()
 
     val isRecording = audioState is AudioRecorderState.Recording
 
@@ -179,20 +180,22 @@ fun InputScreen(
 
     if (showSaveDialog) {
         SaveContentDialog(
+            title = saveDialogTitle,
+            onTitleChanged = viewModel::onSaveDialogTitleChanged,
             onDismissRequest = {
                 showSaveDialog = false
                 sharedVm.resetUiState()
             },
-            onSaveClicked = { title ->
+            onSaveClicked = {
                 if (isLoggedIn) {
-                    sharedVm.saveGeneratedContent(title)
+                    sharedVm.saveGeneratedContent(saveDialogTitle)
                     sharedVm.clearText()
                     Toast.makeText(context, "Content saved successfully", Toast.LENGTH_SHORT).show()
                     onSaved()
+                    showSaveDialog = false
                 } else {
                     onNavigateToAuth()
                 }
-                showSaveDialog = false
             }
         )
     }
