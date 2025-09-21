@@ -29,6 +29,7 @@ import com.fredrickosuala.ncheta.android.features.practice.PracticeScreen
 import com.fredrickosuala.ncheta.android.features.settings.SettingsScreen
 import com.fredrickosuala.ncheta.android.navigation.AppHeader
 import com.fredrickosuala.ncheta.android.navigation.BottomNavItem
+import com.fredrickosuala.ncheta.android.navigation.Route
 import com.fredrickosuala.ncheta.features.main.MainViewModel
 import org.koin.androidx.compose.koinViewModel
 
@@ -37,7 +38,6 @@ import org.koin.androidx.compose.koinViewModel
 fun MainScreen(
     mainViewModel: MainViewModel = koinViewModel()
 ) {
-
     val hasCompletedOnboarding by mainViewModel.hasCompletedOnboarding.collectAsState()
     val isReadyToUseApp by mainViewModel.isReadyToUseApp.collectAsState()
     val navController = rememberNavController()
@@ -45,14 +45,14 @@ fun MainScreen(
 
     val startDestination = remember(hasCompletedOnboarding, isReadyToUseApp) {
         when {
-            hasCompletedOnboarding == null -> "loading"
-            !hasCompletedOnboarding!! -> "onboarding"
-            !isReadyToUseApp -> "settings"
-            else -> BottomNavItem.Create.route
+            hasCompletedOnboarding == null -> Route.Loading.path
+            !hasCompletedOnboarding!! -> Route.Onboarding.path
+            !isReadyToUseApp -> Route.Settings.create(true)
+            else -> Route.Create.path
         }
     }
 
-    if (startDestination == "loading") {
+    if (startDestination == Route.Loading.path) {
         Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
             CircularProgressIndicator()
         }
@@ -67,18 +67,17 @@ fun MainScreen(
         topBar = {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentDestination = navBackStackEntry?.destination
-            val bottomBarRoutes =
-                listOf(BottomNavItem.Create.route, BottomNavItem.Entries.route).toSet()
+            val bottomBarRoutes = setOf(Route.Create.path, Route.Entries.path)
             val shouldShowTopBar = currentDestination?.route in bottomBarRoutes
 
             if (shouldShowTopBar) {
                 TopAppBar(
                     title = {
-                        val title = if (currentDestination?.route.orEmpty() == BottomNavItem.Create.route) "Nchèta" else "My Entries"
+                        val title = if (currentDestination?.route == Route.Create.path) "Nchèta" else "My Entries"
                         AppHeader(title, showBackArrow = false) { }
                     },
                     actions = {
-                        IconButton(onClick = { navController.navigate("settings?isFirstTime=false") }) {
+                        IconButton(onClick = { navController.navigate(Route.Settings.create(false)) }) {
                             Icon(
                                 imageVector = Icons.Default.Settings,
                                 contentDescription = "Settings"
@@ -91,23 +90,21 @@ fun MainScreen(
         bottomBar = {
             val navBackStackEntry by navController.currentBackStackEntryAsState()
             val currentDestination = navBackStackEntry?.destination
-            val shouldShowBottomBar = listOf(
-                BottomNavItem.Create.route,
-                BottomNavItem.Entries.route
-            ).any { it == currentDestination?.route }
+            val shouldShowBottomBar = listOf(Route.Create.path, Route.Entries.path)
+                .any { it == currentDestination?.route }
 
             if (shouldShowBottomBar) {
                 Column {
                     HorizontalDivider(thickness = 1.dp, color = MaterialTheme.colorScheme.outline)
                     NavigationBar(containerColor = MaterialTheme.colorScheme.surface) {
-                        val navItems = listOf(BottomNavItem.Create, BottomNavItem.Entries)
+                        val navItems = listOf(Route.Create, Route.Entries)
                         navItems.forEach { screen ->
                             NavigationBarItem(
-                                icon = { Icon(screen.icon, contentDescription = screen.title) },
-                                label = { Text(screen.title) },
-                                selected = currentDestination?.hierarchy?.any { it.route == screen.route } == true,
+                                icon = { Icon(BottomNavItem.fromRoute(screen.path)!!.icon, contentDescription = BottomNavItem.fromRoute(screen.path)!!.title) },
+                                label = { Text(BottomNavItem.fromRoute(screen.path)!!.title) },
+                                selected = currentDestination?.hierarchy?.any { it.route == screen.path } == true,
                                 onClick = {
-                                    navController.navigate(screen.route) {
+                                    navController.navigate(screen.path) {
                                         popUpTo(navController.graph.findStartDestination().id) {
                                             saveState = true
                                         }
@@ -135,73 +132,66 @@ fun MainScreen(
             startDestination = startDestination,
             modifier = Modifier.padding(innerPadding)
         ) {
-            composable("onboarding") {
+            composable(Route.Onboarding.path) {
                 OnboardingScreen(
                     onOnboardingComplete = {
                         mainViewModel.setOnboardingComplete()
-                        navController.navigate("settings?isFirstTime=true") {
-                            popUpTo("onboarding") {
-                                inclusive = true
-                            }
+                        navController.navigate(Route.Settings.create(true)) {
+                            popUpTo(Route.Onboarding.path) { inclusive = true }
                         }
                     }
                 )
             }
 
             composable(
-                route = "settings?isFirstTime={isFirstTime}",
-                arguments = listOf(
-                    navArgument("isFirstTime") {
-                        type = NavType.BoolType
-                        defaultValue = false
-                    }
-                )
+                route = Route.Settings.path,
+                arguments = listOf(navArgument("isFirstTime") { type = NavType.BoolType })
             ) { backStackEntry ->
                 val isFirstTime = backStackEntry.arguments?.getBoolean("isFirstTime") ?: false
                 SettingsScreen(
                     onNavigateBack = { navController.popBackStack() },
                     onKeySaved = {
-                        navController.navigate(BottomNavItem.Create.route) {
+                        navController.navigate(Route.Create.path) {
                             popUpTo(navController.graph.id) { inclusive = true }
                         }
                     },
-                    onNavigateToPaywall = { navController.navigate("paywall") },
-                    onNavigateToAuth = { navController.navigate("auth") },
+                    onNavigateToPaywall = { navController.navigate(Route.Paywall.path) },
+                    onNavigateToAuth = { navController.navigate(Route.Auth.path) },
                     isFirstTimeSetup = isFirstTime
                 )
             }
 
-            composable("paywall") {
+            composable(Route.Paywall.path) {
                 PaywallScreen(
-                    onPurchaseSuccess = {
-                        navController.popBackStack()
-                    },
-                    onNavigateBack = {
-                        navController.popBackStack()
-                    }
+                    onPurchaseSuccess = { navController.popBackStack() },
+                    onNavigateBack = { navController.popBackStack() }
                 )
             }
-            composable(BottomNavItem.Create.route) {
+
+            composable(Route.Create.path) {
                 InputScreen(
                     onSaved = {
-                        navController.navigate(BottomNavItem.Entries.route) {
-                            popUpTo(BottomNavItem.Create.route) { inclusive = true }
+                        navController.navigate(Route.Entries.path) {
+                            popUpTo(Route.Create.path) { inclusive = true }
                         }
                     },
-                    onNavigateToAuth = { navController.navigate("auth") },
-                    onNavigateToPayWall = { navController.navigate("paywall") }
+                    onNavigateToAuth = { navController.navigate(Route.Auth.path) },
+                    onNavigateToPayWall = { navController.navigate(Route.Paywall.path) }
                 )
             }
-            composable(BottomNavItem.Entries.route) {
+
+            composable(Route.Entries.path) {
                 EntryListScreen(
-                    onEntryClick = { entryId -> navController.navigate("practice/$entryId") },
+                    onEntryClick = { entryId -> navController.navigate(Route.Practice.create(entryId)) },
                 )
             }
-            composable("auth") {
+
+            composable(Route.Auth.path) {
                 AuthScreen(onAuthSuccess = { navController.popBackStack() })
             }
+
             composable(
-                route = "practice/{entryId}",
+                route = Route.Practice.path,
                 arguments = listOf(navArgument("entryId") { type = NavType.StringType })
             ) { backStackEntry ->
                 val entryId = backStackEntry.arguments?.getString("entryId")

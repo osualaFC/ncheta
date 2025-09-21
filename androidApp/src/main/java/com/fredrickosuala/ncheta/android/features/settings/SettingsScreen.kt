@@ -37,7 +37,7 @@ fun SettingsScreen(
     onKeySaved: () -> Unit,
     onNavigateToPaywall: () -> Unit,
     onNavigateToAuth: () -> Unit,
-    isFirstTimeSetup: Boolean = false,
+    isFirstTimeSetup: Boolean,
     viewModel: AndroidSettingsViewModel = koinViewModel()
 ) {
     val apiKey by viewModel.settingsViewModel.apiKey.collectAsState()
@@ -70,7 +70,7 @@ fun SettingsScreen(
             .padding(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        AppHeader("Settings") {
+        AppHeader("Settings", showBackArrow = !isFirstTimeSetup) {
             onNavigateBack()
         }
         Text(

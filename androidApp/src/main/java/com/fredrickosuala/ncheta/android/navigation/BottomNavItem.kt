@@ -8,4 +8,13 @@ import androidx.compose.ui.graphics.vector.ImageVector
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val title: String) {
     data object Create : BottomNavItem("create", Icons.Default.Create, "Create")
     data object Entries : BottomNavItem("entries", Icons.AutoMirrored.Filled.List, "Entries")
+
+
+    companion object {
+        private val items = listOf(Create, Entries)
+
+        fun fromRoute(route: String?): BottomNavItem? {
+            return items.find { it.route == route }
+        }
+    }
 }

@@ -18,17 +18,6 @@ class EntryListViewModel(
     private val subscriptionManager: SubscriptionManager
 ) {
 
-    init {
-        syncEntries()
-    }
-
-    val entries: StateFlow<List<NchetaEntry>> = repository.getAllEntries()
-        .stateIn(
-            scope = coroutineScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
-
     private val _isSyncing = MutableStateFlow(false)
     val isSyncing = _isSyncing.asStateFlow()
 
@@ -39,6 +28,17 @@ class EntryListViewModel(
             _isSyncing.value = false
         }
     }
+
+    init {
+        syncEntries()
+    }
+
+    val entries: StateFlow<List<NchetaEntry>> = repository.getAllEntries()
+        .stateIn(
+            scope = coroutineScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = emptyList()
+        )
 
     private suspend fun isPremium(): Boolean {
         return subscriptionManager.getCustomerInfo().let {
