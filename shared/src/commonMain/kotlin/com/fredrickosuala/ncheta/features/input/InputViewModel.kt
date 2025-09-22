@@ -13,6 +13,7 @@ import com.fredrickosuala.ncheta.repository.NchetaRepository
 import com.fredrickosuala.ncheta.repository.SettingsRepository
 import com.fredrickosuala.ncheta.services.Result
 import com.fredrickosuala.ncheta.services.ContentGenerationService
+import com.revenuecat.purchases.kmp.Purchases
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -71,7 +72,7 @@ class InputViewModel(
 
     private suspend fun isPremium(): Boolean {
    return subscriptionManager.getCustomerInfo().let {
-            it.entitlements["premium"]?.isActive == true
+            it.entitlements["premium"]?.isActive == true && currentUser?.uid == Purchases.sharedInstance.appUserID
         }
     }
 

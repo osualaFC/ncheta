@@ -17,16 +17,19 @@ class ObservablePaywallViewModel: ObservableObject {
     private let sharedVm: PaywallViewModel
     
     @Published var state: PaywallState
+    @Published var promoCode: String = ""
     
     ///A publisher for one-time events
     let events = PassthroughSubject<shared.PaywallEvent, Never>()
     
     private var stateWatcher: Task<Void, Never>?
     private var eventWatcher: Task<Void, Never>?
+    private var promoCodeWatcher: Task<Void, Never>?
     
     init() {
         self.sharedVm = ViewModels().paywallViewModel
         self.state = self.sharedVm.state.value
+        self.promoCode = self.sharedVm.promoCode.value
         
         self.stateWatcher = Task {
             for await state in self.sharedVm.state {
@@ -39,6 +42,12 @@ class ObservablePaywallViewModel: ObservableObject {
                 self.events.send(event)
             }
         }
+        
+        self.promoCodeWatcher = Task {
+            for await promoCode in self.sharedVm.promoCode {
+                self.promoCode = promoCode
+            }
+        }
     }
     
     func onPurchaseClicked(pkg: ModelsPackage) {
@@ -49,9 +58,18 @@ class ObservablePaywallViewModel: ObservableObject {
         sharedVm.onPurchaseSuccess()
     }
     
+    func onPromoCodeChanged(_ newCode: String) {
+            sharedVm.onPromoCodeChanged(newCode: newCode)
+        }
+
+        func applyPromoCode() {
+            sharedVm.applyPromoCode()
+        }
+    
     deinit {
         stateWatcher?.cancel()
         eventWatcher?.cancel()
+        promoCodeWatcher?.cancel()
         sharedVm.clear()
     }
 }

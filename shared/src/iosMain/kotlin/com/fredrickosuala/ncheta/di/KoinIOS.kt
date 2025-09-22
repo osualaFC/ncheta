@@ -1,6 +1,7 @@
 package com.fredrickosuala.ncheta.di
 
 import com.fredrickosuala.ncheta.domain.onboarding.OnboardingManager
+import com.fredrickosuala.ncheta.domain.config.RemoteConfigManager
 import com.fredrickosuala.ncheta.features.auth.AuthViewModel
 import com.fredrickosuala.ncheta.features.entrylist.EntryListViewModel
 import com.fredrickosuala.ncheta.features.input.InputViewModel
@@ -27,5 +28,6 @@ class ViewModels : KoinComponent {
     val onboardingManager: OnboardingManager by inject()
     val settingsViewModel: SettingsViewModel by inject()
     val paywallViewModel: PaywallViewModel by inject()
+    val remoteConfigManager: RemoteConfigManager by inject()
 }
 

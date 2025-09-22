@@ -79,6 +79,7 @@ kotlin {
             api(libs.koin.core)
             implementation(libs.firebase.auth)
             implementation("dev.gitlive:firebase-firestore:1.13.0")
+            implementation("dev.gitlive:firebase-config:1.13.0")
             implementation(libs.multiplatformSettings.noArg)
             implementation(libs.multiplatform.settings.coroutines)
             implementation(libs.purchases.core)

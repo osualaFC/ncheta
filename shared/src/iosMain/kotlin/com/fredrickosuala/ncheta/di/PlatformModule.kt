@@ -48,7 +48,8 @@ actual fun platformModule(): Module = module {
         EntryListViewModel(
             repository = get(),
             coroutineScope = get(),
-            subscriptionManager = get()
+            subscriptionManager = get(),
+            authRepository = get()
         )
     }
 
@@ -69,6 +70,7 @@ actual fun platformModule(): Module = module {
     factory {
         PaywallViewModel(
             subscriptionManager = get(),
+            remoteConfigManager = get(),
             coroutineScope = get()
         )
     }

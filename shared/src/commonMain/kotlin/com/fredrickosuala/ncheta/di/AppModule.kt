@@ -1,6 +1,7 @@
 package com.fredrickosuala.ncheta.di
 
 import com.fredrickosuala.ncheta.database.Database
+import com.fredrickosuala.ncheta.domain.config.RemoteConfigManager
 import com.fredrickosuala.ncheta.domain.onboarding.OnboardingManager
 import com.fredrickosuala.ncheta.domain.subscription.RevenueCatSubscriptionManager
 import com.fredrickosuala.ncheta.domain.subscription.SubscriptionManager
@@ -30,6 +31,7 @@ val sharedModule = module {
     single<LocalDataSource> { SqlDelightLocalDataSource(database = get()) }
     single<RemoteDataSource> { FirestoreRemoteDataSource() }
     single<SubscriptionManager> { RevenueCatSubscriptionManager() }
+    single { RemoteConfigManager() }
     single<NchetaRepository> {
         NchetaRepositoryImpl(
             localDataSource = get(),

@@ -12,6 +12,15 @@ struct iOSApp: App {
         KoinHelper.doInit()
         
         RevenueCatModuleKt.initializeRevenueCat()
+        
+        Task {
+            do {
+                try await ViewModels().remoteConfigManager.fetchAndActivate()
+                print("Remote Config fetched and activated successfully.")
+            } catch {
+                print("Error fetching Remote Config: \(error.localizedDescription)")
+            }
+        }
     }
     
     @State private var isActive = false

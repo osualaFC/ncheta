@@ -23,7 +23,10 @@ actual fun platformModule(): Module = module {
         SharedPreferencesSettings.Factory(androidContext()).create(name = "ncheta_settings")
     }
 
-    viewModel { MainViewModel(onboardingManager = get()) }
+    viewModel { MainViewModel(
+        onboardingManager = get(),
+        remoteConfigManager = get()
+    ) }
 
     viewModel {
         AndroidSettingsViewModel(
@@ -47,7 +50,8 @@ actual fun platformModule(): Module = module {
     viewModel {
         AndroidEntryListViewModel(
             repository = get(),
-            subscriptionManager = get()
+            subscriptionManager = get(),
+            authRepository = get()
         )
     }
 
@@ -65,7 +69,8 @@ actual fun platformModule(): Module = module {
 
     viewModel {
         AndroidPaywallViewModel(
-            subscriptionManager = get()
+            subscriptionManager = get(),
+            remoteConfigManager = get()
         )
     }
 }

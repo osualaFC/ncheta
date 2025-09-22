@@ -22,6 +22,7 @@
 		0F06F2772E2291AC005D9745 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = 0F06F2762E2291AC005D9745 /* GoogleSignInSwift */; };
 		0F06F2792E22924C005D9745 /* UIApplication+TopViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F06F2782E229248005D9745 /* UIApplication+TopViewController.swift */; };
 		0F06F27B2E229632005D9745 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0F06F27A2E229632005D9745 /* GoogleService-Info.plist */; };
+		0F1C47F02E80E9FF006DC7DD /* FirebaseRemoteConfig in Frameworks */ = {isa = PBXBuildFile; productRef = 0F1C47EF2E80E9FF006DC7DD /* FirebaseRemoteConfig */; };
 		0F59BB932E18B76B002FA65B /* KMP+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F59BB922E18B75C002FA65B /* KMP+Extension.swift */; };
 		0F5F01BF2E30E50100AD071C /* MainViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5F01BE2E30E4EF00AD071C /* MainViewModel.swift */; };
 		0F5F01C22E30E62100AD071C /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0F5F01C12E30E61600AD071C /* OnboardingView.swift */; };
@@ -109,6 +110,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				0F1C47F02E80E9FF006DC7DD /* FirebaseRemoteConfig in Frameworks */,
 				0FB9D3812E054BC7002E0EDC /* libsqlite3.tbd in Frameworks */,
 				0F78786E2E5F0B98004EA53B /* PurchasesHybridCommonUI in Frameworks */,
 				0F06F2672E22599D005D9745 /* FirebaseAuth in Frameworks */,
@@ -685,6 +687,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 0F06F2732E2291AC005D9745 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */;
 			productName = GoogleSignInSwift;
+		};
+		0F1C47EF2E80E9FF006DC7DD /* FirebaseRemoteConfig */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 0F06F2652E22599C005D9745 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseRemoteConfig;
 		};
 		0F78786B2E5F0B98004EA53B /* PurchasesHybridCommon */ = {
 			isa = XCSwiftPackageProductDependency;

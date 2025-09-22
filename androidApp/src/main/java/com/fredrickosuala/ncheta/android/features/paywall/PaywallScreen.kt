@@ -1,6 +1,7 @@
 package com.fredrickosuala.ncheta.android.features.paywall
 
 import android.widget.Toast
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -35,6 +36,7 @@ fun PaywallScreen(
 ) {
     val viewModel: AndroidPaywallViewModel = koinViewModel()
     val state by viewModel.payWallViewModel.state.collectAsState()
+    val promoCode by viewModel.payWallViewModel.promoCode.collectAsState()
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
@@ -58,6 +60,9 @@ fun PaywallScreen(
                         }
                     )
                 }
+                is PaywallEvent.PromoError -> {
+                    Toast.makeText(context, event.error, Toast.LENGTH_LONG).show()
+                }
             }
         }
     }
@@ -75,10 +80,15 @@ fun PaywallScreen(
         ) {
             when (val currentState = state) {
                 is PaywallState.Loading -> CircularProgressIndicator()
-                is PaywallState.Error -> Text(currentState.message, textAlign = TextAlign.Center)
+                is PaywallState.Error -> {
+                    Text(currentState.message, textAlign = TextAlign.Center)
+                }
                 is PaywallState.Success -> {
                     PaywallContent(
                         offerings = currentState.offerings,
+                        promoCode = promoCode,
+                        onPromoCodeChanged = { viewModel.payWallViewModel.onPromoCodeChanged(it) },
+                        applyPromoCode = { viewModel.payWallViewModel.applyPromoCode() },
                         onPurchaseClicked = { pkg ->
                             viewModel.payWallViewModel.onPurchaseClicked(pkg)
                         }
@@ -92,12 +102,17 @@ fun PaywallScreen(
 @Composable
 private fun PaywallContent(
     offerings: List<Offering>,
+    promoCode: String,
+    onPromoCodeChanged: (String) -> Unit,
+    applyPromoCode: () -> Unit,
     onPurchaseClicked: (Package) -> Unit
 ) {
 
     var selectedPackage by remember {
         mutableStateOf(offerings.map { it.availablePackages.firstOrNull() }.firstOrNull())
     }
+
+    var promoSectionVisible by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -116,7 +131,6 @@ private fun PaywallContent(
         Column(modifier = Modifier.fillMaxWidth(0.8f)) {
             FeatureItem(text = "Unlock cloud sync across all devices")
             FeatureItem(text = "Input text via audio")
-            FeatureItem(text = "Advanced editing & merging")
             FeatureItem(text = "And lots more coming...")
         }
 
@@ -139,16 +153,39 @@ private fun PaywallContent(
 
         Spacer(modifier = Modifier.weight(1f))
 
+        Column {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.clickable { promoSectionVisible = !promoSectionVisible }
+            ) {
+                Checkbox(checked = promoSectionVisible, onCheckedChange = { promoSectionVisible = it })
+                Text("I have a promo code")
+            }
+
+            AnimatedVisibility(visible = promoSectionVisible) {
+                OutlinedTextField(
+                    value = promoCode,
+                    onValueChange = onPromoCodeChanged,
+                    label = { Text("Enter code") },
+                    modifier = Modifier.fillMaxWidth().padding(top = 8.dp)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
         Button(
             onClick = {
-                selectedPackage?.let { onPurchaseClicked(it) }
+                if (promoSectionVisible) {
+                    applyPromoCode()
+                } else {
+                    selectedPackage?.let { onPurchaseClicked(it) }
+                }
             },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(50.dp),
-            enabled = selectedPackage != null
+            modifier = Modifier.fillMaxWidth().height(50.dp),
+            enabled = if (promoSectionVisible) promoCode.isNotBlank() else selectedPackage != null
         ) {
-            Text("Upgrade Now")
+            Text(if (promoSectionVisible) "Apply Code" else "Upgrade Now")
         }
         Spacer(modifier = Modifier.height(8.dp))
         Text(

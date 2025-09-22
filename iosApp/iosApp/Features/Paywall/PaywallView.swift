@@ -11,7 +11,6 @@ import shared
 import RevenueCat
 
 struct PaywallView: View {
-    
     @StateObject private var viewModel = ObservablePaywallViewModel()
     
     @State private var nativeOffering: RevenueCat.Offering?
@@ -22,19 +21,18 @@ struct PaywallView: View {
     var body: some View {
         NavigationView {
             ZStack {
+                Color(.systemGroupedBackground).ignoresSafeArea()
                 
                 switch viewModel.state {
                 case is PaywallState.Loading:
                     ProgressView()
                     
                 case let successState as PaywallState.Success:
-                    
-                    if let kmpOffering = successState.offerings as? [shared.ModelsOffering] {
+                    if let kmpOfferings = successState.offerings as? [shared.ModelsOffering],
+                       let firstOffering = kmpOfferings.first {
                         PaywallContentView(
-                            offerings: kmpOffering,
-                            onPurchaseClicked: { kmpPackage in
-                                viewModel.onPurchaseClicked(pkg: kmpPackage)
-                            }
+                            offering: firstOffering,
+                            viewModel: viewModel
                         )
                     } else {
                         Text("Could not display products.")
@@ -57,7 +55,7 @@ struct PaywallView: View {
                 }
             }
             .onAppear {
-                // When the view appears, fetch the native offerings from the RevenueCat SDK
+                // Fetch the native offerings when the view appears
                 Task {
                     do {
                         self.nativeOffering = try await Purchases.shared.offerings().current
@@ -69,16 +67,15 @@ struct PaywallView: View {
             .onReceive(viewModel.events) { event in
                 // Listen for the purchase request event from the KMP ViewModel
                 if case let requestPurchase as shared.PaywallEvent.RequestPurchase = event {
-                    // Call our helper function with the KMP package
-                    purchase(kmpPackage: requestPurchase.pkg)
+                    if let kmpPackage = requestPurchase.pkg as? shared.ModelsPackage {
+                        purchase(kmpPackage: kmpPackage)
+                    }
                 }
             }
         }
     }
     
-    // This helper function bridges the KMP package to the native package and makes the purchase
     private func purchase(kmpPackage: shared.ModelsPackage) {
-        // Find the native package that matches the KMP package's identifier
         guard let nativePackage = self.nativeOffering?.package(identifier: kmpPackage.identifier) else {
             print("Could not find matching native package to purchase.")
             return
@@ -86,59 +83,77 @@ struct PaywallView: View {
         Task {
             do {
                 let result = try await Purchases.shared.purchase(package: nativePackage)
-                // Check if the user cancelled and if the entitlement is now active
                 if !result.userCancelled && result.customerInfo.entitlements.all["premium"]?.isActive == true {
-                    // Tell the ViewModel the purchase was a success
                     viewModel.onPurchaseSuccess()
-                    // Tell the UI to dismiss the paywall
                     onPurchaseSuccess()
                 }
             } catch {
                 print("Purchase failed: \(error.localizedDescription)")
-                // You could show an error alert here
             }
         }
     }
+}
+
+
+private struct PaywallContentView: View {
+    let offering: shared.ModelsOffering
+    @ObservedObject var viewModel: ObservablePaywallViewModel
     
-    private struct PaywallContentView: View {
-        
-        let offerings: [shared.ModelsOffering]
-        let onPurchaseClicked: (shared.ModelsPackage) -> Void
-        
-        // State to keep track of the currently selected package
-        @State private var selectedPackage: shared.ModelsPackage?
-        
-        var body: some View {
+    @State private var selectedPackage: shared.ModelsPackage?
+    @State private var showPromoField = false
+    
+    var body: some View {
+        ScrollView {
             VStack {
-                Spacer()
                 Text("Go Premium")
                     .font(.largeTitle).bold()
+                    .padding(.top, 32)
                 
                 VStack(alignment: .leading, spacing: 12) {
                     FeatureItemView(text: "Unlock cloud sync across all devices")
                     FeatureItemView(text: "Input text via audio")
-                    FeatureItemView(text: "Advanced editing & merging")
-                    FeatureItemView(text: "And lots more coming...")
+                    FeatureItemView(text: "And lots more...")
                 }
                 .padding(.vertical, 32)
                 
+                if let packages = offering.availablePackages as? [shared.ModelsPackage] {
                     HStack(spacing: 16) {
-                        ForEach(offerings, id: \.identifier) { offering in
-                            if let pkg = offering.availablePackages.first {
-                                PackageCardView(
-                                    pkg: pkg,
-                                    isSelected: selectedPackage?.identifier == pkg.identifier,
-                                    onTap: { selectedPackage = pkg }
-                                )
-                            }
+                        ForEach(packages, id: \.identifier) { pkg in
+                            PackageCardView(
+                                pkg: pkg,
+                                isSelected: selectedPackage?.identifier == pkg.identifier,
+                                onTap: { selectedPackage = pkg }
+                            )
                         }
                     }
+                }
                 
-                Spacer()
+                // Promo Code Section
+                VStack {
+                    Toggle("I have a promo code", isOn: $showPromoField.animation())
+                    
+                    if showPromoField {
+                        HStack {
+                            TextField("Enter code", text: $viewModel.promoCode)
+                                .textFieldStyle(.roundedBorder)
+                                .onChange(of: viewModel.promoCode) { viewModel.onPromoCodeChanged($0) }
+                            
+                            Button("Apply") { viewModel.applyPromoCode() }
+                                .buttonStyle(.bordered)
+                                .disabled(viewModel.promoCode.isEmpty)
+                        }
+                    }
+                }
+                .padding(.vertical)
                 
+            }
+            .padding(.horizontal, 16)
+        }
+        .safeAreaInset(edge: .bottom) {
+            VStack(spacing: 8) {
                 Button(action: {
                     if let selectedPackage = selectedPackage {
-                        onPurchaseClicked(selectedPackage)
+                        viewModel.onPurchaseClicked(pkg: selectedPackage)
                     }
                 }) {
                     Text("Upgrade Now")
@@ -152,18 +167,18 @@ struct PaywallView: View {
                 Text("Payments are managed by the App Store.")
                     .font(.caption)
                     .foregroundColor(.secondary)
-                    .padding(.top, 8)
             }
-            .padding(32)
-            .onAppear {
-                // Pre-select the first available package
-                selectedPackage = offerings
-                       .compactMap { $0.availablePackages.first }
-                       .first
+            .padding(16)
+            .background(.thinMaterial)
+        }
+        .onAppear {
+            if let packages = offering.availablePackages as? [shared.ModelsPackage] {
+                selectedPackage = packages.first
             }
         }
     }
 }
+
 
 private struct FeatureItemView: View {
     let text: String

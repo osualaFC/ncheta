@@ -6,6 +6,7 @@ import com.revenuecat.purchases.kmp.models.Package
 
 sealed class PaywallEvent {
     data class RequestPurchase(val pkg: Package) : PaywallEvent()
+    data class PromoError(val error: String) : PaywallEvent()
 }
 
 

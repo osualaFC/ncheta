@@ -151,8 +151,19 @@ fun SettingsScreen(
 
             // --- Premium Section ---
             if (!isPremium) {
-                Button(onClick = onNavigateToPaywall) {
-                    Text("Upgrade to Premium")
+                Text("Premium", style = MaterialTheme.typography.titleMedium)
+                Spacer(modifier = Modifier.height(8.dp))
+
+                if (user == null) {
+                    Text(
+                        text = "Please sign in or create an account to upgrade.",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+                } else {
+                    Button(onClick = onNavigateToPaywall) {
+                        Text("Upgrade to Premium")
+                    }
                 }
             }
         }

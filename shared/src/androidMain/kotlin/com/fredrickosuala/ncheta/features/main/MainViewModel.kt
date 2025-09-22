@@ -2,6 +2,7 @@ package com.fredrickosuala.ncheta.features.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.fredrickosuala.ncheta.domain.config.RemoteConfigManager
 import com.fredrickosuala.ncheta.domain.onboarding.OnboardingManager
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -9,8 +10,15 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
 class MainViewModel(
-    private val onboardingManager: OnboardingManager
+    private val onboardingManager: OnboardingManager,
+    private val remoteConfigManager: RemoteConfigManager
 ) : ViewModel() {
+
+    init {
+        viewModelScope.launch {
+            remoteConfigManager.fetchAndActivate()
+        }
+    }
 
     val hasCompletedOnboarding: StateFlow<Boolean?> =
         onboardingManager.hasCompletedOnboarding

@@ -67,8 +67,15 @@ struct SettingsView: View {
                     // --- Premium Section ---
                     if !isPremium {
                         Section(header: Text("Premium")) {
-                            Button("Upgrade to Premium") {
-                                showPaywallSheet = true
+                            if user == nil {
+                                // If user is not logged in, show an instructional message
+                                Text("Please sign in or create an account to upgrade.")
+                                    .foregroundColor(.secondary)
+                            } else if !isPremium {
+                                // If user is logged in AND not premium, show the button
+                                Button("Upgrade to Premium") {
+                                    showPaywallSheet = true
+                                }
                             }
                         }
                     }

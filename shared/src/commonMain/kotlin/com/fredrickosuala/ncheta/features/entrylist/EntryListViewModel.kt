@@ -2,7 +2,9 @@ package com.fredrickosuala.ncheta.features.entrylist
 
 import com.fredrickosuala.ncheta.data.model.NchetaEntry
 import com.fredrickosuala.ncheta.domain.subscription.SubscriptionManager
+import com.fredrickosuala.ncheta.repository.AuthRepository
 import com.fredrickosuala.ncheta.repository.NchetaRepository
+import com.revenuecat.purchases.kmp.Purchases
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -15,8 +17,11 @@ import kotlinx.coroutines.launch
 class EntryListViewModel(
     private val coroutineScope: CoroutineScope,
     private val repository: NchetaRepository,
-    private val subscriptionManager: SubscriptionManager
+    private val subscriptionManager: SubscriptionManager,
+    private val authRepository: AuthRepository,
 ) {
+
+    val currentUser = authRepository.getCurrentUser()
 
     private val _isSyncing = MutableStateFlow(false)
     val isSyncing = _isSyncing.asStateFlow()
@@ -42,7 +47,7 @@ class EntryListViewModel(
 
     private suspend fun isPremium(): Boolean {
         return subscriptionManager.getCustomerInfo().let {
-            it.entitlements["premium"]?.isActive == true
+            it.entitlements["premium"]?.isActive == true && currentUser?.uid == Purchases.sharedInstance.appUserID
         }
     }
 

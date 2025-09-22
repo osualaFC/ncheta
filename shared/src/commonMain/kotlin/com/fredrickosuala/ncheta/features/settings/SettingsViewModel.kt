@@ -4,6 +4,7 @@ import com.fredrickosuala.ncheta.domain.subscription.SubscriptionManager
 import com.fredrickosuala.ncheta.repository.AuthRepository
 import com.fredrickosuala.ncheta.repository.NchetaUser
 import com.fredrickosuala.ncheta.repository.SettingsRepository
+import com.revenuecat.purchases.kmp.Purchases
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
@@ -45,7 +46,7 @@ class SettingsViewModel(
         coroutineScope.launch {
             while (isActive) {
                 _isPremium.value = subscriptionManager.getCustomerInfo().let {
-                    it.entitlements["premium"]?.isActive == true
+                    it.entitlements["premium"]?.isActive == true && user.value?.uid == Purchases.sharedInstance.appUserID
                 }
                 delay(5000)
             }
