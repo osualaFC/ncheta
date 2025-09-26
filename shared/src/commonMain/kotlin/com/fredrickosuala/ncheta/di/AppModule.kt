@@ -26,7 +26,7 @@ import org.koin.dsl.module
 
 val sharedModule = module {
 
-    single<ContentGenerationService> { GeminiContentGenerationService() }
+    single<ContentGenerationService> { GeminiContentGenerationService(remoteConfigManager = get()) }
     single { Database(databaseDriverFactory = get()) }
     single<LocalDataSource> { SqlDelightLocalDataSource(database = get()) }
     single<RemoteDataSource> { FirestoreRemoteDataSource() }

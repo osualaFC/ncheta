@@ -15,4 +15,25 @@ class RemoteConfigManager() {
     fun getPromoCode(): String {
         return remoteConfig["promo_code"]
     }
+
+    fun getPremiumCharLimit(): Int {
+        return remoteConfig.get<Long>("premium_char_limit").toInt()
+    }
+
+    fun getFreeCharLimit(): Int {
+        return remoteConfig.get<Long>("free_char_limit").toInt()
+    }
+
+    fun getFreeMaxGenerationLimit(): Int {
+        return remoteConfig.get<Long>("free_daily_generations").toInt()
+    }
+
+    fun getApiKey(): String {
+        return remoteConfig["api_key"]
+    }
+
+    fun getGeminiModel(): String {
+        return remoteConfig["gemini_model"]
+    }
+
 }

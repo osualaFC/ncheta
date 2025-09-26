@@ -73,45 +73,45 @@ fun SettingsScreen(
         AppHeader("Settings", showBackArrow = !isFirstTimeSetup) {
             onNavigateBack()
         }
-        Text(
-            "API Key",
-            style = MaterialTheme.typography.titleMedium
-        )
-        OutlinedTextField(
-            value = apiKey,
-            onValueChange = viewModel.settingsViewModel::onApiKeyChanged,
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text("Gemini API Key") },
-            placeholder = { Text("Enter your key here") },
-            visualTransformation = PasswordVisualTransformation(),
-            singleLine = true
-        )
-        Button(
-            onClick = viewModel.settingsViewModel::saveApiKey,
-            enabled = uiState !is SettingsUiState.Saving,
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            if (uiState is SettingsUiState.Saving) {
-                CircularProgressIndicator(modifier = Modifier.size(24.dp))
-            } else {
-                Text("Save API Key")
-            }
-        }
+//        Text(
+//            "API Key",
+//            style = MaterialTheme.typography.titleMedium
+//        )
+//        OutlinedTextField(
+//            value = apiKey,
+//            onValueChange = viewModel.settingsViewModel::onApiKeyChanged,
+//            modifier = Modifier.fillMaxWidth(),
+//            label = { Text("Gemini API Key") },
+//            placeholder = { Text("Enter your key here") },
+//            visualTransformation = PasswordVisualTransformation(),
+//            singleLine = true
+//        )
+//        Button(
+//            onClick = viewModel.settingsViewModel::saveApiKey,
+//            enabled = uiState !is SettingsUiState.Saving,
+//            modifier = Modifier.fillMaxWidth()
+//        ) {
+//            if (uiState is SettingsUiState.Saving) {
+//                CircularProgressIndicator(modifier = Modifier.size(24.dp))
+//            } else {
+//                Text("Save API Key")
+//            }
+//        }
 
-        Spacer(modifier = Modifier.height(24.dp))
-
-        ClickableText(
-            text = annotatedString,
-            style = MaterialTheme.typography.bodyMedium,
-            onClick = { offset ->
-                annotatedString.getStringAnnotations(tag = "URL", start = offset, end = offset)
-                    .firstOrNull()?.let { annotation ->
-                        uriHandler.openUri(annotation.item)
-                    }
-            }
-        )
-
-        Spacer(modifier = Modifier.height(32.dp))
+//        Spacer(modifier = Modifier.height(24.dp))
+//
+//        ClickableText(
+//            text = annotatedString,
+//            style = MaterialTheme.typography.bodyMedium,
+//            onClick = { offset ->
+//                annotatedString.getStringAnnotations(tag = "URL", start = offset, end = offset)
+//                    .firstOrNull()?.let { annotation ->
+//                        uriHandler.openUri(annotation.item)
+//                    }
+//            }
+//        )
+//
+//        Spacer(modifier = Modifier.height(32.dp))
 
         if (!isFirstTimeSetup) {
             Divider(modifier = Modifier.padding(vertical = 24.dp))
