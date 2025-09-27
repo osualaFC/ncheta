@@ -16,27 +16,27 @@ struct AppEntryPointView: View {
 
     var body: some View {
         // Use a switch on our two state variables to determine the correct view
-        switch (viewModel.hasCompletedOnboarding, viewModel.isReadyToUseApp) {
+        switch (viewModel.hasCompletedOnboarding) {
         
         // States are still loading from disk
-        case (nil, _), (_, nil):
+        case (nil):
             ProgressView()
             
         // Onboarding has not been completed yet
-        case (false, _):
+        case (false):
             OnboardingView(onOnboardingComplete: viewModel.setOnboardingComplete)
             
         // Onboarding is done, but the app isn't ready (API key is missing)
-        case (true, false):
-            NavigationView {
-                  SettingsView(isFirstTimeSetup: true)
-              }
+        // case (true, false):
+        //     NavigationView {
+        //           SettingsView(isFirstTimeSetup: true)
+        //       }
             
         // Onboarding is done and the app is ready to use
-        case (true, true):
+        case (true):
             MainView()
             
-        case (.some(_), .some(_)):
+        case (.some(_)):
             ProgressView()
         }
     }

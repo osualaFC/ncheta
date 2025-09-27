@@ -25,9 +25,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
-import kotlinx.datetime.Clock
-import kotlinx.datetime.TimeZone
-import kotlinx.datetime.toLocalDateTime
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
 
@@ -109,27 +106,22 @@ class InputViewModel(
             return false
         }
 
-        // 2. Check Daily Generation Limit (FREE users only)
+        // 2. Check Generation Limit (FREE users only)
         if (!isPremium()) {
             val dailyLimit = remoteConfigManager.getFreeMaxGenerationLimit()
             val usageDocRef = firestore.collection("usage_limits").document(user.uid)
-            val today = Clock.System.now().toLocalDateTime(TimeZone.UTC).date.toString()
 
             try {
                 val usageDoc = usageDocRef.get()
-                val lastUsed = usageDoc.get<String?>("lastUsedDate")
-                val currentCount = usageDoc.get<Long?>("dailyCount") ?: 0
-                val count = if (lastUsed == today) currentCount else 0
+                val currentCount = usageDoc.get<Long?>("count") ?: 0
 
-                if (count >= dailyLimit) {
-                    println("COUNT: $count")
-                    println("LIMIT: $dailyLimit")
+                if (currentCount >= dailyLimit) {
                     _uiState.value = InputUiState.PremiumFeatureLocked
                     return false
                 }
 
                 // Update usage
-                usageDocRef.set(mapOf("lastUsedDate" to today, "dailyCount" to count + 1))
+                usageDocRef.set(mapOf( "count" to currentCount + 1))
             } catch (e: Exception) {
                 _uiState.value = InputUiState.Error("Could not verify usage limit.")
                 return false

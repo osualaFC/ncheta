@@ -61,7 +61,7 @@ class SettingsViewModel(
         _uiState.value = SettingsUiState.Saving
         coroutineScope.launch {
             settingsRepository.saveApiKey(apiKey.value)
-            _uiState.value = SettingsUiState.Success
+            _uiState.value = SettingsUiState.Success("API Key saved successfully!")
         }
     }
 
@@ -75,6 +75,17 @@ class SettingsViewModel(
         }
     }
 
+    fun restoreSubscription() {
+        coroutineScope.launch {
+           val wasRestored = subscriptionManager.restorePurchases()
+            if (wasRestored.isSuccess) {
+                _uiState.value = SettingsUiState.Success("Subscription restored successfully!")
+            } else {
+                _uiState.value = SettingsUiState.Error("Failed to restore subscription.")
+            }
+        }
+    }
+
     fun clear() {
         coroutineScope.cancel()
     }
@@ -85,5 +96,6 @@ class SettingsViewModel(
 sealed class SettingsUiState {
     data object Idle : SettingsUiState()
     data object Saving : SettingsUiState()
-    data object Success : SettingsUiState()
+    data class Success(val message: String? = null) : SettingsUiState()
+    data class Error(val message: String) : SettingsUiState()
 }

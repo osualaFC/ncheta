@@ -129,9 +129,10 @@ private fun PaywallContent(
         Spacer(modifier = Modifier.height(16.dp))
 
         Column(modifier = Modifier.fillMaxWidth(0.8f)) {
-            FeatureItem(text = "Unlock cloud sync across all devices")
-            FeatureItem(text = "Input text via audio")
-            FeatureItem(text = "And lots more coming...")
+            FeatureItem(text = "Unlimited content generations")
+            FeatureItem(text = "Cloud sync across all devices")
+            FeatureItem(text = "Input text using your voice")
+            FeatureItem(text = "And much more coming soon...")
         }
 
         Spacer(modifier = Modifier.height(32.dp))

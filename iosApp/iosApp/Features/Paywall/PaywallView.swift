@@ -110,9 +110,10 @@ private struct PaywallContentView: View {
                     .padding(.top, 32)
                 
                 VStack(alignment: .leading, spacing: 12) {
-                    FeatureItemView(text: "Unlock cloud sync across all devices")
-                    FeatureItemView(text: "Input text via audio")
-                    FeatureItemView(text: "And lots more...")
+                    FeatureItemView(text: "Unlimited content generations")
+                    FeatureItemView(text: "Cloud sync across all devices")
+                    FeatureItemView(text: "Input text using your voice")
+                    FeatureItemView(text: "And much more coming soon...")
                 }
                 .padding(.vertical, 32)
                 
