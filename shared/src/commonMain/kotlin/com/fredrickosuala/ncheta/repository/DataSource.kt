@@ -14,4 +14,6 @@ interface LocalDataSource {
 interface RemoteDataSource {
     suspend fun saveEntry(userId: String, entry: NchetaEntry)
     suspend fun getEntries(userId: String): List<NchetaEntry>
+    suspend fun deleteEntry(userId: String, entryId: String)
+    suspend fun saveEntries(userId: String, entries: List<NchetaEntry>)
 }

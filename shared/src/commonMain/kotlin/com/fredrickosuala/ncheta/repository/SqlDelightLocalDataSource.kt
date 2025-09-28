@@ -42,6 +42,8 @@ class SqlDelightLocalDataSource(database: Database) : LocalDataSource {
     override suspend fun addAll(entries: List<NchetaEntry>) {
         queries.transaction {
 
+            queries.deleteAll()
+
             entries.forEach { entry ->
                 queries.insert(
                     id = entry.id,
