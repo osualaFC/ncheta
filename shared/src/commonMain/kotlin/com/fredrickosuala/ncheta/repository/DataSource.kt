@@ -8,7 +8,7 @@ interface LocalDataSource {
     suspend fun insertEntry(entry: NchetaEntry)
     suspend fun getEntryById(id: String): NchetaEntry?
     suspend fun deleteEntryById(id: String)
-    suspend fun replaceAll(entries: List<NchetaEntry>)
+    suspend fun addAll(entries: List<NchetaEntry>)
 }
 
 interface RemoteDataSource {

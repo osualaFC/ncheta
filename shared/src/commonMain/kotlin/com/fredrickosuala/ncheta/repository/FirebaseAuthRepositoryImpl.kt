@@ -43,7 +43,6 @@ class FirebaseAuthRepositoryImpl(
                 ?: return AuthResult.Error("User ID is null after sign-in.")
 
             subscriptionManager.logIn(userId)
-            subscriptionManager.restorePurchases()
             AuthResult.Success
         } catch (e: Exception) {
             AuthResult.Error(e.message ?: "An unknown signup error occurred.")
@@ -57,7 +56,6 @@ class FirebaseAuthRepositoryImpl(
                 ?: return AuthResult.Error("User ID is null after sign-in.")
 
             subscriptionManager.logIn(userId)
-            subscriptionManager.restorePurchases()
 
             AuthResult.Success
         } catch (e: Exception) {
@@ -82,7 +80,6 @@ class FirebaseAuthRepositoryImpl(
                 ?: return AuthResult.Error("User ID is null after Google Sign-In.")
 
             subscriptionManager.logIn(userId)
-            subscriptionManager.restorePurchases()
 
             AuthResult.Success
         } catch (e: Exception) {
@@ -102,7 +99,7 @@ class FirebaseAuthRepositoryImpl(
                 ?: return AuthResult.Error("User ID is null after Google Sign-In.")
 
             subscriptionManager.logIn(userId)
-            subscriptionManager.restorePurchases()
+
             AuthResult.Success
         } catch (e: Exception) {
             AuthResult.Error(e.message ?: "An unknown Apple Sign-In error occurred.")

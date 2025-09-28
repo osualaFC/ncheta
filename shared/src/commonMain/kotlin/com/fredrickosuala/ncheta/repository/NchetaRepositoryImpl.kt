@@ -42,7 +42,7 @@ class NchetaRepositoryImpl(
         if (isPremium && currentUser != null) {
             try {
                 val remoteEntries = remoteDataSource.getEntries(currentUser.uid)
-                localDataSource.replaceAll(remoteEntries)
+                localDataSource.addAll(remoteEntries)
             } catch (e: Exception) {
                 println("Error syncing remote entries: ${e.message}")
             }
