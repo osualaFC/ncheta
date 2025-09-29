@@ -1,6 +1,7 @@
 import co.touchlab.skie.configuration.FlowInterop
 import co.touchlab.skie.configuration.SealedInterop
 import co.touchlab.skie.configuration.SuspendInterop
+import com.codingfeline.buildkonfig.compiler.FieldSpec
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 
 plugins {
@@ -9,6 +10,7 @@ plugins {
     alias(libs.plugins.kotlin.serialization)
     alias(libs.plugins.skie)
     alias(libs.plugins.sqldelight)
+    alias(libs.plugins.buildKonfig)
 }
 
 dependencies {
@@ -111,6 +113,14 @@ kotlin {
             implementation(libs.mockk)
             implementation(libs.junit)
             implementation(libs.kotlinx.coroutines.test)
+        }
+    }
+
+    buildkonfig {
+        packageName = "com.fredrickosuala.ncheta"
+        defaultConfigs {
+            buildConfigField(FieldSpec.Type.STRING, "ANDROID_KEY", project.properties["ANDROID_KEY"].toString())
+            buildConfigField(FieldSpec.Type.STRING, "IOS_KEY", project.properties["IOS_KEY"].toString())
         }
     }
 }
