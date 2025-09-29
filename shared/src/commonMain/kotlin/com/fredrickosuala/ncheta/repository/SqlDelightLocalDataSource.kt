@@ -39,7 +39,7 @@ class SqlDelightLocalDataSource(database: Database) : LocalDataSource {
         queries.deleteById(id)
     }
 
-    override suspend fun replaceAll(entries: List<NchetaEntry>) {
+    override suspend fun addAll(entries: List<NchetaEntry>) {
         queries.transaction {
 
             queries.deleteAll()

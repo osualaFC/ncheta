@@ -1,6 +1,7 @@
 package com.fredrickosuala.ncheta.services
 
 import com.fredrickosuala.ncheta.data.model.*
+import com.fredrickosuala.ncheta.domain.config.RemoteConfigManager
 import kotlinx.serialization.json.Json
 import dev.shreyaspatil.ai.client.generativeai.GenerativeModel
 import dev.shreyaspatil.ai.client.generativeai.type.content
@@ -14,8 +15,10 @@ import okio.ByteString.Companion.toByteString
 
 
 class GeminiContentGenerationService(
-    private val modelName: String = "gemini-1.5-flash-latest"
+    private val remoteConfigManager: RemoteConfigManager
 ) : ContentGenerationService {
+
+    private val modelName = remoteConfigManager.getGeminiModel()
 
     private val json = Json { isLenient = true; ignoreUnknownKeys = true }
 
@@ -30,6 +33,7 @@ class GeminiContentGenerationService(
             return response.text?.let { Result.Success(it) }
                 ?: Result.Error("Failed to generate summary. The response was empty.")
         } catch (e: Exception) {
+            println("Summary Generation Error: ${e.message}")
             return Result.Error(e.message ?: "An unknown error occurred.")
         }
     }

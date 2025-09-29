@@ -28,20 +28,6 @@ struct SettingsView: View {
         
         NavigationView {
             Form {
-                // --- API Key Section ---
-                Section(header: Text("API Key")) {
-                    SecureField("Enter your Gemini API Key", text: $viewModel.apiKey)
-                        .onChange(of: viewModel.apiKey) { viewModel.onApiKeyChanged($0) }
-                    
-                    Button("Save API Key") { viewModel.saveApiKey() }
-                        .disabled(isSaving)
-                }
-                
-                // --- Instructional Text ---
-                Section(footer: Text("Ncheta uses the Gemini API. You must provide your own free developer key.")) {
-                    Link("Click here to get your Gemini API key", destination: URL(string: "https://aistudio.google.com/app/apikey")!)
-                }
-                
                 // --- Account & Premium Sections ---
                 if !isFirstTimeSetup {
                     // --- Account Section ---
@@ -65,8 +51,8 @@ struct SettingsView: View {
                     }
                     
                     // --- Premium Section ---
-                    if !isPremium {
                         Section(header: Text("Premium")) {
+                            if !isPremium {
                             if user == nil {
                                 // If user is not logged in, show an instructional message
                                 Text("Please sign in or create an account to upgrade.")
@@ -77,7 +63,10 @@ struct SettingsView: View {
                                     showPaywallSheet = true
                                 }
                             }
-                        }
+                        } else {
+                                Button("Restore Subscription") { viewModel.restoreSubscription() }
+                            }
+
                     }
                 }
             }

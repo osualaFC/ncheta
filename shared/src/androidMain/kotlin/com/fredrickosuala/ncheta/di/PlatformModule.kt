@@ -43,7 +43,8 @@ actual fun platformModule(): Module = module {
            authRepository = get(),
            settingsRepository = get(),
            audioRecorder = get(),
-           subscriptionManager = get()
+           subscriptionManager = get(),
+           remoteConfigManager = get()
        )
    }
 

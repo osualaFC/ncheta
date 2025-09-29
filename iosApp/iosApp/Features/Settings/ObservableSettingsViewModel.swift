@@ -72,6 +72,11 @@ class ObservableSettingsViewModel: ObservableObject {
     func signOut() {
         sharedVm.signOut()
     }
+
+    func restoreSubscription() {
+        sharedVm.restoreSubscription()
+    }
+
     
     deinit {
         stateWatcher?.cancel()

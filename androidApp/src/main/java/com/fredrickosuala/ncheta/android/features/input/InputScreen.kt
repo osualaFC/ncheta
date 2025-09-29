@@ -63,6 +63,7 @@ fun InputScreen(
 
     var showSaveDialog by remember { mutableStateOf(false) }
     var showImageSourceDialog by remember { mutableStateOf(false) }
+    var showSignInPromptDialog by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
     val context = LocalContext.current
     val density = LocalDensity.current
@@ -163,12 +164,15 @@ fun InputScreen(
         when (val state = uiState) {
             is InputUiState.Error -> {
                 coroutineScope.launch {
-                    Toast.makeText(context, state.message, Toast.LENGTH_SHORT).show()
+                    Toast.makeText(context, state.message, Toast.LENGTH_LONG).show()
                 }
                 sharedVm.resetUiState()
             }
             is InputUiState.Success -> {
                 showSaveDialog = true
+            }
+            is InputUiState.AuthRequired -> {
+                showSignInPromptDialog = true
             }
             is InputUiState.PremiumFeatureLocked -> {
                 onNavigateToPayWall()
@@ -176,6 +180,38 @@ fun InputScreen(
             }
             else -> {}
         }
+    }
+
+    if (showSignInPromptDialog) {
+        AlertDialog(
+            onDismissRequest = {
+                showSignInPromptDialog = false
+                viewModel.inputViewModel.resetUiState()
+            },
+            title = { Text("Sign In Required") },
+            text = { Text("Please sign in or create an account to generate content.") },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showSignInPromptDialog = false
+                        viewModel.inputViewModel.resetUiState()
+                        onNavigateToAuth()
+                    }
+                ) {
+                    Text("Sign In")
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showSignInPromptDialog = false
+                        viewModel.inputViewModel.resetUiState()
+                    }
+                ) {
+                    Text("Cancel")
+                }
+            }
+        )
     }
 
     if (showSaveDialog) {

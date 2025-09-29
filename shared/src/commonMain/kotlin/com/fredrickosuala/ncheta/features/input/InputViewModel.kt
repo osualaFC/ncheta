@@ -5,25 +5,25 @@ import com.fredrickosuala.ncheta.data.model.GeneratedContent
 import com.fredrickosuala.ncheta.data.model.InputSourceType
 import com.fredrickosuala.ncheta.data.model.MultipleChoiceQuestion
 import com.fredrickosuala.ncheta.data.model.NchetaEntry
-import com.fredrickosuala.ncheta.domain.audio.AudioRecorderState
 import com.fredrickosuala.ncheta.domain.audio.AudioRecorder
+import com.fredrickosuala.ncheta.domain.audio.AudioRecorderState
+import com.fredrickosuala.ncheta.domain.config.RemoteConfigManager
 import com.fredrickosuala.ncheta.domain.subscription.SubscriptionManager
 import com.fredrickosuala.ncheta.repository.AuthRepository
 import com.fredrickosuala.ncheta.repository.NchetaRepository
 import com.fredrickosuala.ncheta.repository.SettingsRepository
-import com.fredrickosuala.ncheta.services.Result
 import com.fredrickosuala.ncheta.services.ContentGenerationService
+import com.fredrickosuala.ncheta.services.Result
 import com.revenuecat.purchases.kmp.Purchases
+import dev.gitlive.firebase.Firebase
+import dev.gitlive.firebase.firestore.firestore
 import kotlinx.coroutines.CoroutineExceptionHandler
 import kotlinx.coroutines.CoroutineScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collectLatest
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlin.uuid.ExperimentalUuidApi
 import kotlin.uuid.Uuid
@@ -35,9 +35,11 @@ class InputViewModel(
     private val authRepository: AuthRepository,
     private val settingsRepository: SettingsRepository,
     private val audioRecorder: AudioRecorder,
-    private val subscriptionManager: SubscriptionManager
+    private val subscriptionManager: SubscriptionManager,
+    private val remoteConfigManager: RemoteConfigManager
 ) {
 
+    private val firestore = Firebase.firestore
     val isLoggedIn = authRepository.observeAuthState()
     val currentUser = authRepository.getCurrentUser()
 
@@ -65,35 +67,80 @@ class InputViewModel(
             }
         }
 
-       launchSafe {
-           repository.syncRemoteEntries(isPremium())
-       }
+        launchSafe {
+            repository.syncRemoteEntries(isPremium())
+        }
     }
 
     private suspend fun isPremium(): Boolean {
-   return subscriptionManager.getCustomerInfo().let {
+        return subscriptionManager.getCustomerInfo().let {
             it.entitlements["premium"]?.isActive == true && currentUser?.uid == Purchases.sharedInstance.appUserID
         }
     }
 
-
-    private var userApiKey: StateFlow<String?> = settingsRepository.getApiKey()
-        .stateIn(
-            scope = coroutineScope,
-            started = SharingStarted.Eagerly,
-            initialValue = null
-        )
+    private var userApiKey = remoteConfigManager.getApiKey()
 
     fun onInputTextChanged(newText: String) {
         _inputText.value = newText
+    }
+
+    private suspend fun performLimitChecks(): Boolean {
+
+        val user = authRepository.getCurrentUser()
+
+        if (user == null) {
+            _uiState.value = InputUiState.AuthRequired
+            return false
+        }
+
+        // 1. Check Character Limit
+        val charLimit = if (isPremium()) {
+            remoteConfigManager.getPremiumCharLimit()
+        } else {
+            remoteConfigManager.getFreeCharLimit()
+        }
+
+        if (_inputText.value.length > charLimit) {
+            _uiState.value =
+                InputUiState.Error("Character limit exceeded. Premium users have a higher limit.")
+            return false
+        }
+
+        // 2. Check Generation Limit (FREE users only)
+        if (!isPremium()) {
+            val dailyLimit = remoteConfigManager.getFreeMaxGenerationLimit()
+            val usageDocRef = firestore.collection("usage_limits").document(user.uid)
+
+            try {
+                val usageDoc = usageDocRef.get()
+                val currentCount = usageDoc.get<Long?>("count") ?: 0
+
+                if (currentCount >= dailyLimit) {
+                    _uiState.value = InputUiState.PremiumFeatureLocked
+                    return false
+                }
+
+                // Update usage
+                usageDocRef.set(mapOf( "count" to currentCount + 1))
+            } catch (e: Exception) {
+                _uiState.value = InputUiState.Error("Could not verify usage limit.")
+                return false
+            }
+        }
+
+        return true
     }
 
     fun onSummarizeClicked() {
         if (!validateInputs()) return
 
         launchSafe {
+
+            val canProceed = performLimitChecks()
+            if (!canProceed) return@launchSafe
+
             _uiState.value = InputUiState.Loading
-            when(val result = generationService.generateSummary(_inputText.value, userApiKey.value!!)) {
+            when (val result = generationService.generateSummary(_inputText.value, userApiKey)) {
                 is Result.Success -> _uiState.value = InputUiState.Success(result.data)
                 is Result.Error -> _uiState.value = InputUiState.Error(result.message)
             }
@@ -104,8 +151,12 @@ class InputViewModel(
         if (!validateInputs()) return
 
         launchSafe {
+
+            val canProceed = performLimitChecks()
+            if (!canProceed) return@launchSafe
+
             _uiState.value = InputUiState.Loading
-            when(val result = generationService.generateFlashcards(_inputText.value, userApiKey.value!!)) {
+            when (val result = generationService.generateFlashcards(_inputText.value, userApiKey)) {
                 is Result.Success -> _uiState.value = InputUiState.Success(result.data)
                 is Result.Error -> _uiState.value = InputUiState.Error(result.message)
             }
@@ -116,8 +167,12 @@ class InputViewModel(
         if (!validateInputs()) return
 
         launchSafe {
+
+            val canProceed = performLimitChecks()
+            if (!canProceed) return@launchSafe
+
             _uiState.value = InputUiState.Loading
-            when(val result = generationService.generateMcqs(_inputText.value, userApiKey.value!!)) {
+            when (val result = generationService.generateMcqs(_inputText.value, userApiKey)) {
                 is Result.Success -> _uiState.value = InputUiState.Success(result.data)
                 is Result.Error -> _uiState.value = InputUiState.Error(result.message)
             }
@@ -129,11 +184,12 @@ class InputViewModel(
 
         launchSafe {
             _uiState.value = InputUiState.Loading
-            when (val result = generationService.getTextFromImage(imageData, userApiKey.value!!)) {
+            when (val result = generationService.getTextFromImage(imageData, userApiKey)) {
                 is Result.Success -> {
                     _inputText.value = result.data
                     _uiState.value = InputUiState.Idle
                 }
+
                 is Result.Error -> _uiState.value = InputUiState.Error(result.message)
             }
         }
@@ -156,8 +212,8 @@ class InputViewModel(
     }
 
     private fun validateInputs(checkApiKeyOnly: Boolean = false): Boolean {
-        if (userApiKey.value.isNullOrBlank()) {
-            _uiState.value = InputUiState.Error("API Key is missing. Please add it in settings.")
+        if (userApiKey.isBlank()) {
+            _uiState.value = InputUiState.Error("Something went wrong. Unable to fetch API key.")
             return false
         }
         if (checkApiKeyOnly) {
@@ -195,6 +251,7 @@ class InputViewModel(
                         return
                     }
                 }
+
                 else -> {
                     _uiState.value = InputUiState.Error("Cannot save this type of content.")
                     return
@@ -241,19 +298,20 @@ class InputViewModel(
 
 
     private fun transcribeAudio(audioData: ByteArray, mimeType: String) {
-        val currentApiKey = userApiKey.value
-        if (currentApiKey.isNullOrBlank()) {
-            _uiState.value = InputUiState.Error("API Key is missing.")
+
+        if (userApiKey.isBlank()) {
+            _uiState.value = InputUiState.Error("Something went wrong. Unable to fetch API key.")
             return
         }
 
         _uiState.value = InputUiState.Loading
         launchSafe {
-            when (val result = generationService.transcribeAudio(audioData, mimeType, currentApiKey)) {
+            when (val result = generationService.transcribeAudio(audioData, mimeType, userApiKey)) {
                 is Result.Success -> {
                     _inputText.value = result.data
                     _uiState.value = InputUiState.Idle
                 }
+
                 is Result.Error -> _uiState.value = InputUiState.Error(result.message)
             }
         }
@@ -270,7 +328,6 @@ class InputViewModel(
     }
 
 
-
     fun clear() {
         coroutineScope.cancel()
         audioRecorder.onCleared()
@@ -278,10 +335,11 @@ class InputViewModel(
 }
 
 sealed class InputUiState {
-    data object Idle: InputUiState()
-    data object Loading: InputUiState()
-    data object Saved: InputUiState()
+    data object Idle : InputUiState()
+    data object Loading : InputUiState()
+    data object Saved : InputUiState()
     data object PremiumFeatureLocked : InputUiState()
-    data class Success(val data: Any): InputUiState()
-    data class Error(val message: String): InputUiState()
+    data object AuthRequired : InputUiState()
+    data class Success(val data: Any) : InputUiState()
+    data class Error(val message: String) : InputUiState()
 }

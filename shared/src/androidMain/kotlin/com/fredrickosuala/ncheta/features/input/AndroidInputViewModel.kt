@@ -3,6 +3,7 @@ package com.fredrickosuala.ncheta.features.input
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.fredrickosuala.ncheta.domain.audio.AudioRecorder
+import com.fredrickosuala.ncheta.domain.config.RemoteConfigManager
 import com.fredrickosuala.ncheta.domain.subscription.SubscriptionManager
 import com.fredrickosuala.ncheta.repository.AuthRepository
 import com.fredrickosuala.ncheta.repository.NchetaRepository
@@ -17,7 +18,8 @@ open class AndroidInputViewModel(
     authRepository: AuthRepository,
     settingsRepository: SettingsRepository,
     audioRecorder: AudioRecorder,
-    subscriptionManager: SubscriptionManager
+    subscriptionManager: SubscriptionManager,
+    remoteConfigManager: RemoteConfigManager
 ) : ViewModel() {
 
     val inputViewModel = InputViewModel(
@@ -27,7 +29,8 @@ open class AndroidInputViewModel(
         authRepository = authRepository,
         settingsRepository = settingsRepository,
         audioRecorder = audioRecorder,
-        subscriptionManager = subscriptionManager
+        subscriptionManager = subscriptionManager,
+        remoteConfigManager = remoteConfigManager
     )
 
     private val _saveDialogTitle = MutableStateFlow("")

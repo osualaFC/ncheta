@@ -45,7 +45,6 @@ class RevenueCatSubscriptionManager : SubscriptionManager {
 
     override suspend fun logIn(userId: String): Result<Boolean> = try {
         val logInResult = Purchases.sharedInstance.awaitLogIn(userId)
-        restorePurchases()
         Result.success(logInResult.created)
     } catch (e: Exception) {
         Result.failure(e)

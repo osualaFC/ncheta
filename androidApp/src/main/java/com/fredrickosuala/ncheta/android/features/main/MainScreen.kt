@@ -43,11 +43,10 @@ fun MainScreen(
     val navController = rememberNavController()
     val snackbarHostState = remember { SnackbarHostState() }
 
-    val startDestination = remember(hasCompletedOnboarding, isReadyToUseApp) {
+    val startDestination = remember(hasCompletedOnboarding) {
         when {
             hasCompletedOnboarding == null -> Route.Loading.path
             !hasCompletedOnboarding!! -> Route.Onboarding.path
-            !isReadyToUseApp -> Route.Settings.create(true)
             else -> Route.Create.path
         }
     }

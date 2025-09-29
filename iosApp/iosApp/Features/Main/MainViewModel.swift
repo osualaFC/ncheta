@@ -37,6 +37,15 @@ class MainViewModel: ObservableObject {
                 self.isReadyToUseApp = isReady as? Bool ?? false
             }
         }
+        
+        Task {
+            do {
+                try await ViewModels().remoteConfigManager.fetchAndActivate()
+                print("Remote Config fetched and activated successfully.")
+            } catch {
+                print("Error fetching Remote Config: \(error.localizedDescription)")
+            }
+        }
     }
     
     func setOnboardingComplete() {
